@@ -345,17 +345,19 @@ def search_linkedin_jobs(query: str, location: str = "", workplace_type: str = "
     log(f"🔍 Searching jobs: \"{query}\" in \"{location or 'anywhere'}\"")
 
     run_input = {
-        "searchKeywords": query,
-        "maxResults": max_jobs,
+        "jobTitles": [query],
+        "maxItems": max_jobs,
     }
     if location:
-        run_input["location"] = location
+        run_input["locations"] = [location]
     if workplace_type:
-        run_input["workplaceType"] = workplace_type
+        run_input["workplaceType"] = [workplace_type]
     if employment_type:
-        run_input["employmentType"] = employment_type
+        # Map CLI values to actor values (actor uses "full-time" not "fulltime")
+        etype_map = {"fulltime": "full-time", "parttime": "part-time"}
+        run_input["employmentType"] = [etype_map.get(employment_type, employment_type)]
     if experience_level:
-        run_input["experienceLevel"] = experience_level
+        run_input["experienceLevel"] = [experience_level]
 
     try:
         run = client.actor(APIFY_ACTOR_ID_JOBS).call(run_input=run_input)
