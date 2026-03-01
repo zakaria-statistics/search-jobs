@@ -91,6 +91,29 @@ CLAUDE_MODEL = "claude-sonnet-4-5-20250929"
 CLAUDE_MAX_TOKENS = 8192
 APIFY_ACTOR_ID_JOBS = "harvestapi/linkedin-job-search"
 DEFAULT_MAX_JOBS = 25
+DEFAULT_POSTED_LIMIT = "week"
+
+# Fields to keep when slimming jobs for Claude (drop descriptionHtml and other bloat)
+JOB_FIELDS_FOR_RANKING = [
+    "id", "title", "linkedinUrl", "postedDate", "location",
+    "employmentType", "workplaceType", "workRemoteAllowed",
+    "easyApplyUrl", "applicants", "company",
+]
+# Max chars of descriptionText to send per job for initial ranking
+JOB_DESC_TRUNCATE = 600
+
+# Candidate skill keywords for pre-filtering (lowercase)
+CANDIDATE_SKILL_KEYWORDS = {
+    "devops", "cloud", "platform", "sre", "site reliability", "devsecops",
+    "kubernetes", "k8s", "docker", "terraform", "ansible", "helm", "argocd",
+    "ci/cd", "cicd", "jenkins", "gitlab", "github actions",
+    "azure", "aws", "gcp", "multi-cloud",
+    "prometheus", "grafana", "monitoring", "observability",
+    "linux", "bash", "python", "infrastructure", "iac",
+    "mlops", "ai infrastructure", "llm", "machine learning",
+    "security", "vault", "secrets", "kms",
+    "nginx", "load balancer", "networking",
+}
 
 
 # ─── Candidate Profile (Zakaria's context) ────────────────────────────────────
@@ -335,25 +358,31 @@ def load_profile_from_file(filepath: str) -> dict:
 
 def search_linkedin_jobs(query: str, location: str = "", workplace_type: str = "",
                          employment_type: str = "", experience_level: str = "",
-                         max_jobs: int = DEFAULT_MAX_JOBS) -> list:
-    """Search LinkedIn jobs using HarvestAPI actor on Apify."""
+                         max_jobs: int = DEFAULT_MAX_JOBS,
+                         posted_limit: str = DEFAULT_POSTED_LIMIT) -> list:
+    """Search LinkedIn jobs using HarvestAPI actor on Apify.
+
+    query can contain multiple titles separated by commas:
+        "DevOps Engineer,Cloud Engineer,SRE"
+    """
     if not APIFY_TOKEN:
         print("APIFY_API_TOKEN not set. Add it to .env")
         sys.exit(1)
 
     client = ApifyClient(APIFY_TOKEN)
-    log(f"🔍 Searching jobs: \"{query}\" in \"{location or 'anywhere'}\"")
+    titles = [t.strip() for t in query.split(",") if t.strip()]
+    log(f"🔍 Searching jobs: {titles} in \"{location or 'anywhere'}\" (posted: {posted_limit})")
 
     run_input = {
-        "jobTitles": [query],
+        "jobTitles": titles,
         "maxItems": max_jobs,
+        "postedLimit": posted_limit,
     }
     if location:
         run_input["locations"] = [location]
     if workplace_type:
         run_input["workplaceType"] = [workplace_type]
     if employment_type:
-        # Map CLI values to actor values (actor uses "full-time" not "fulltime")
         etype_map = {"fulltime": "full-time", "parttime": "part-time"}
         run_input["employmentType"] = [etype_map.get(employment_type, employment_type)]
     if experience_level:
@@ -370,16 +399,57 @@ def search_linkedin_jobs(query: str, location: str = "", workplace_type: str = "
     return items
 
 
+def _pre_filter_jobs(jobs: list) -> list:
+    """Drop jobs that have zero keyword overlap with candidate skills."""
+    filtered = []
+    for job in jobs:
+        text = (
+            (job.get("title") or "") + " " +
+            (job.get("descriptionText") or "")
+        ).lower()
+        if any(kw in text for kw in CANDIDATE_SKILL_KEYWORDS):
+            filtered.append(job)
+    dropped = len(jobs) - len(filtered)
+    if dropped:
+        log(f"🗑️  Pre-filter: dropped {dropped} irrelevant jobs, keeping {len(filtered)}")
+    return filtered
+
+
+def _slim_job_for_claude(job: dict) -> dict:
+    """Strip heavy fields and truncate description to save tokens."""
+    slim = {}
+    for key in JOB_FIELDS_FOR_RANKING:
+        if key in job:
+            slim[key] = job[key]
+    # Truncated description — enough for ranking, not full HTML
+    desc = job.get("descriptionText") or ""
+    if len(desc) > JOB_DESC_TRUNCATE:
+        slim["descriptionText"] = desc[:JOB_DESC_TRUNCATE] + "..."
+    else:
+        slim["descriptionText"] = desc
+    return slim
+
+
 def analyze_jobs_with_claude(jobs_data: list, target_role: str = None) -> dict:
-    """Send job listings to Claude for ranked analysis against candidate profile."""
+    """Send job listings to Claude for ranked analysis against candidate profile.
+
+    Automatically pre-filters irrelevant jobs and slims payloads to save tokens.
+    """
     if not ANTHROPIC_KEY:
         print("ANTHROPIC_API_KEY not set. Add it to .env")
         sys.exit(1)
 
-    client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
-    jobs_json = json.dumps(jobs_data, indent=2, default=str)
+    # Pre-filter and slim
+    relevant = _pre_filter_jobs(jobs_data)
+    if not relevant:
+        print("No relevant jobs after filtering. Try broader search terms.")
+        sys.exit(1)
+    slim_jobs = [_slim_job_for_claude(j) for j in relevant]
 
-    user_msg = f"""Analyze and rank the following {len(jobs_data)} LinkedIn job postings for fit against the candidate profile in the system prompt.
+    client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
+    jobs_json = json.dumps(slim_jobs, indent=2, default=str)
+
+    user_msg = f"""Analyze and rank the following {len(slim_jobs)} LinkedIn job postings for fit against the candidate profile in the system prompt.
 
 {"Target role focus: " + target_role if target_role else ""}
 
@@ -1055,9 +1125,12 @@ def main():
           %(prog)s --url "https://www.linkedin.com/in/competitor/" --mode competitor
           %(prog)s --file scraped.json --md
 
-          # Job search
-          %(prog)s --mode jobs --query "DevOps Engineer" --location "France"
-          %(prog)s --mode jobs -q "Cloud Engineer" -l "London" --workplace-type remote --md
+          # Job search (single title)
+          %(prog)s --mode jobs -q "DevOps Engineer" -l "France"
+          # Multi-title search in one call
+          %(prog)s --mode jobs -q "DevOps Engineer,SRE,Cloud Engineer" -l "France" --md
+          # Remote jobs posted in last 24h
+          %(prog)s --mode jobs -q "Cloud Engineer" -l "London" --workplace-type remote --posted-limit 24h --md
           %(prog)s --mode jobs -q "SRE" -l "Germany" --save-profile jobs.json
           %(prog)s --mode jobs --job-file jobs.json --md
         """),
@@ -1078,11 +1151,12 @@ def main():
 
     # Job search options
     jobs_group = parser.add_argument_group("Job Search Options (--mode jobs)")
-    jobs_group.add_argument("--query", "-q", help="Job title or keywords to search")
+    jobs_group.add_argument("--query", "-q", help="Job title(s) — comma-separated for multi-search (e.g. 'DevOps Engineer,SRE,Cloud Engineer')")
     jobs_group.add_argument("--location", "-l", help="Search location (city, country, or 'remote')")
     jobs_group.add_argument("--workplace-type", choices=["onsite", "remote", "hybrid"], help="Workplace type filter")
     jobs_group.add_argument("--employment-type", choices=["fulltime", "parttime", "contract", "internship"], help="Employment type filter")
     jobs_group.add_argument("--experience-level", choices=["entry", "associate", "mid-senior", "director", "executive"], help="Experience level filter")
+    jobs_group.add_argument("--posted-limit", choices=["1h", "24h", "week", "month"], default=DEFAULT_POSTED_LIMIT, help=f"Only jobs posted within (default: {DEFAULT_POSTED_LIMIT})")
     jobs_group.add_argument("--max-jobs", type=int, default=DEFAULT_MAX_JOBS, help=f"Max job results (default: {DEFAULT_MAX_JOBS})")
     jobs_group.add_argument("--job-file", help="Load saved jobs JSON instead of searching Apify")
 
@@ -1113,6 +1187,7 @@ def main():
                 employment_type=args.employment_type or "",
                 experience_level=args.experience_level or "",
                 max_jobs=args.max_jobs,
+                posted_limit=args.posted_limit,
             )
             if args.save_profile:
                 with open(args.save_profile, "w") as f:
