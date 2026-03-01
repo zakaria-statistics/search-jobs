@@ -32,8 +32,15 @@ Usage:
     # Custom target role override
     python linkedin_optimizer.py --file profile.json --target-role "Platform Engineer"
 
-    # Full output with HTML report
-    python linkedin_optimizer.py --url "https://www.linkedin.com/in/your-profile/" --html
+    # Search & rank LinkedIn jobs by fit
+    python linkedin_optimizer.py --mode jobs --query "DevOps Engineer" --location "France"
+
+    # Remote cloud jobs with markdown report
+    python linkedin_optimizer.py --mode jobs -q "Cloud Engineer" -l "London" --workplace-type remote --md
+
+    # Save jobs for re-analysis later (skip Apify)
+    python linkedin_optimizer.py --mode jobs -q "SRE" -l "Germany" --save-profile jobs.json
+    python linkedin_optimizer.py --mode jobs --job-file jobs.json --md
 """
 
 import argparse
@@ -82,6 +89,8 @@ ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 APIFY_ACTOR_ID = "curious_coder/linkedin-profile-scraper"
 CLAUDE_MODEL = "claude-sonnet-4-5-20250929"
 CLAUDE_MAX_TOKENS = 8192
+APIFY_ACTOR_ID_JOBS = "harvestapi/linkedin-job-search"
+DEFAULT_MAX_JOBS = 25
 
 
 # ─── Candidate Profile (Zakaria's context) ────────────────────────────────────
@@ -236,6 +245,52 @@ Analyze the competitor profile and return ONLY valid JSON:
   ]
 }}"""
 
+SYSTEM_PROMPT_JOBS = f"""You are an elite career strategist specializing in DevOps, Cloud, Platform Engineering and AI/MLOps hiring markets. You will receive a list of LinkedIn job postings and must rank them by fit for the candidate below.
+
+{CANDIDATE_CONTEXT}
+
+## Scoring Criteria (0-100 per dimension)
+
+1. **Skills Match** — how many required/preferred skills does the candidate already have?
+2. **Experience Fit** — does the seniority and years-of-experience match?
+3. **Location Fit** — is the job in a target region? Remote-friendly?
+4. **Growth Potential** — does the role offer career progression, learning, visa sponsorship, or other strategic value?
+
+The overall fit score is the weighted average: skills 40%, experience 30%, location 15%, growth 15%.
+
+## Output Format
+
+Return ONLY valid JSON (no markdown fences, no preamble):
+
+{{
+  "search_summary": {{
+    "total_jobs_analyzed": 0,
+    "average_fit_score": 0,
+    "top_fit_score": 0,
+    "score_distribution": {{"excellent_80_plus": 0, "good_60_79": 0, "fair_40_59": 0, "poor_below_40": 0}}
+  }},
+  "ranked_jobs": [
+    {{
+      "rank": 1,
+      "title": "",
+      "company": "",
+      "location": "",
+      "url": "",
+      "scores": {{"skills_match": 0, "experience_fit": 0, "location_fit": 0, "growth_potential": 0, "overall": 0}},
+      "matching_skills": [],
+      "missing_skills": [],
+      "resume_tweaks": [],
+      "priority": "apply_now|strong_match|worth_trying|long_shot|skip"
+    }}
+  ],
+  "global_insights": {{
+    "most_demanded_skills": [],
+    "skills_to_learn": [],
+    "market_observations": [],
+    "recommended_search_refinements": []
+  }}
+}}"""
+
 
 # ─── Apify Scraper ────────────────────────────────────────────────────────────
 
@@ -274,6 +329,323 @@ def load_profile_from_file(filepath: str) -> dict:
     """Load previously scraped profile from JSON."""
     with open(filepath, "r") as f:
         return json.load(f)
+
+
+# ─── Job Search (HarvestAPI) ──────────────────────────────────────────────────
+
+def search_linkedin_jobs(query: str, location: str = "", workplace_type: str = "",
+                         employment_type: str = "", experience_level: str = "",
+                         max_jobs: int = DEFAULT_MAX_JOBS) -> list:
+    """Search LinkedIn jobs using HarvestAPI actor on Apify."""
+    if not APIFY_TOKEN:
+        print("APIFY_API_TOKEN not set. Add it to .env")
+        sys.exit(1)
+
+    client = ApifyClient(APIFY_TOKEN)
+    log(f"🔍 Searching jobs: \"{query}\" in \"{location or 'anywhere'}\"")
+
+    run_input = {
+        "searchKeywords": query,
+        "maxResults": max_jobs,
+    }
+    if location:
+        run_input["location"] = location
+    if workplace_type:
+        run_input["workplaceType"] = workplace_type
+    if employment_type:
+        run_input["employmentType"] = employment_type
+    if experience_level:
+        run_input["experienceLevel"] = experience_level
+
+    try:
+        run = client.actor(APIFY_ACTOR_ID_JOBS).call(run_input=run_input)
+    except Exception as e:
+        print(f"Apify error: {e}")
+        sys.exit(1)
+
+    items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
+    log(f"Found {len(items)} jobs")
+    return items
+
+
+def analyze_jobs_with_claude(jobs_data: list, target_role: str = None) -> dict:
+    """Send job listings to Claude for ranked analysis against candidate profile."""
+    if not ANTHROPIC_KEY:
+        print("ANTHROPIC_API_KEY not set. Add it to .env")
+        sys.exit(1)
+
+    client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
+    jobs_json = json.dumps(jobs_data, indent=2, default=str)
+
+    user_msg = f"""Analyze and rank the following {len(jobs_data)} LinkedIn job postings for fit against the candidate profile in the system prompt.
+
+{"Target role focus: " + target_role if target_role else ""}
+
+## Job Listings Data
+
+{jobs_json}
+
+---
+
+Instructions:
+1. Score every job honestly across all 4 dimensions
+2. Rank by overall fit score (descending)
+3. Be specific about which skills match and which are missing
+4. Resume tweaks should be actionable one-liners
+5. Priority labels should reflect realistic chances
+6. Global insights should help refine the job search strategy"""
+
+    log(f"🤖 Analyzing {len(jobs_data)} jobs with {CLAUDE_MODEL}...")
+    start = time.time()
+
+    try:
+        response = client.messages.create(
+            model=CLAUDE_MODEL,
+            max_tokens=CLAUDE_MAX_TOKENS,
+            system=SYSTEM_PROMPT_JOBS,
+            messages=[{"role": "user", "content": user_msg}],
+        )
+    except anthropic.APIError as e:
+        print(f"Claude API error: {e}")
+        sys.exit(1)
+
+    elapsed = time.time() - start
+    usage = response.usage
+    log(f"Done in {elapsed:.1f}s ({usage.input_tokens} in / {usage.output_tokens} out)")
+
+    raw = response.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[1]
+    if raw.endswith("```"):
+        raw = raw.rsplit("```", 1)[0]
+    raw = raw.strip()
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        log("Response wasn't valid JSON — saving raw text")
+        return {"raw_response": raw}
+
+
+def print_jobs_summary(analysis: dict):
+    """Print ranked job analysis to console."""
+    if "raw_response" in analysis:
+        print("\nRaw Response:\n")
+        print(analysis["raw_response"])
+        return
+
+    summary = analysis.get("search_summary", {})
+    ranked = analysis.get("ranked_jobs", [])
+    insights = analysis.get("global_insights", {})
+
+    # Stats
+    dist = summary.get("score_distribution", {})
+    print(f"\n📊 Search Summary: {summary.get('total_jobs_analyzed', 0)} jobs analyzed")
+    print(f"   Average fit: {summary.get('average_fit_score', 0)}/100 | Top fit: {summary.get('top_fit_score', 0)}/100")
+    print(f"   Excellent (80+): {dist.get('excellent_80_plus', 0)} | Good (60-79): {dist.get('good_60_79', 0)} | Fair (40-59): {dist.get('fair_40_59', 0)} | Poor (<40): {dist.get('poor_below_40', 0)}")
+
+    # Top 10 table
+    top_10 = ranked[:10]
+    if HAS_RICH and top_10:
+        table = Table(title="🏆 Top 10 Job Matches", show_header=True)
+        table.add_column("#", justify="center", style="bold")
+        table.add_column("Title", style="cyan", max_width=35)
+        table.add_column("Company", max_width=20)
+        table.add_column("Location", max_width=18)
+        table.add_column("Fit", justify="center")
+        table.add_column("Priority", justify="center")
+
+        priority_colors = {
+            "apply_now": "bold green",
+            "strong_match": "green",
+            "worth_trying": "yellow",
+            "long_shot": "red",
+            "skip": "dim",
+        }
+
+        for job in top_10:
+            scores = job.get("scores", {})
+            priority = job.get("priority", "")
+            style = priority_colors.get(priority, "")
+            table.add_row(
+                str(job.get("rank", "")),
+                job.get("title", ""),
+                job.get("company", ""),
+                job.get("location", ""),
+                f"{scores.get('overall', 0)}/100",
+                Text(priority.replace("_", " ").title(), style=style),
+            )
+        console.print(table)
+    elif top_10:
+        print("\nTop 10 Job Matches:")
+        for job in top_10:
+            scores = job.get("scores", {})
+            print(f"  {job.get('rank', '')}. [{scores.get('overall', 0)}/100] {job.get('title', '')} @ {job.get('company', '')} ({job.get('location', '')})")
+
+    # Top 5 details
+    for job in ranked[:5]:
+        scores = job.get("scores", {})
+        print(f"\n{'─' * 60}")
+        print(f"#{job.get('rank', '')} — {job.get('title', '')} @ {job.get('company', '')}")
+        print(f"   Location: {job.get('location', '')} | Priority: {job.get('priority', '').replace('_', ' ').title()}")
+        print(f"   Skills: {scores.get('skills_match', 0)} | Exp: {scores.get('experience_fit', 0)} | Loc: {scores.get('location_fit', 0)} | Growth: {scores.get('growth_potential', 0)} | Overall: {scores.get('overall', 0)}")
+        matching = job.get("matching_skills", [])
+        missing = job.get("missing_skills", [])
+        tweaks = job.get("resume_tweaks", [])
+        if matching:
+            print(f"   Matching: {', '.join(matching)}")
+        if missing:
+            print(f"   Missing: {', '.join(missing)}")
+        if tweaks:
+            for t in tweaks:
+                print(f"   Tweak: {t}")
+        url = job.get("url", "")
+        if url:
+            print(f"   Link: {url}")
+
+    # Global insights
+    if insights:
+        print(f"\n{'═' * 60}")
+        print("🌍 Global Insights")
+        demanded = insights.get("most_demanded_skills", [])
+        to_learn = insights.get("skills_to_learn", [])
+        observations = insights.get("market_observations", [])
+        if demanded:
+            print(f"   Most demanded: {', '.join(demanded)}")
+        if to_learn:
+            print(f"   Skills to learn: {', '.join(to_learn)}")
+        if observations:
+            for obs in observations:
+                print(f"   • {obs}")
+    print()
+
+
+def generate_jobs_markdown_report(analysis: dict, jobs_data: list, output_path: str):
+    """Generate a Markdown report for job search results."""
+    summary = analysis.get("search_summary", {})
+    ranked = analysis.get("ranked_jobs", [])
+    insights = analysis.get("global_insights", {})
+
+    lines = []
+    w = lines.append
+
+    w("# LinkedIn Job Search — Fit Analysis Report")
+    w("")
+    w(f"> **Candidate:** Zakaria Elmoumnaoui")
+    w(f"> **Generated:** {datetime.now().strftime('%B %d, %Y at %H:%M')}")
+    w(f"> **Model:** {CLAUDE_MODEL}")
+    w(f"> **Jobs analyzed:** {summary.get('total_jobs_analyzed', len(jobs_data))}")
+    w("")
+
+    # Summary stats
+    dist = summary.get("score_distribution", {})
+    w("## Search Summary")
+    w("")
+    w(f"| Metric | Value |")
+    w(f"|--------|------:|")
+    w(f"| Average fit score | {summary.get('average_fit_score', 0)}/100 |")
+    w(f"| Top fit score | {summary.get('top_fit_score', 0)}/100 |")
+    w(f"| Excellent (80+) | {dist.get('excellent_80_plus', 0)} |")
+    w(f"| Good (60-79) | {dist.get('good_60_79', 0)} |")
+    w(f"| Fair (40-59) | {dist.get('fair_40_59', 0)} |")
+    w(f"| Poor (<40) | {dist.get('poor_below_40', 0)} |")
+    w("")
+
+    # Rankings table
+    w("## Rankings")
+    w("")
+    w("| # | Title | Company | Location | Fit | Priority |")
+    w("|:-:|-------|---------|----------|:---:|:--------:|")
+    for job in ranked:
+        scores = job.get("scores", {})
+        priority = job.get("priority", "").replace("_", " ").title()
+        title = job.get("title", "")
+        url = job.get("url", "")
+        title_cell = f"[{title}]({url})" if url else title
+        w(f"| {job.get('rank', '')} | {title_cell} | {job.get('company', '')} | {job.get('location', '')} | {scores.get('overall', 0)} | {priority} |")
+    w("")
+
+    # Per-job breakdown
+    w("## Per-Job Breakdown")
+    w("")
+    for job in ranked:
+        scores = job.get("scores", {})
+        w(f"### #{job.get('rank', '')} — {job.get('title', '')} @ {job.get('company', '')}")
+        w("")
+        w(f"**Location:** {job.get('location', '')} | **Priority:** {job.get('priority', '').replace('_', ' ').title()}")
+        w("")
+        w("| Dimension | Score |")
+        w("|-----------|:-----:|")
+        w(f"| Skills Match | {scores.get('skills_match', 0)} |")
+        w(f"| Experience Fit | {scores.get('experience_fit', 0)} |")
+        w(f"| Location Fit | {scores.get('location_fit', 0)} |")
+        w(f"| Growth Potential | {scores.get('growth_potential', 0)} |")
+        w(f"| **Overall** | **{scores.get('overall', 0)}** |")
+        w("")
+        matching = job.get("matching_skills", [])
+        missing = job.get("missing_skills", [])
+        tweaks = job.get("resume_tweaks", [])
+        if matching:
+            w(f"**Matching skills:** {', '.join(matching)}")
+        if missing:
+            w(f"**Missing skills:** {', '.join(missing)}")
+        if tweaks:
+            w("")
+            w("**Resume tweaks:**")
+            for t in tweaks:
+                w(f"- {t}")
+        url = job.get("url", "")
+        if url:
+            w(f"")
+            w(f"[Apply / View Job]({url})")
+        w("")
+
+    # Global insights
+    if insights:
+        w("## Global Insights")
+        w("")
+        demanded = insights.get("most_demanded_skills", [])
+        to_learn = insights.get("skills_to_learn", [])
+        observations = insights.get("market_observations", [])
+        refinements = insights.get("recommended_search_refinements", [])
+        if demanded:
+            w(f"**Most demanded skills:** {', '.join(demanded)}")
+            w("")
+        if to_learn:
+            w(f"**Skills to learn:** {', '.join(to_learn)}")
+            w("")
+        if observations:
+            w("**Market observations:**")
+            for obs in observations:
+                w(f"- {obs}")
+            w("")
+        if refinements:
+            w("**Recommended search refinements:**")
+            for r in refinements:
+                w(f"- {r}")
+            w("")
+
+    w("---")
+    w("")
+    w("*Generated by LinkedIn Optimizer — HarvestAPI + Claude API pipeline*")
+
+    with open(output_path, "w") as f:
+        f.write("\n".join(lines))
+    log(f"📄 Markdown report: {output_path}")
+
+
+def save_jobs_json_report(analysis: dict, jobs_data: list, output_path: str):
+    """Save job analysis as JSON."""
+    report = {
+        "generated_at": datetime.now().isoformat(),
+        "candidate": "Zakaria Elmoumnaoui",
+        "model": CLAUDE_MODEL,
+        "jobs_data": jobs_data,
+        "job_analysis": analysis,
+    }
+    with open(output_path, "w") as f:
+        json.dump(report, f, indent=2, default=str)
+    log(f"💾 JSON report: {output_path}")
 
 
 # ─── Claude Analyzer ──────────────────────────────────────────────────────────
@@ -676,28 +1048,96 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=dedent("""\
         Examples:
+          # Profile optimization
           %(prog)s --url "https://www.linkedin.com/in/your-profile/"
           %(prog)s --url "https://www.linkedin.com/in/competitor/" --mode competitor
           %(prog)s --file scraped.json --md
-          %(prog)s --file scraped.json --target-role "Platform Engineer"
+
+          # Job search
+          %(prog)s --mode jobs --query "DevOps Engineer" --location "France"
+          %(prog)s --mode jobs -q "Cloud Engineer" -l "London" --workplace-type remote --md
+          %(prog)s --mode jobs -q "SRE" -l "Germany" --save-profile jobs.json
+          %(prog)s --mode jobs --job-file jobs.json --md
         """),
     )
 
-    source = parser.add_mutually_exclusive_group(required=True)
+    # Source group — not required, validated manually per mode
+    source = parser.add_mutually_exclusive_group(required=False)
     source.add_argument("--url", help="LinkedIn profile URL to scrape")
     source.add_argument("--file", help="Path to previously scraped profile JSON")
 
-    parser.add_argument("--mode", choices=["self", "competitor"], default="self",
-                        help="'self' = optimize your profile, 'competitor' = learn from theirs")
+    parser.add_argument("--mode", choices=["self", "competitor", "jobs"], default="self",
+                        help="'self' = optimize your profile, 'competitor' = learn from theirs, 'jobs' = search & rank jobs")
     parser.add_argument("--target-role", help="Override target role (default: from candidate context)")
     parser.add_argument("--output", "-o", default="linkedin_report.json", help="JSON output path")
     parser.add_argument("--md", action="store_true", help="Also generate Markdown report (.md)")
-    parser.add_argument("--save-profile", help="Save raw scraped data to this path")
+    parser.add_argument("--save-profile", help="Save raw scraped/fetched data to this path")
     parser.add_argument("--model", default=CLAUDE_MODEL, help=f"Claude model (default: {CLAUDE_MODEL})")
+
+    # Job search options
+    jobs_group = parser.add_argument_group("Job Search Options (--mode jobs)")
+    jobs_group.add_argument("--query", "-q", help="Job title or keywords to search")
+    jobs_group.add_argument("--location", "-l", help="Search location (city, country, or 'remote')")
+    jobs_group.add_argument("--workplace-type", choices=["onsite", "remote", "hybrid"], help="Workplace type filter")
+    jobs_group.add_argument("--employment-type", choices=["fulltime", "parttime", "contract", "internship"], help="Employment type filter")
+    jobs_group.add_argument("--experience-level", choices=["entry", "associate", "mid-senior", "director", "executive"], help="Experience level filter")
+    jobs_group.add_argument("--max-jobs", type=int, default=DEFAULT_MAX_JOBS, help=f"Max job results (default: {DEFAULT_MAX_JOBS})")
+    jobs_group.add_argument("--job-file", help="Load saved jobs JSON instead of searching Apify")
 
     args = parser.parse_args()
 
     CLAUDE_MODEL = args.model
+
+    # ── Jobs mode ──
+    if args.mode == "jobs":
+        if not args.query and not args.job_file:
+            parser.error("--mode jobs requires --query/-q or --job-file")
+
+        log("🚀 LinkedIn Job Search & Fit Analysis (Zakaria Edition)")
+        log("─" * 50)
+
+        # Get jobs
+        if args.job_file:
+            log(f"📂 Loading jobs from: {args.job_file}")
+            with open(args.job_file, "r") as f:
+                data = json.load(f)
+            # Support both raw list and our report format
+            jobs_data = data if isinstance(data, list) else data.get("jobs_data", data)
+        else:
+            jobs_data = search_linkedin_jobs(
+                query=args.query,
+                location=args.location or "",
+                workplace_type=args.workplace_type or "",
+                employment_type=args.employment_type or "",
+                experience_level=args.experience_level or "",
+                max_jobs=args.max_jobs,
+            )
+            if args.save_profile:
+                with open(args.save_profile, "w") as f:
+                    json.dump(jobs_data, f, indent=2, default=str)
+                log(f"💾 Raw jobs saved: {args.save_profile}")
+
+        if not jobs_data:
+            print("No jobs found. Try broadening your search.")
+            sys.exit(1)
+
+        # Analyze
+        analysis = analyze_jobs_with_claude(jobs_data, target_role=args.target_role)
+
+        # Output
+        print_jobs_summary(analysis)
+        save_jobs_json_report(analysis, jobs_data, args.output)
+
+        if args.md:
+            md_path = args.output.replace(".json", ".md")
+            generate_jobs_markdown_report(analysis, jobs_data, md_path)
+
+        log("\n✨ Done! Review the ranked jobs and start applying.")
+        return
+
+    # ── Profile mode (self / competitor) ──
+    if not args.url and not args.file:
+        parser.error("--url or --file is required for self/competitor mode")
 
     log("🚀 LinkedIn Profile Optimizer (Zakaria Edition)")
     log("─" * 50)
