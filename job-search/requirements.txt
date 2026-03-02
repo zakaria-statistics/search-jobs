@@ -1,0 +1,4 @@
+scrapling[all]
+requests
+anthropic
+python-dotenv
