@@ -13,6 +13,7 @@ from .config import (
     JOB_DESC_TRUNCATE,
     CANDIDATE_SKILL_KEYWORDS,
     CLAUDE_MAX_TOKENS,
+    USE_SEMANTIC_FILTER,
 )
 from .prompts import SYSTEM_PROMPT_JOBS
 
@@ -47,16 +48,32 @@ def pre_filter_jobs(jobs: list[dict]) -> list[dict]:
 
 
 def slim_job(job: dict) -> dict:
-    """Strip heavy fields and truncate description to save tokens."""
+    """Strip heavy fields and extract skill-relevant description sentences."""
+    from scraper.description_utils import extract_skill_sentences
+
     slim = {}
     for key in JOB_FIELDS_FOR_RANKING:
         if key in job:
             slim[key] = job[key]
     desc = job.get("description") or ""
     if len(desc) > JOB_DESC_TRUNCATE:
-        slim["description"] = desc[:JOB_DESC_TRUNCATE] + "..."
+        # Extract skill-relevant sentences instead of blind truncation
+        skill_desc = extract_skill_sentences(desc, max_chars=JOB_DESC_TRUNCATE)
+        slim["description"] = skill_desc if skill_desc else desc[:JOB_DESC_TRUNCATE] + "..."
     else:
         slim["description"] = desc
+
+    # Attach RAG context if available from semantic filter
+    if job.get("relevant_chunks"):
+        from .semantic_filter import get_rag_context
+        rag_ctx = get_rag_context(job)
+        if rag_ctx:
+            slim["resume_context"] = rag_ctx
+    if job.get("semantic_score"):
+        slim["semantic_score"] = job["semantic_score"]
+    if job.get("matched_stack"):
+        slim["matched_stack"] = job["matched_stack"]
+
     return slim
 
 
@@ -66,8 +83,16 @@ def rank_jobs(jobs: list[dict], target_role: str = None) -> dict:
         print("ANTHROPIC_API_KEY not set. Add it to .env or export it.")
         sys.exit(1)
 
-    # Pre-filter and slim
-    relevant = pre_filter_jobs(jobs)
+    # Pre-filter: semantic (primary) or keyword (fallback)
+    if USE_SEMANTIC_FILTER:
+        try:
+            from .semantic_filter import semantic_filter_jobs
+            relevant = semantic_filter_jobs(jobs)
+        except Exception as e:
+            log(f"Semantic filter failed ({e}), using keyword filter")
+            relevant = pre_filter_jobs(jobs)
+    else:
+        relevant = pre_filter_jobs(jobs)
     if not relevant:
         print("No relevant jobs after filtering. Try broader search terms.")
         return {"ranked_jobs": [], "search_summary": {"total_jobs_analyzed": 0}}

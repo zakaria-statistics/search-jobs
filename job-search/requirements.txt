@@ -2,3 +2,5 @@ scrapling[all]
 requests
 anthropic
 python-dotenv
+chromadb
+sentence-transformers

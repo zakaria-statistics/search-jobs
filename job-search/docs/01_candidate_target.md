@@ -51,6 +51,5 @@
 - [ ] Title matches target role exactly (e.g. "DevOps Engineer — AWS/Azure/Kubernetes")
 - [ ] Summary includes: cloud, Kubernetes, Terraform, CI/CD, bilingual
 - [ ] Each experience bullet starts with action verb + measurable result
-- [ ] Certifications listed: AWS SAA/SAP, CKA/CKAD, AZ-104/400, Terraform Associate
 - [ ] GitHub/portfolio link included with IaC or automation projects
 - [ ] LinkedIn headline mirrors CV title

@@ -44,7 +44,8 @@ class RemoteOKScraper(BaseScraper):
             tags = " ".join(item.get("tags", []))
             description = item.get("description", "")
 
-            matched_keyword = match_job(title, tags, keywords)
+            matched_keyword = match_job(title, tags, keywords,
+                                        description=description, lenient=True)
             if not matched_keyword:
                 continue
 

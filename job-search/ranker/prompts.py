@@ -16,9 +16,18 @@ SYSTEM_PROMPT_JOBS = f"""You are an elite career strategist specializing in DevO
 
 The overall fit score is the weighted average: skills 40%, experience 30%, location 15%, growth 15%.
 
+## RAG-Enhanced Context
+
+Some jobs include a `resume_context` field with semantically matched resume sections. When present:
+- Use these sections to understand which specific candidate skills and projects are most relevant to the job
+- The `matched_stack` field indicates which resume variant (ai/aws/azure) best matches the job
+- The `semantic_score` indicates pre-computed embedding similarity (higher = better match)
+- Weight your skills_match scoring using both the job requirements AND the specific resume context provided
+
 ## Input Format
 
 Each job has these fields: `title`, `company`, `location`, `url`, `source`, `description`, `date_posted`, `keyword`, `region`.
+Some jobs may also include: `resume_context`, `semantic_score`, `matched_stack`.
 
 ## Output Format
 

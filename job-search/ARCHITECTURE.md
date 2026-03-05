@@ -7,31 +7,34 @@ A job search pipeline that automates scraping, uses Claude to rank jobs by candi
 ```
                         AUTOMATED PATH
                         ─────────────
-  ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-  │ scraper/ │ ──> │ output/  │ ──> │ ranker/  │ ──> │ output/  │
-  │          │     │ scraped_ │     │          │     │ ranked_  │
-  │ Indeed   │     │ *.json   │     │ Claude   │     │ *.json   │
-  │ RemoteOK │     │          │     │ API      │     │          │
-  │ Arbeitnow│     └──────────┘     └──────────┘     └─────┬────┘
-  │ Rekrute  │                                             │
-  │ WTTJ     │                                             v
-  └──────────┘                                     ┌──────────────┐
-                                                   │ pipeline.py  │
-                        MANUAL PATH                │ review       │
-                        ───────────                │ (human-in-   │
-  LinkedIn / APEC /                                │  the-loop)   │
-  career pages     ─────────────────────────────>  │              │
-                      pipeline.py manual           └──────┬───────┘
-                                                          │
-                                                          v
-                                                   ┌──────────────┐
-                                                   │ opportunity  │
-                                                   │ _tracker.py  │
-                                                   │              │
-                                                   │ output/      │
-                                                   │ opportunities│
-                                                   │ .json        │
-                                                   └──────────────┘
+
+  ┌──────────┐     ┌──────────┐     ┌───────────────────────────────┐     ┌──────────┐
+  │ scraper/ │ ──> │ output/  │ ──> │ ranker/                       │ ──> │ output/  │
+  │          │     │ scraped_ │     │                               │     │ ranked_  │
+  │ Indeed   │     │ *.json   │     │  ┌─────────────┐              │     │ *.json   │
+  │ RemoteOK │     │          │     │  │ ChromaDB    │  Semantic    │     │          │
+  │ Arbeitnow│     └──────────┘     │  │ (resumes)   │──filter──┐  │     └─────┬────┘
+  │ Rekrute  │                      │  └─────────────┘          │  │           │
+  │ WTTJ     │                      │        ↑                  ↓  │           │
+  └──────────┘     ┌──────────┐     │  ┌─────────────┐  ┌─────────┐│          │
+                   │ resumes/ │ ──> │  │ vectorstore │  │ Claude  ││          v
+                   │ 6 resume │     │  │ .py (embed) │  │ + RAG   ││   ┌──────────────┐
+                   │ variants │     │  └─────────────┘  │ context ││   │ pipeline.py  │
+                   └──────────┘     │                   └─────────┘│   │ review       │
+                                    └───────────────────────────────┘   │ (human-in-   │
+                        MANUAL PATH                                    │  the-loop)   │
+                        ───────────                                    │              │
+  LinkedIn / APEC /                                                    └──────┬───────┘
+  career pages     ─────────────────────────────────────────────────>         │
+                      pipeline.py manual                                     v
+                                                                      ┌──────────────┐
+                                                                      │ opportunity  │
+                                                                      │ _tracker.py  │
+                                                                      │              │
+                                                                      │ output/      │
+                                                                      │ opportunities│
+                                                                      │ .json        │
+                                                                      └──────────────┘
 ```
 
 ## Project Structure
@@ -49,13 +52,23 @@ job-search/
 │   ├── rekrute.py                 RekruteScraper — Fetcher, Morocco-only
 │   └── wttj.py                    WTTJScraper — Fetcher, Welcome to the Jungle
 │
-├── ranker/                      Claude-powered job ranking
-│   ├── config.py                  Candidate context, skill keywords, Claude model settings
-│   ├── prompts.py                 System prompt with scoring criteria and output schema
-│   └── rank.py                    pre_filter → slim → Claude API → parse → save
+├── ranker/                      Semantic filtering + Claude-powered ranking
+│   ├── config.py                  Candidate context, skill keywords, Claude & semantic settings
+│   ├── prompts.py                 System prompt with scoring criteria, RAG instructions
+│   ├── rank.py                    semantic_filter → slim (+ RAG context) → Claude API → parse → save
+│   ├── vectorstore.py             ChromaDB management: index resumes, query by job text
+│   └── semantic_filter.py         Semantic pre-filter: embed jobs, compare to resume chunks
+│
+├── resumes/                     Resume variants (6 total, indexed into ChromaDB)
+│   ├── ai_eng_.../main.md         AI/MLOps stack, English
+│   ├── ai_fr_.../main.md          AI/MLOps stack, French
+│   ├── aws_eng_.../main.md        AWS cloud stack, English
+│   ├── aws_fr_.../main.md         AWS cloud stack, French
+│   ├── az_eng_.../main.md         Azure cloud stack, English
+│   └── az_fr_.../main.md          Azure cloud stack, French
 │
 ├── scripts/                     CLI tools
-│   ├── pipeline.py                Orchestrator: scrape | rank | review | run | manual | status
+│   ├── pipeline.py                Orchestrator: scrape | index | rank | review | run | manual | status
 │   ├── opportunity_tracker.py     Application tracking: add | list | update | stats | import | due
 │   ├── contact_pipeline.py        Recruiter outreach: add | list | update | stats | due
 │   └── job_search_queries.sh      Opens pre-built search URLs in browser
@@ -69,6 +82,7 @@ job-search/
 │   └── 06_90_day_plan.md          12-week execution plan with KPIs
 │
 ├── output/                      Generated data (gitignored)
+│   ├── .chromadb/                 ChromaDB persistent vector store
 │   ├── scraped_YYYY-MM-DD.json    Daily scraped jobs
 │   ├── ranked_YYYY-MM-DD.json     Daily ranked jobs
 │   ├── opportunities.json         Application tracker state
@@ -100,23 +114,55 @@ Collects raw job listings from five sources. Each scraper inherits from `BaseScr
 
 ### ranker/
 
-Scores and ranks scraped jobs using Claude. The scoring formula:
+Scores and ranks scraped jobs using a two-stage pipeline: semantic pre-filtering via ChromaDB, then Claude-based scoring with RAG context.
 
 ```
 Overall = (Skills Match x 0.40) + (Experience Fit x 0.30)
         + (Location Fit x 0.15) + (Growth Potential x 0.15)
 ```
 
-**Pipeline** (`rank.py`):
-1. **Load** — reads `scraped_*.json`
-2. **Pre-filter** — drops jobs with zero overlap against `CANDIDATE_SKILL_KEYWORDS` (34 terms covering devops, cloud, k8s, terraform, etc.)
-3. **Slim** — keeps only ranking-relevant fields, truncates description to 600 chars
-4. **Claude API** — sends slimmed jobs + candidate context, receives scored JSON
-5. **Save** — writes `ranked_YYYY-MM-DD.json`
+**Stage 1 — Semantic Filter** (`vectorstore.py` + `semantic_filter.py`):
+1. **Index** — 6 resume variants + `CANDIDATE_CONTEXT` chunked by headings, embedded with `all-MiniLM-L6-v2`, stored in ChromaDB (`output/.chromadb/`)
+2. **Query** — each job's `title + description` is embedded and compared to resume chunks via cosine similarity
+3. **Filter** — jobs below the similarity threshold (0.65) are dropped
+4. **Enrich** — surviving jobs get `semantic_score`, `matched_stack` (ai/aws/azure), and top 3 `relevant_chunks` attached
 
-**Output per job**: rank, scores (4 dimensions + overall), matching skills, missing skills, resume tweaks, priority label (`apply_now` / `strong_match` / `worth_trying` / `long_shot` / `skip`).
+**Stage 2 — Claude Ranking** (`rank.py`):
+1. **Slim** — keeps ranking-relevant fields, attaches matched resume chunks as RAG context
+2. **Claude API** — sends slimmed jobs + per-job resume context, receives scored JSON
+3. **Save** — writes `ranked_YYYY-MM-DD.json`
+
+**Fallback**: if ChromaDB/sentence-transformers unavailable, falls back to keyword-based `pre_filter_jobs()` (34 terms).
+
+**Output per job**: rank, scores (4 dimensions + overall), matching skills, missing skills, resume tweaks, priority label, semantic_score, matched_stack.
 
 **Global insights**: most demanded skills, skills to learn, market observations, search refinements.
+
+### vectorstore.py — How Indexing Works
+
+```
+resumes/ai_eng_*/main.md  ──┐
+resumes/aws_eng_*/main.md ──┤ chunk by ## headings ──> embed ──> ChromaDB
+resumes/az_eng_*/main.md  ──┤                                   (cosine space)
+resumes/*_fr_*/main.md    ──┤   metadata: {stack, lang, section}
+CANDIDATE_CONTEXT         ──┘ chunk by ### headings
+```
+
+- ~53 total chunks indexed (46 resume + 7 candidate context)
+- Hash-based change detection: reindexes only when files change
+- Embedding model: `all-MiniLM-L6-v2` (384-dim, ~22M params, runs locally)
+
+### semantic_filter.py — How Filtering Works
+
+```
+job.title + job.description
+    ↓ embed
+    ↓ query ChromaDB (top 5 chunks)
+    ↓ best_similarity >= 0.65 → KEEP (attach score + stack + chunks)
+    ↓ best_similarity < 0.65  → DROP
+```
+
+Stack detection: the dominant stack across top chunks determines `matched_stack`. This tells Claude which resume variant (AI/AWS/Azure) is most relevant for that job.
 
 ### scripts/pipeline.py
 
@@ -125,9 +171,10 @@ Unified CLI that chains everything:
 | Command | What it does |
 |---------|-------------|
 | `scrape` | Runs selected scrapers, saves to `output/scraped_*.json` |
-| `rank` | Loads latest scraped file, sends to Claude, saves `output/ranked_*.json` |
+| `index` | Indexes resumes into ChromaDB (auto-runs on first `rank`) |
+| `rank` | Semantic filter + Claude ranking, saves `output/ranked_*.json` |
 | `review` | Interactive terminal — shows ranked jobs by priority, user approves/skips |
-| `run` | Full chain: scrape → rank → review |
+| `run` | Full chain: scrape → enrich → rank → review |
 | `manual` | Delegates to `opportunity_tracker.py add` for manual entry |
 | `status` | Counts across pipeline stages (scraped, ranked, tracked, by status) |
 
@@ -238,6 +285,8 @@ Tracks recruiter and tech lead outreach with automated follow-up cadence (Day 0 
 | `requests` | HTTP for REST API scrapers (RemoteOK, Arbeitnow) |
 | `anthropic` | Claude API for job ranking |
 | `python-dotenv` | Load ANTHROPIC_API_KEY from .env |
+| `chromadb` | Persistent vector database for semantic resume search |
+| `sentence-transformers` | Local embedding model (all-MiniLM-L6-v2, 384-dim) |
 
 ## Configuration
 
@@ -245,6 +294,8 @@ All tunable settings are in two config files:
 
 **`scraper/config.py`** — search keywords, target regions, per-source rate limits and page limits, keyword matching patterns.
 
-**`ranker/config.py`** — candidate profile context (skills, experience, target roles, location preferences), skill keywords for pre-filtering, Claude model and token settings.
+**`ranker/config.py`** — candidate profile context (skills, experience, target roles, location preferences), skill keywords for pre-filtering, Claude model and token settings, semantic filter settings (model, threshold, paths).
 
 To change target roles, keywords, or regions: edit these two files. No other files need modification.
+
+To update resumes: edit the `main.md` files under `resumes/`, then run `pipeline.py index --force` (or let the next `rank` auto-detect the change).

@@ -5,10 +5,33 @@
 This is a repeatable workflow to follow **daily and weekly**. Every step feeds the next. Nothing falls through the cracks if you follow the cadence.
 
 The pipeline has two paths:
-- **Automated**: scraper → Claude ranking → human review → tracker
+- **Automated**: scraper → enrich → Claude ranking → human review → tracker
 - **Manual**: LinkedIn/APEC/career pages → human finds job → tracker
 
 Both feed into the same opportunity tracker.
+
+---
+
+## Python Environment
+
+Before running any command, activate the virtual environment:
+
+```bash
+cd job-search
+python3 -m venv .venv          # first time only
+source .venv/bin/activate
+pip install -r requirements.txt  # first time only
+
+# Index resumes into vector DB (first time only, auto-reindexes on changes)
+python scripts/pipeline.py index
+```
+
+For every new terminal session:
+
+```bash
+cd job-search
+source .venv/bin/activate
+```
 
 ---
 
@@ -19,17 +42,21 @@ Both feed into the same opportunity tracker.
 Run the automated scrape → rank → review pipeline:
 
 ```bash
-cd job-search
-
-# Full pipeline (scrape all sources, rank with Claude, interactive review)
+# Full pipeline (scrape → enrich → rank → review)
 python scripts/pipeline.py run
 
 # Or run steps individually:
 python scripts/pipeline.py scrape                          # Scrape all sources
-python scripts/pipeline.py scrape --sources remoteok arbeitnow  # API sources only (fast)
-python scripts/pipeline.py rank                            # Rank latest scraped file
+python scripts/pipeline.py scrape --sources remoteok arbeitnow wttj  # API sources only (fast)
+python scripts/pipeline.py enrich                          # Fetch full Indeed descriptions (top 50)
+python scripts/pipeline.py enrich --max-enrich 10          # Limit enrichment count
+python scripts/pipeline.py index                           # Index resumes into ChromaDB
+python scripts/pipeline.py index --force                   # Force reindex after resume edits
+python scripts/pipeline.py rank                            # Semantic filter + Claude ranking
 python scripts/pipeline.py review                          # Review ranked jobs interactively
 ```
+
+> The `rank` command auto-indexes resumes on first run. Use `index --force` after editing resumes.
 
 During review, for each job you can:
 - `[a]pprove` → imports to tracker automatically
@@ -221,6 +248,7 @@ New → Applied → Screening → Interview → Technical → Offer → Accepted
 
 | What | How often | Tool |
 |------|-----------|------|
+| Index resumes | Once + after edits | `pipeline.py index` (auto on first `rank`) |
 | Automated scrape + rank | Daily or 3x/week | `pipeline.py run` or `scrape` + `rank` |
 | Review ranked jobs | After each rank | `pipeline.py review` |
 | Search manually | Daily (1 platform/day) | `job_search_queries.sh` |
@@ -246,21 +274,26 @@ job-search/
 ├── scraper/                 — Automated job scrapers
 │   ├── __init__.py
 │   ├── base.py              — BaseScraper abstract class
-│   ├── config.py            — Keywords, regions, platform settings
+│   ├── config.py            — Keywords, regions, match_job() with 5-tier matching
+│   ├── description_utils.py — extract_skill_sentences(), count_skill_matches()
 │   ├── models.py            — Job dataclass
 │   ├── storage.py           — Save/merge scraped jobs
-│   ├── indeed.py            — Indeed scraper (StealthyFetcher)
-│   ├── remoteok.py          — RemoteOK API scraper
-│   ├── arbeitnow.py         — Arbeitnow API scraper
+│   ├── indeed.py            — Indeed scraper (StealthyFetcher) + enrich()
+│   ├── remoteok.py          — RemoteOK API (lenient matching)
+│   ├── arbeitnow.py         — Arbeitnow API (lenient matching, 15 pages)
 │   ├── rekrute.py           — Rekrute.com scraper (Morocco)
-│   └── wttj.py              — Welcome to the Jungle scraper
-├── ranker/                  — Claude-powered job ranking
+│   └── wttj.py              — WTTJ via Algolia API (lenient matching)
+├── ranker/                  — Semantic filtering + Claude-powered ranking
 │   ├── __init__.py
-│   ├── config.py            — Candidate context, skill keywords, Claude settings
-│   ├── prompts.py           — System prompt for job scoring
-│   └── rank.py              — Pre-filter, slim, rank with Claude, save
+│   ├── config.py            — Candidate context, skill keywords, Claude & semantic settings
+│   ├── prompts.py           — System prompt for job scoring (RAG-aware)
+│   ├── rank.py              — Filter, slim, rank with Claude, save
+│   ├── vectorstore.py       — ChromaDB: index resumes, query by job text
+│   └── semantic_filter.py   — Semantic pre-filter using resume embeddings
+├── resumes/                 — 6 resume variants (AI/AWS/Azure x EN/FR)
+│   └── */main.md            — Stack-specific resume markdown
 ├── scripts/
-│   ├── pipeline.py          — Unified CLI: scrape → rank → review → track
+│   ├── pipeline.py          — Unified CLI: scrape → index → rank → review → track
 │   ├── job_search_queries.sh     — Open all search URLs
 │   ├── opportunity_tracker.py    — Track applications (add/list/update/stats/export/due/import)
 │   └── contact_pipeline.py       — Track contacts (add/list/update/stats/export/due)
@@ -272,6 +305,7 @@ job-search/
 │   ├── 05_recruiter_contacts.md  — Outreach templates & follow-up rules
 │   └── 06_90_day_plan.md         — 12-week execution plan with KPIs
 └── output/
+    ├── .chromadb/                — Vector store (auto-created, gitignored)
     ├── scraped_YYYY-MM-DD.json   — Daily scraped jobs (auto-created)
     ├── ranked_YYYY-MM-DD.json    — Daily ranked jobs (auto-created)
     ├── opportunities.json        — Application data (auto-created)
@@ -286,22 +320,42 @@ job-search/
 
 ```bash
 cd job-search
+source .venv/bin/activate
 
-# 1. Read your positioning
+# 1. Index your resumes (one-time setup)
+python scripts/pipeline.py index
+
+# 2. Read your positioning
 cat docs/01_candidate_target.md
 
-# 2. Run search queries
+# 3. Run search queries
 ./scripts/job_search_queries.sh
 
-# 3. Add your first opportunities
+# 4. Add your first opportunities
 python scripts/opportunity_tracker.py add
 
-# 4. Add your first contacts
+# 5. Add your first contacts
 python scripts/contact_pipeline.py add
 
-# 5. Check what's due tomorrow
+# 6. Check what's due tomorrow
 python scripts/opportunity_tracker.py due
 python scripts/contact_pipeline.py due
 ```
 
 Repeat daily. Review weekly. Adjust monthly.
+
+---
+
+## Resume Update Workflow
+
+When you edit a resume variant under `resumes/`:
+
+```bash
+# After editing any resumes/*.md file
+python scripts/pipeline.py index --force   # Reindex into ChromaDB
+
+# Verify chunks were updated
+python scripts/pipeline.py index           # Should say "up-to-date" if no further changes
+```
+
+The system detects resume changes via MD5 hashing. The next `rank` command also auto-reindexes if it detects changes, so `index --force` is only needed if you want to verify immediately.

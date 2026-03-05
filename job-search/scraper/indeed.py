@@ -5,6 +5,9 @@ from .base import BaseScraper
 from .config import (
     INDEED_DELAY_MAX,
     INDEED_DELAY_MIN,
+    INDEED_ENRICH_DELAY_MAX,
+    INDEED_ENRICH_DELAY_MIN,
+    INDEED_ENRICH_MAX,
     INDEED_MAX_PAGES,
     INDEED_RESULTS_PER_PAGE,
     REGIONS,
@@ -101,3 +104,69 @@ class IndeedScraper(BaseScraper):
 
         logger.info(f"Indeed: found {len(jobs)} jobs total")
         return self.dedup(jobs)
+
+    def enrich(self, jobs: list[dict], max_jobs: int = None) -> list[dict]:
+        """Fetch full descriptions for Indeed jobs with short/empty descriptions.
+
+        Modifies jobs in-place and returns the full list.
+        """
+        from scrapling import StealthyFetcher
+        from .description_utils import extract_skill_sentences
+
+        if max_jobs is None:
+            max_jobs = INDEED_ENRICH_MAX
+
+        # Filter to Indeed jobs needing enrichment (short descriptions)
+        candidates = [
+            j for j in jobs
+            if j.get("source") == "indeed" and len(j.get("description", "")) < 100
+        ]
+        to_enrich = candidates[:max_jobs]
+
+        if not to_enrich:
+            logger.info("Indeed enrich: no jobs need enrichment")
+            return jobs
+
+        logger.info(f"Indeed enrich: enriching {len(to_enrich)}/{len(candidates)} candidates")
+        fetcher = StealthyFetcher()
+        enriched = 0
+
+        for i, job in enumerate(to_enrich, 1):
+            url = job.get("url", "")
+            if not url:
+                continue
+
+            logger.info(f"  Enriching {i}/{len(to_enrich)}: {job.get('title', '?')[:50]}")
+            try:
+                response = fetcher.fetch(url, headless=True, disable_resources=True)
+                if response.status != 200:
+                    logger.warning(f"  Status {response.status} for {url}")
+                    self.delay(INDEED_ENRICH_DELAY_MIN, INDEED_ENRICH_DELAY_MAX)
+                    continue
+
+                # Try known description selectors
+                desc_el = _first(response.css("#jobDescriptionText"))
+                if not desc_el:
+                    desc_el = _first(response.css(".jobsearch-JobComponent-description"))
+
+                if desc_el:
+                    raw_html = desc_el.html_content if hasattr(desc_el, 'html_content') else desc_el.get_all_text()
+                    skill_text = extract_skill_sentences(raw_html)
+                    if skill_text:
+                        job["description"] = skill_text
+                        enriched += 1
+                        logger.info(f"  Enriched ({len(skill_text)} chars)")
+                    else:
+                        # Fall back to full text truncated
+                        full_text = desc_el.get_all_text().strip()
+                        if full_text:
+                            job["description"] = full_text[:800]
+                            enriched += 1
+
+            except Exception as e:
+                logger.error(f"  Enrich error: {e}")
+
+            self.delay(INDEED_ENRICH_DELAY_MIN, INDEED_ENRICH_DELAY_MAX)
+
+        logger.info(f"Indeed enrich: enriched {enriched}/{len(to_enrich)} jobs")
+        return jobs

@@ -5,6 +5,8 @@ pipeline.py — Unified job search pipeline: scrape → rank → review → trac
 Usage:
     python scripts/pipeline.py scrape          # Run all scrapers
     python scripts/pipeline.py scrape --sources indeed remoteok
+    python scripts/pipeline.py index           # Index resumes into ChromaDB
+    python scripts/pipeline.py index --force   # Force reindex even if unchanged
     python scripts/pipeline.py rank            # Rank latest scraped file with Claude
     python scripts/pipeline.py rank --file output/scraped_2026-03-02.json
     python scripts/pipeline.py review          # Interactive: show ranked jobs, approve/skip
@@ -86,6 +88,86 @@ def cmd_scrape(args):
         print("No jobs found across any source.")
 
     return all_jobs
+
+
+# ─── Enrich ───────────────────────────────────────────────────────────────────
+
+def cmd_enrich(args):
+    """Enrich Indeed jobs with full descriptions."""
+    from scraper import IndeedScraper
+
+    if args.file:
+        filepath = Path(args.file)
+    else:
+        filepath = _find_latest_file("scraped_")
+        if not filepath:
+            print("No scraped files found. Run 'scrape' first.")
+            sys.exit(1)
+
+    print(f"Loading jobs from {filepath}...")
+    with open(filepath, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    jobs = data.get("jobs", []) if isinstance(data, dict) else data
+
+    indeed_jobs = [j for j in jobs if j.get("source") == "indeed"]
+    if not indeed_jobs:
+        print("No Indeed jobs found to enrich.")
+        return jobs
+
+    max_enrich = args.max_enrich if hasattr(args, "max_enrich") else 50
+    print(f"Enriching up to {max_enrich} Indeed jobs...")
+
+    scraper = IndeedScraper()
+    scraper.enrich(jobs, max_jobs=max_enrich)
+
+    # Save back
+    if isinstance(data, dict):
+        data["jobs"] = jobs
+    else:
+        data = jobs
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    enriched_count = sum(
+        1 for j in jobs
+        if j.get("source") == "indeed" and len(j.get("description", "")) >= 100
+    )
+    print(f"Enrichment done. {enriched_count} Indeed jobs now have descriptions.")
+    return jobs
+
+
+# ─── Index ───────────────────────────────────────────────────────────────────
+
+def cmd_index(args):
+    """Index resumes into ChromaDB vector store."""
+    from ranker.config import (
+        CHROMADB_DIR, RESUMES_DIR, CANDIDATE_CONTEXT,
+        SEMANTIC_MODEL_NAME, HF_API_TOKEN,
+    )
+    from ranker.vectorstore import full_index
+
+    force = getattr(args, "force", False)
+    print(f"Indexing resumes from {RESUMES_DIR} into {CHROMADB_DIR}...")
+
+    try:
+        total = full_index(
+            chromadb_dir=CHROMADB_DIR,
+            resumes_dir=RESUMES_DIR,
+            candidate_context=CANDIDATE_CONTEXT,
+            model_name=SEMANTIC_MODEL_NAME,
+            hf_token=HF_API_TOKEN,
+            force=force,
+        )
+        if total > 0:
+            print(f"Indexed {total} chunks into ChromaDB.")
+        else:
+            print("Vector store already up-to-date (use --force to reindex).")
+    except ImportError as e:
+        print(f"Cannot index: {e}")
+        print("Install dependencies: pip install chromadb sentence-transformers")
+        sys.exit(1)
 
 
 # ─── Rank ────────────────────────────────────────────────────────────────────
@@ -281,26 +363,32 @@ def cmd_review(args):
 # ─── Run (Full Pipeline) ────────────────────────────────────────────────────
 
 def cmd_run(args):
-    """Run full pipeline: scrape → rank → review."""
+    """Run full pipeline: scrape → enrich → rank → review."""
     print("=" * 60)
-    print("  FULL PIPELINE: Scrape → Rank → Review")
+    print("  FULL PIPELINE: Scrape → Enrich → Rank → Review")
     print("=" * 60)
 
     # Step 1: Scrape
-    print("\n[1/3] SCRAPING...")
+    print("\n[1/4] SCRAPING...")
     jobs = cmd_scrape(args)
     if not jobs:
         print("No jobs scraped. Pipeline stopped.")
         return
 
-    # Step 2: Rank
-    print("\n[2/3] RANKING...")
+    # Step 2: Enrich Indeed descriptions
+    print("\n[2/4] ENRICHING...")
+    args.file = None  # Use latest scraped file
+    args.max_enrich = getattr(args, "max_enrich", 50)
+    cmd_enrich(args)
+
+    # Step 3: Rank
+    print("\n[3/4] RANKING...")
     args.file = None  # Use latest scraped file
     args.role = getattr(args, "role", None)
     ranked = cmd_rank(args)
 
-    # Step 3: Review
-    print("\n[3/3] REVIEW...")
+    # Step 4: Review
+    print("\n[4/4] REVIEW...")
     args.file = None  # Use latest ranked file
     cmd_review(args)
 
@@ -402,6 +490,16 @@ def main():
     p_scrape.add_argument("--regions", nargs="+", help="Filter by regions")
     p_scrape.add_argument("--max-pages", type=int, default=3, help="Max pages per source")
 
+    # index
+    p_index = sub.add_parser("index", help="Index resumes into ChromaDB for semantic filtering")
+    p_index.add_argument("--force", action="store_true", help="Force reindex even if unchanged")
+
+    # enrich
+    p_enrich = sub.add_parser("enrich", help="Enrich Indeed jobs with full descriptions")
+    p_enrich.add_argument("--file", help="Path to scraped JSON (default: latest)")
+    p_enrich.add_argument("--max-enrich", type=int, default=50,
+                          help="Max Indeed jobs to enrich (default: 50)")
+
     # rank
     p_rank = sub.add_parser("rank", help="Rank scraped jobs with Claude")
     p_rank.add_argument("--file", help="Path to scraped JSON (default: latest)")
@@ -434,6 +532,8 @@ def main():
 
     commands = {
         "scrape": cmd_scrape,
+        "index": cmd_index,
+        "enrich": cmd_enrich,
         "rank": cmd_rank,
         "review": cmd_review,
         "run": cmd_run,

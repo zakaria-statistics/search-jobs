@@ -36,13 +36,18 @@ REKRUTE_DELAY_MAX = 5
 
 REMOTEOK_API_URL = "https://remoteok.com/api"
 ARBEITNOW_API_URL = "https://www.arbeitnow.com/api/job-board-api"
-ARBEITNOW_MAX_PAGES = 5
+ARBEITNOW_MAX_PAGES = 15
 
 # WTTJ (Welcome to the Jungle) settings
 WTTJ_BASE_URL = "https://www.welcometothejungle.com/fr/jobs"
 WTTJ_MAX_PAGES = 3
 WTTJ_DELAY_MIN = 3
 WTTJ_DELAY_MAX = 5
+
+# Indeed enrichment settings
+INDEED_ENRICH_MAX = 50
+INDEED_ENRICH_DELAY_MIN = 8
+INDEED_ENRICH_DELAY_MAX = 12
 
 # Output directory (relative to job-search/)
 OUTPUT_DIR = "output"
@@ -62,7 +67,8 @@ TITLE_TERMS = [
 _TITLE_PATTERN = re.compile("|".join(TITLE_TERMS), re.IGNORECASE)
 
 
-def match_job(title: str, tags: str, keywords: list[str]) -> str | None:
+def match_job(title: str, tags: str, keywords: list[str],
+              description: str = "", lenient: bool = False) -> str | None:
     """Return the matched keyword/term or None.
 
     Matching strategy:
@@ -70,6 +76,7 @@ def match_job(title: str, tags: str, keywords: list[str]) -> str | None:
       2. Role-specific terms as whole words in title
       3. Full keyword phrase in tags
       4. Role-specific terms as whole words in tags
+      5. (lenient only) Description contains 2+ skill keywords
     Title matches are preferred — tag-only matches use a stricter set to
     reduce noise from broad tags like "cloud".
     """
@@ -99,6 +106,12 @@ def match_job(title: str, tags: str, keywords: list[str]) -> str | None:
     m = tag_pattern.search(tags_lower)
     if m:
         return m.group()
+
+    # 5. Lenient: description contains 2+ skill keywords
+    if lenient and description:
+        from .description_utils import count_skill_matches
+        if count_skill_matches(description) >= 2:
+            return "skill-match"
 
     return None
 

@@ -2,12 +2,15 @@
 
 import os
 import sys
+from pathlib import Path
 
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
     pass
+
+ROOT = Path(__file__).resolve().parent.parent
 
 # ─── API Key ─────────────────────────────────────────────────────────────────
 
@@ -74,9 +77,9 @@ CANDIDATE_CONTEXT = """
 - Multi-cloud breadth (Azure + AWS), not locked to one provider
 - hybrid cloud experience (on-prem workloads + cloud), not just public cloud also maintained communication between on-prem and cloud processes
 - Real client delivery experience (Marjane Holding) — not just personal projects
-- Boomi ELT experience (data pipelines, not just infrastructure)
+- Boomi ELT experience (data pipelines, data engineering skills)
 
-### Certifications Intended to Pursue (not yet listed on profile, but plan to add)
+### Certifications Intended to Pursue in future
 - CKA (Certified Kubernetes Administrator)
 - CKS (Certified Kubernetes Security Specialist)
 - CKAD (Certified Kubernetes Application Developer)
@@ -97,7 +100,7 @@ CANDIDATE_CONTEXT = """
 - UK
 - Switzerland
 - Morocco (Casablanca)
-EU/UK/Switzerland/Norway/Turkey/Ukraine/Serbia/Iceland/Georgia/Moldova/Albania/Morocco/Tunisia/EU/saudi arabia/qatar/canada/usa
+- EU/UK/Switzerland/Norway/Turkey/Ukraine/Serbia/Iceland/Georgia/Moldova/Albania/Morocco/Tunisia/EU/saudi arabia/qatar/canada/usa
 
 ### Portfolio Assets
 - GitHub repositories with IaC, CI/CD and AI/MLOps projects
@@ -105,3 +108,12 @@ EU/UK/Switzerland/Norway/Turkey/Ukraine/Serbia/Iceland/Georgia/Moldova/Albania/M
 - Lab projects: Database Lab, Compute Lab, Kubernetes Lab, DevSecOps pipeline, DocAI/RAG
 - Planned projects: Secure LLM Infrastructure on Azure/AWS, Kubernetes LLM Agent Platform
 """
+
+# ─── Semantic Filter Settings ───────────────────────────────────────────────
+
+SEMANTIC_MODEL_NAME = "all-MiniLM-L6-v2"
+SEMANTIC_THRESHOLD = 0.65
+CHROMADB_DIR = str(ROOT / "output" / ".chromadb")
+RESUMES_DIR = str(ROOT / "resumes")
+HF_API_TOKEN = os.getenv("HF_API_TOKEN", "")
+USE_SEMANTIC_FILTER = True
