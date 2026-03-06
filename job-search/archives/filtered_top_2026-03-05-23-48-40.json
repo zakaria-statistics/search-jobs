@@ -1,0 +1,1829 @@
+{
+  "filtered_at": "2026-03-05T23:48:40.222107",
+  "source_file": "/root/search/job-search/output/scraped_2026-03-05-23-27-53.json",
+  "bucket": "top",
+  "score_range": "0.85-1.01",
+  "total_input": 509,
+  "total_in_bucket": 35,
+  "jobs": [
+    {
+      "title": "DevOps Cloud H/F",
+      "company": "The Adecco Group",
+      "location": "no",
+      "url": "https://www.welcometothejungle.com/fr/companies/the-adecco-group/jobs/devops-cloud-h-f_niort",
+      "source": "wttj",
+      "date_posted": "2026-03-02T16:41:59Z",
+      "description": "<p>Diplômé(e) d'un Master en ingénierie ou équivalent, vous avez une expérience dans des fonctions similaires. Vous maîtrisez les services Microsoft Azure (compute, stockage, réseau, sécurité), les outils CI/CD (Azure DevOps, Jenkins, GitHub Actions), le scripting (PowerShell, Bash, Python), et les technologies de conteneurisation (Docker, Kubernetes, AKS). Vous possédez des compétences en infrastructure as code (Terraform, ARM templates, Pulumi), en observabilité (Grafana, Prometheus, Kibana, D | Contract: full_time | Salary: 42000-47000 EUR",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8957,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8957,
+          "distance": 0.2087,
+          "metadata": {
+            "lang": "fr",
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8904,
+          "distance": 0.2192,
+          "metadata": {
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "azure",
+            "section": "Profil Professionnel",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8839,
+          "distance": 0.2323,
+          "metadata": {
+            "lang": "fr",
+            "stack": "ai",
+            "section": "Expériences Professionnelles",
+            "source": "resume",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Paris - Ingénieur Devops H/F",
+      "company": "Hardis Group",
+      "location": "",
+      "url": "https://www.welcometothejungle.com/fr/companies/hardis-group/jobs/paris-ingenieur-devops-h-f_paris",
+      "source": "wttj",
+      "date_posted": "2026-03-04T23:00:57Z",
+      "description": "<p>\n  <strong>\n    Qui êtes vous ?\n  </strong>\n</p>\n<ul>\n  <li>\n    Vous justifiez d&#39;une expérience confirmée sur un poste similaire, avec une expertise solide des environnements Cloud (Azure, AWS) et des outils DevOps.\n  </li>\n  <li>\n    Vous maîtrisez l’automatisation (Ansible, Terraform), le scripting (Bash, PowerShell, Python) et les outils CI/CD (Azure Pipelines, Jenkins, GitLab CI). Vous possédez également de bonnes connaissances des services Microsoft Azure (VMs, Blob Storage, Azure S | Contract: full_time",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8956,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Expérience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Présent | We Are Beebay (Client : Marjane Holding) | Casablanca, Maroc\n\n- **Gouvernance IaC Stratégique :** Architecture d'environnements Terraform modulaires avec intégration Azure Policy (tags, régions, restrictions SKU) et verrouillage d'état via Azure Blob Storage pour assurer la cohérence entre les envs Dev/Prod.\n- **Sécurité :** Intégration de HashiCorp Vault pour l'injection dynamique de secrets (AppRole), éliminant les identifiants codés en dur. Mise en place de Network Security Groups (NSG) stricts et isolation des sous-réseaux.\n- **Optimisation CI/CD :** Conception d'agents auto-hébergés basés sur Docker pour Azure DevOps et GitLab CI afin de contourner les limites de concurrence, permettant une exécution efficace du Docker-in-Docker pour les workloads intenses.\n- **Architecture K8s Sécurisée et Intégration Vault :** Architecture d'une plateforme Kubernetes durcie et auto-gérée sur Azure avec segmentation réseau stricte (5 sous-réseaux dédiés pour Bastions/Control-Plane/Workers/DBs), configurée via Ansible et Cloud-init pour un bootstrap idempotent et intégrée à HashiCorp Vault (AppRole) pour la livraison dynamique de secrets.\n- **Reprise après Sinistre :** Architecture d'une stratégie de Point-in-Time Recovery (PITR) pour PostgreSQL utilisant l'archivage WAL et des snapshots d'infrastructure, validée par des simulations de pannes destructives.\n- **Gouvernance Qualité Automatisée :** Architecture d'une couche d'inspection continue intégrant des outils d'analyse statique dans le pipeline GitLab CI. Implémentation d'un moteur d'ingestion personnalisé pour traiter les artefacts de build, transformant des métriques de qualité disparates en insights structurés et exploitables pour piloter un refactoring basé sur des preuves.\n\n### DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD Sécurisés :** Conception de pipelines de bout en bout avec Jenkins pour Spring Boot et Next.js, intégrant des Quality Gates SonarQube pour bloquer les builds non conformes.\n- **Automatisation Infrastructure :** Standardisation des environnements de test via Vagrant et Ansible, garantissant l'idempotence et réduisant la dérive de configuration (configuration drift).\n- **Gestion du Trafic :** Configuration de Reverse Proxies NGINX avec certificats SSL/TLS Let's Encrypt auto-renouvelés pour sécuriser les endpoints.\n- **Déploiement Kubernetes :** Gestion des déploiements via ArgoCD, utilisant des charts Helm pour le contrôle de version et les capacités de rollback.",
+          "similarity": 0.8956,
+          "distance": 0.2089,
+          "metadata": {
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "azure",
+            "section": "Expérience",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8938,
+          "distance": 0.2123,
+          "metadata": {
+            "stack": "azure",
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8851,
+          "distance": 0.2297,
+          "metadata": {
+            "stack": "aws",
+            "section": "Profil Professionnel",
+            "lang": "fr",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Cloud AWS – Modernisation et Projets Cloud à Lyon",
+      "company": "eXalt",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/exalt/jobs/architecte-cloud-senior-aws-gcp-lyon-cdi_lyon",
+      "source": "wttj",
+      "date_posted": "2026-01-23T08:36:28Z",
+      "description": "* 5 ans d’expérience minimum sur AWS, GCP ou des environnements hybrides\n    \n* Solides compétences en conception d’architectures cloud et sécurité\n    \n* Pratique des outils d’automatisation (Terraform, Ansible, CI/CD…)\n    \n* Envie de transmettre, challenger et partager ta vision\n    \n* 🎓 Bac +5 ou équivalent\n    \n* 🎖️ Certification AWS ou GCP appréciée | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8934,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8934,
+          "distance": 0.2132,
+          "metadata": {
+            "source": "resume",
+            "lang": "fr",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "general",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8834,
+          "distance": 0.2332,
+          "metadata": {
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "aws",
+            "section": "Profil Professionnel",
+            "source": "resume",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8774,
+          "distance": 0.2452,
+          "metadata": {
+            "lang": "fr",
+            "stack": "azure",
+            "section": "Profil Professionnel",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ingénieur réseau & Sécurité cloud (H/F)",
+      "company": "Atyos",
+      "location": "fulltime",
+      "url": "https://www.welcometothejungle.com/fr/companies/atyos/jobs/ingenieur-reseau-h-f",
+      "source": "wttj",
+      "date_posted": "2026-02-24T09:35:49Z",
+      "description": "Nous recherchons une personne qui présente :\n\n* Une expérience confirmée en réseau et sécurité\n    \n* Une expérience sur les technologies AWS est un plus mais n’est pas un prérequis\n    \n* Des compétences en développement / scripting\n    \n* Une conviction forte pour la culture DevOps et l’automatisation\n    \n* De la rigueur, un goût pour la qualité et un bon relationnel\n    \n* De la curiosité, de l’autonomie et un fort intérêt pour la veille technique\n    \n\nUne maîtrise du français et de l’angla | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8883,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8883,
+          "distance": 0.2233,
+          "metadata": {
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "general",
+            "lang": "fr",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8675,
+          "distance": 0.2649,
+          "metadata": {
+            "lang": "fr",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "section": "Expériences Professionnelles",
+            "stack": "ai"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8649,
+          "distance": 0.2702,
+          "metadata": {
+            "section": "Profil Professionnel",
+            "stack": "azure",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Consultant DevOps / Coach Kubernetes, GitLab & Observabilité",
+      "company": "Les Filles & Les Garçons de la Tech",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/fgtech/jobs/consultant-devops-coach-kubernetes-gitlab-observabilite_aix-en-provence",
+      "source": "wttj",
+      "date_posted": "2026-02-26T09:37:50Z",
+      "description": "* **Compétences techniques recherchées**\n    \n\n\\- CI/CD : GitLab (runners, templates, pipelines complexes)\n\n\\- Kubernetes : déploiement d’applications, Helm, namespaces, secrets, observabilité\n\n\\- Observabilité : bonne maîtrise de l’utilisation d’outils comme Prometheus, Grafana, CloudWatch, ELK/Opensearch, ou équivalents\n\n\\- Clouds : AWS et OpenStack\n\n\\- DevOps : culture de l’automatisation, intégration et déploiement continu\n\n\\- Langages / outils : Docker, YAML, Bash, Python (optionnel)\n\n* **S | Contract: full_time",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8774,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Compétences Techniques\n\n- **Cloud et Infrastructure**: AWS, Azure, VMware ESXi, Proxmox, Cloud Hybride.\n- **Conteneurisation**: Kubernetes (AKS, EKS, GKE, On-premise), Helm, Operators, GitOps (ArgoCD), Docker, Docker Swarm.\n- **IaC et Automatisation**: Terraform (Modules, Workspaces, State Locking), Ansible, Cloud-init, Vagrant.\n- **CI/CD**: GitLab CI, GitHub Actions, Azure DevOps, Jenkins.\n- **Sécurité et Networking**: KMS (HashiCorp Vault, Azure Key Vault), SSL/TLS, Iptables, VPNs, Nginx, GitGuardian, Azure Policy.\n- **Scripting et Dev**: Bash, PowerShell, Python(Automation), Java (Spring Boot), TypeScript (Angular).\n- **AIOps**: Vector databases, Ollama, LangChain, Infrastructure GPU, RAG, MCP, Agents.",
+          "similarity": 0.8774,
+          "distance": 0.2453,
+          "metadata": {
+            "stack": "azure",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Compétences Techniques",
+            "lang": "fr",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Competences Techniques\n\n- **Plateformes Cloud**: Azure, AWS, Cloud hybride, VMware ESXi, Proxmox.\n- **Conteneurisation et Orchestration**: Kubernetes (AKS, EKS, On-prem), Helm, ArgoCD, Docker, Docker Swarm.\n- **IaC et Automatisation**: Terraform (modules, workspaces, verrouillage du state), Ansible, Cloud-init, Vagrant, Packer.\n- **CI/CD**: GitLab CI, GitHub Actions, Jenkins, Azure DevOps.\n- **Securite et Reseau**: HashiCorp Vault, Azure Policy, IAM, NSG/Security Groups, SSL/TLS, Nginx, VPN.\n- **Scripting et Developpement**: Python, Bash, PowerShell, Node.js, Java (Spring Boot), TypeScript.\n- **AI et MLOps**: Ollama, LangChain, RAG, agents IA, bases vectorielles, toolchain NVIDIA GPU, Open WebUI.",
+          "similarity": 0.8722,
+          "distance": 0.2556,
+          "metadata": {
+            "lang": "fr",
+            "stack": "general",
+            "section": "Competences Techniques",
+            "source": "resume",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "### Core Technical Skills\n- Cloud: Azure (AKS, Key Vault, Policy, NSG), AWS, multi-cloud architectures, hybrid cloud\n- IaC: Terraform (modules, state management, workspaces), Cloud-init, ARM templates\n- Containers: Kubernetes (kubeadm, GKE, EKS, on-prem), Docker, containerd, Helm, ArgoCD (GitOps)\n- CI/CD: Jenkins, GitLab CI, GitHub Actions\n- Monitoring: Prometheus, Grafana, loki\n- DevSecOps: KMS, security scanning, secrets management\n- Networking: iptables, firewalls, Linux kernal modules, middleware (Nginx, load balancers, gateways)\n- Scripting: Bash, Python, PowerShell\n- OS: Ubuntu Server, Debian (Proxmox VE)\n- Automation: Ansible, Vagrant",
+          "similarity": 0.8684,
+          "distance": 0.2632,
+          "metadata": {
+            "section": "Core Technical Skills",
+            "lang": "en",
+            "stack": "general",
+            "source": "candidate_context"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Cloud F/H",
+      "company": "Atos",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/atos/jobs/architecte-cloud-f-h_lyon_ATOS_JpwVxYV",
+      "source": "wttj",
+      "date_posted": "2026-02-21T14:20:46Z",
+      "description": "<span>Description du profil :<br><br></span><p><strong>Les atouts pour réussir :</strong> <strong>  </strong> </p><p>Vous êtes issu(e) d’une formation supérieure Bac+5 Ecole d’ingénieur ou cursus universitaire, et disposez d'au moins<strong> 7 années d’expérience</strong> sur un poste similaire.</p><p>Être certifié « Solution Architect » et « Administrator / SysOPS » AZURE et/ou AWS Intégration / déploiement continus IaC : terraform, ansible, powershell Compétences méthode : Agile ITIL</p><p>Sav | Contract: full_time | Salary: 63000-82000 EUR",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8728,
+      "matched_stack": "aws",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8728,
+          "distance": 0.2545,
+          "metadata": {
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "source": "resume",
+            "stack": "general",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8712,
+          "distance": 0.2576,
+          "metadata": {
+            "source": "resume",
+            "section": "Expériences Professionnelles",
+            "lang": "fr",
+            "stack": "ai",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on AWS and Azure.\nExperienced in Infrastructure as Code (Terraform), Serverless computing (Lambda), and Kubernetes orchestration.\nProven track record of implementing reliable CI/CD pipelines, automating compliance, and optimizing cloud costs for enterprise clients.",
+          "similarity": 0.8706,
+          "distance": 0.2587,
+          "metadata": {
+            "stack": "aws",
+            "source": "resume",
+            "lang": "en",
+            "source_file": "aws_eng_zakaria_el_moumnaoui/main.md",
+            "section": "Professional Summary"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Consultant.e DevOps (Cloud & Kubernetes)",
+      "company": "Les Filles & Les Garçons de la Tech",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/fgtech/jobs/expert-cloud-aws_paris",
+      "source": "wttj",
+      "date_posted": "2026-03-04T13:30:46Z",
+      "description": "**Les compétences techniques requises :**\n\n* **Bonnes connaissances des environnements Cloud et des pratiques DevOps** (Cloud publics et on-premise, architectures distribuées)\n    \n* **Maîtrise avancée de Kubernetes en production :** conception et exploitation de clusters (GKE / EKS / AKS), bonnes pratiques Cloud Native, sécurité (RBAC), déploiements via Helm\n    \n* **Automatisation des infrastructures et des déploiements :** Infrastructure as Code (OpenTofu / Terraform) et approches GitOps / CI | Contract: full_time | Salary: 55000-65000 EUR",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8714,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8714,
+          "distance": 0.2571,
+          "metadata": {
+            "lang": "fr",
+            "stack": "general",
+            "source": "resume",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8555,
+          "distance": 0.289,
+          "metadata": {
+            "stack": "azure",
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.852,
+          "distance": 0.2961,
+          "metadata": {
+            "lang": "fr",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Résumé Professionnel",
+            "stack": "ai",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "ARCHITECTE CLOUD (H/F)",
+      "company": "RS2i",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/rs2i/jobs/architecte-cloud-h-f_levallois-perret_RS2I_xQqqJMr",
+      "source": "wttj",
+      "date_posted": "2026-02-20T14:13:48Z",
+      "description": "Issu(e) de formation universitaire ou Ingénieur BAC+ 5, vous justifiez d’au moins 5 ans d'expérience dans un rôle similaire sur des projets d'envergures dans la conception et le déploiement d’une infrastructure cloud avec de solides connaissances des technologies Cloud telles que Amazon AWS ou Microsoft Azure.\n\n**Vos soft skills  :**\n\n·       Excellentes compétences en communication et en relations interpersonnelles.\n\n·       Capacité à travailler de manière indépendante et en équipe.\n\n·       S | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8713,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8713,
+          "distance": 0.2573,
+          "metadata": {
+            "source": "resume",
+            "stack": "general",
+            "lang": "fr",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.871,
+          "distance": 0.258,
+          "metadata": {
+            "source": "resume",
+            "section": "Résumé Professionnel",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr",
+            "stack": "ai"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8647,
+          "distance": 0.2705,
+          "metadata": {
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "stack": "azure",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Data Platform Enablement Engineer ",
+      "company": "Lenstra",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/lenstra/jobs/data-platform-enablement-engineer_paris",
+      "source": "wttj",
+      "date_posted": "2026-02-17T09:22:29Z",
+      "description": "* 5–10 years of professional experience\n    \n* Strong background as a **Cloud Engineer (AWS)**\n    \n* Solid understanding of modern data platform architectures\n    \n* Experience with infrastructure as code (CloudFormation/CDK)\n    \n* Strong knowledge of data lake technologies and formats (Parquet, Iceberg)\n    \n* Experience building and orchestrating data pipelines\n    \n* Good understanding of DevOps practices and CI/CD\n    \n* Comfortable working in Agile environments\n    \n* Strong problem-solvi | Contract: freelance",
+      "keyword": "platform",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8702,
+      "matched_stack": "general",
+      "relevant_chunks": [
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on AWS and Azure.\nExperienced in Infrastructure as Code (Terraform), Serverless computing (Lambda), and Kubernetes orchestration.\nProven track record of implementing reliable CI/CD pipelines, automating compliance, and optimizing cloud costs for enterprise clients.",
+          "similarity": 0.8702,
+          "distance": 0.2596,
+          "metadata": {
+            "stack": "aws",
+            "source_file": "aws_eng_zakaria_el_moumnaoui/main.md",
+            "lang": "en",
+            "section": "Professional Summary",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on Azure and AWS. Experienced in Infrastructure as Code (Terraform), Kubernetes orchestration, and \"Shift-Left\" security integration. Proven track record of implementing reliable CI/CD pipelines and automating cloud environments for enterprise clients.",
+          "similarity": 0.8618,
+          "distance": 0.2764,
+          "metadata": {
+            "source": "resume",
+            "stack": "azure",
+            "section": "Professional Summary",
+            "lang": "en",
+            "source_file": "az_eng_zakaria_el_moumnoaui/main.md"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nSenior DevOps and Cloud Engineer with strong experience building secure and resilient platforms on Azure and AWS. Specialized in Terraform, Kubernetes, CI/CD, and cloud security, with hands-on delivery of AI infrastructure and MLOps workloads (GPU, LLM services, agents). Focused on scalable automation, governance, and cost-efficient operations for enterprise environments.",
+          "similarity": 0.8393,
+          "distance": 0.3214,
+          "metadata": {
+            "section": "Professional Summary",
+            "source": "resume",
+            "stack": "general",
+            "source_file": "devops_eng_zakaria_el_moumnaoui/main.md",
+            "lang": "en"
+          }
+        }
+      ]
+    },
+    {
+      "title": "SRE / DevOps Engineer",
+      "company": "Parallel",
+      "location": "punctual",
+      "url": "https://www.welcometothejungle.com/fr/companies/kiosk/jobs/sre-devops-engineer_paris",
+      "source": "wttj",
+      "date_posted": "2026-02-27T13:05:01Z",
+      "description": "We’re looking for someone who’s passionate about infrastructure, reliability, and security. You are the ideal candidate if you have:\n\n* 4+ years of experience in DevOps, SRE, or infrastructure roles\n    \n* Strong hands-on experience with AWS or Azure\n    \n* Experience with CI/CD tools (GitHub Actions, etc.) and container orchestration (Docker, potentially Kubernetes)\n    \n* Strong focus on system observability: logging, monitoring, tracing\n    \n* Experience with IaC tools like Terraform or Pulum | Contract: full_time",
+      "keyword": "DevOps Engineer",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8698,
+      "matched_stack": "aws",
+      "relevant_chunks": [
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on Azure and AWS. Experienced in Infrastructure as Code (Terraform), Kubernetes orchestration, and \"Shift-Left\" security integration. Proven track record of implementing reliable CI/CD pipelines and automating cloud environments for enterprise clients.",
+          "similarity": 0.8698,
+          "distance": 0.2604,
+          "metadata": {
+            "source_file": "az_eng_zakaria_el_moumnoaui/main.md",
+            "lang": "en",
+            "stack": "azure",
+            "section": "Professional Summary",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on AWS and Azure.\nExperienced in Infrastructure as Code (Terraform), Serverless computing (Lambda), and Kubernetes orchestration.\nProven track record of implementing reliable CI/CD pipelines, automating compliance, and optimizing cloud costs for enterprise clients.",
+          "similarity": 0.8594,
+          "distance": 0.2811,
+          "metadata": {
+            "source_file": "aws_eng_zakaria_el_moumnaoui/main.md",
+            "section": "Professional Summary",
+            "stack": "aws",
+            "lang": "en",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nSenior DevOps and Cloud Engineer with strong experience building secure and resilient platforms on Azure and AWS. Specialized in Terraform, Kubernetes, CI/CD, and cloud security, with hands-on delivery of AI infrastructure and MLOps workloads (GPU, LLM services, agents). Focused on scalable automation, governance, and cost-efficient operations for enterprise environments.",
+          "similarity": 0.8575,
+          "distance": 0.2851,
+          "metadata": {
+            "source": "resume",
+            "source_file": "devops_eng_zakaria_el_moumnaoui/main.md",
+            "lang": "en",
+            "stack": "general",
+            "section": "Professional Summary"
+          }
+        }
+      ]
+    },
+    {
+      "title": "AWS Architect / DevOps Engineer (Part-Time / Contractor)",
+      "company": "Spare-it",
+      "location": "fulltime",
+      "url": "https://www.welcometothejungle.com/fr/companies/spare-it/jobs/aws-architect-devops-engineer-part-time-contractor",
+      "source": "wttj",
+      "date_posted": "2026-02-03T08:33:35Z",
+      "description": "* Mid-to-senior experience as an **AWS Architect and/or DevOps Engineer**\n    \n* Strong hands-on experience with **AWS serverless architectures**\n    \n* Solid experience with **Infrastructure as Code** (AWS CDK preferred)\n    \n* Experience designing platforms that **integrate AI/ML capabilities into production systems**\n    \n* Familiarity with one or more of Sagemaker, Bedrock, MLOps concepts\n    \n* Strong understanding of:\n    \n    * Cloud security best practices\n        \n    * Cost optimizatio | Contract: freelance | Salary: 500-800 EUR",
+      "keyword": "DevOps Engineer",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8689,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Professional Summary\n\nSenior DevOps and Cloud Engineer with strong experience building secure and resilient platforms on Azure and AWS. Specialized in Terraform, Kubernetes, CI/CD, and cloud security, with hands-on delivery of AI infrastructure and MLOps workloads (GPU, LLM services, agents). Focused on scalable automation, governance, and cost-efficient operations for enterprise environments.",
+          "similarity": 0.8689,
+          "distance": 0.2622,
+          "metadata": {
+            "source": "resume",
+            "lang": "en",
+            "section": "Professional Summary",
+            "source_file": "devops_eng_zakaria_el_moumnaoui/main.md",
+            "stack": "general"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on AWS and Azure.\nExperienced in Infrastructure as Code (Terraform), Serverless computing (Lambda), and Kubernetes orchestration.\nProven track record of implementing reliable CI/CD pipelines, automating compliance, and optimizing cloud costs for enterprise clients.",
+          "similarity": 0.858,
+          "distance": 0.2839,
+          "metadata": {
+            "section": "Professional Summary",
+            "source_file": "aws_eng_zakaria_el_moumnaoui/main.md",
+            "stack": "aws",
+            "source": "resume",
+            "lang": "en"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on Azure and AWS. Experienced in Infrastructure as Code (Terraform), Kubernetes orchestration, and \"Shift-Left\" security integration. Proven track record of implementing reliable CI/CD pipelines and automating cloud environments for enterprise clients.",
+          "similarity": 0.8437,
+          "distance": 0.3125,
+          "metadata": {
+            "section": "Professional Summary",
+            "lang": "en",
+            "source_file": "az_eng_zakaria_el_moumnoaui/main.md",
+            "stack": "azure",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ingénieure / Ingénieur Cloud DevOps - Alternance",
+      "company": "Capgemini",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/capgemini/jobs/ingenieure-ingenieur-cloud-devops-alternance_lyon",
+      "source": "wttj",
+      "date_posted": "2026-03-02T16:20:54Z",
+      "description": "<span>Description du profil :<br><br></span> <strong>Votre profil</strong>   <ul> <li>Actuellement en M1/M2 en informatique, la culture DevOps vous intrigue• Première expérience en qualité d'Ingénieur DevOps</li> <li>Vous avez des connaissances dans les environnements Linux, Cloud (AWS, Azure, GCP),</li> <li> Vous avec une première maitrise des solutions Kubernetes, Openshift, Docker,</li> <li>Qualités synthétiques et de communication</li> <li>Maîtrise de l'anglais (niveau B2</li> </ul> <br><br> | Contract: apprenticeship",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8678,
+      "matched_stack": "general",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8678,
+          "distance": 0.2644,
+          "metadata": {
+            "source": "resume",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "general",
+            "section": "Profil Professionnel",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.8671,
+          "distance": 0.2658,
+          "metadata": {
+            "lang": "fr",
+            "stack": "ai",
+            "section": "Résumé Professionnel",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8617,
+          "distance": 0.2767,
+          "metadata": {
+            "stack": "azure",
+            "section": "Profil Professionnel",
+            "source": "resume",
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte solution Cloud AWS - CCOE France",
+      "company": "Sopra Steria",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/sopra-steria/jobs/architecte-solution-cloud-aws-ccoe-france_courbevoie_SS_dD5QY9",
+      "source": "wttj",
+      "date_posted": "2026-02-13T22:12:46Z",
+      "description": "<p>Titulaire d&#39;un Bac+5 en informatique Ingénierie ou équivalent, vous justifiez d&#39;au moins 5 à 10 ans d&#39;expérience dans le domaine de la conception d&#39;architecture en environnement Cloud AWS, GCP ou Azure.\n\nVous avez le sens du service et savez être à l&#39;écoute de votre interlocuteur afin de comprendre son besoin et lui proposer des solutions pertinentes.\nVous êtes habitué(e) au travail en équipe et partagez volontiers vos connaissances.\n\nVous possédez les compétences clefs su | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8664,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8664,
+          "distance": 0.2672,
+          "metadata": {
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8593,
+          "distance": 0.2814,
+          "metadata": {
+            "lang": "fr",
+            "stack": "azure",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8587,
+          "distance": 0.2826,
+          "metadata": {
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr",
+            "source": "resume",
+            "stack": "aws",
+            "section": "Profil Professionnel"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Consultant.e Cloud Azure",
+      "company": "Les Filles & Les Garçons de la Tech",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/fgtech/jobs/consultant-e-cloud-azure_paris",
+      "source": "wttj",
+      "date_posted": "2026-03-04T13:29:27Z",
+      "description": "**Les compétences techniques requises :**\n\n* **Expertise avancée de Microsoft Azure** : conception d’architectures incluant compute, réseau, Entra ID, gouvernance et gestion des coûts\n    \n* **Maîtrise de Kubernetes / AKS en production** : intégration et exploitation de clusters dans des environnements Cloud sécurisés et critiques\n    \n* **Compétences solides en sécurité Cloud et gestion des identités :** Entra ID, RBAC, segmentation réseau, durcissement des environnements\n    \n* **Pratique expe | Contract: full_time | Salary: 55000-70000 EUR",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.865,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.865,
+          "distance": 0.27,
+          "metadata": {
+            "source": "resume",
+            "section": "Profil Professionnel",
+            "lang": "fr",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "general"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.861,
+          "distance": 0.278,
+          "metadata": {
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "section": "Profil Professionnel",
+            "stack": "azure"
+          }
+        },
+        {
+          "text": "## Expérience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Présent | We Are Beebay (Client : Marjane Holding) | Casablanca, Maroc\n\n- **Gouvernance IaC Stratégique :** Architecture d'environnements Terraform modulaires avec intégration Azure Policy (tags, régions, restrictions SKU) et verrouillage d'état via Azure Blob Storage pour assurer la cohérence entre les envs Dev/Prod.\n- **Sécurité :** Intégration de HashiCorp Vault pour l'injection dynamique de secrets (AppRole), éliminant les identifiants codés en dur. Mise en place de Network Security Groups (NSG) stricts et isolation des sous-réseaux.\n- **Optimisation CI/CD :** Conception d'agents auto-hébergés basés sur Docker pour Azure DevOps et GitLab CI afin de contourner les limites de concurrence, permettant une exécution efficace du Docker-in-Docker pour les workloads intenses.\n- **Architecture K8s Sécurisée et Intégration Vault :** Architecture d'une plateforme Kubernetes durcie et auto-gérée sur Azure avec segmentation réseau stricte (5 sous-réseaux dédiés pour Bastions/Control-Plane/Workers/DBs), configurée via Ansible et Cloud-init pour un bootstrap idempotent et intégrée à HashiCorp Vault (AppRole) pour la livraison dynamique de secrets.\n- **Reprise après Sinistre :** Architecture d'une stratégie de Point-in-Time Recovery (PITR) pour PostgreSQL utilisant l'archivage WAL et des snapshots d'infrastructure, validée par des simulations de pannes destructives.\n- **Gouvernance Qualité Automatisée :** Architecture d'une couche d'inspection continue intégrant des outils d'analyse statique dans le pipeline GitLab CI. Implémentation d'un moteur d'ingestion personnalisé pour traiter les artefacts de build, transformant des métriques de qualité disparates en insights structurés et exploitables pour piloter un refactoring basé sur des preuves.\n\n### DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD Sécurisés :** Conception de pipelines de bout en bout avec Jenkins pour Spring Boot et Next.js, intégrant des Quality Gates SonarQube pour bloquer les builds non conformes.\n- **Automatisation Infrastructure :** Standardisation des environnements de test via Vagrant et Ansible, garantissant l'idempotence et réduisant la dérive de configuration (configuration drift).\n- **Gestion du Trafic :** Configuration de Reverse Proxies NGINX avec certificats SSL/TLS Let's Encrypt auto-renouvelés pour sécuriser les endpoints.\n- **Déploiement Kubernetes :** Gestion des déploiements via ArgoCD, utilisant des charts Helm pour le contrôle de version et les capacités de rollback.",
+          "similarity": 0.8525,
+          "distance": 0.295,
+          "metadata": {
+            "stack": "azure",
+            "section": "Expérience",
+            "source": "resume",
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Cloud Azure/AWS",
+      "company": "Navigacom",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/navigacom/jobs/architecte-cloud-azure-aws_puteaux_NAVIG_0gk2R8d",
+      "source": "wttj",
+      "date_posted": "2026-02-25T08:28:29Z",
+      "description": "**Expérience :** 4 à 5 ans d’expérience dans les technologies Cloud, dont au moins 2 ans sur Azure et/ou AWS.\n\n**Compétences techniques :**\n\n* Connaissance approfondie du cloud Azure et/ou AWS (IaaS, PaaS...)\n    \n* Solide expertise des services Azure et/ou AWS : Compute, Storage, Networking, Sécurité\n    \n* Connaissance des outils d’automatisation et de gestion d’infrastructure (Terraform, Ansible, etc.)\n    \n* Compétence en sécurisation des environnements cloud et gestion des identités (Azure  | Contract: full_time | Salary: 55000-65000 EUR",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8642,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8642,
+          "distance": 0.2716,
+          "metadata": {
+            "lang": "fr",
+            "stack": "general",
+            "section": "Profil Professionnel",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8525,
+          "distance": 0.2951,
+          "metadata": {
+            "stack": "azure",
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8508,
+          "distance": 0.2985,
+          "metadata": {
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Expériences Professionnelles",
+            "stack": "ai",
+            "lang": "fr",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Expert Cloud Azure F/H",
+      "company": "La Poste - Réseau national des bureaux de Poste",
+      "location": "punctual",
+      "url": "https://www.welcometothejungle.com/fr/companies/groupe-la-poste/jobs/expert-cloud-azure-f-h_issy-les-moulineaux",
+      "source": "wttj",
+      "date_posted": "2026-02-28T09:00:14Z",
+      "description": "Environnement technique \r\nConnaissances approfondies en cloud computing, réseaux, sécurité informatique et gestion des systèmes.\r\nConnaissance des outils d'infrastructure as code (IaC) : Expérience avec Terraform, Maîtrise de PowerShell, Azure CLI ou d'autres langages de scripting.\r\nÊtre certifié Azure Administrator Associate (AZ-104) serait un plus\r\nExpérience spécifique avec Azure\r\nAvoir travaillé dans une organisation ayant appliqué le Framework SAFe serait un plus\r\nCompétences en sécurité :  | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8633,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Expérience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Présent | We Are Beebay (Client : Marjane Holding) | Casablanca, Maroc\n\n- **Gouvernance IaC Stratégique :** Architecture d'environnements Terraform modulaires avec intégration Azure Policy (tags, régions, restrictions SKU) et verrouillage d'état via Azure Blob Storage pour assurer la cohérence entre les envs Dev/Prod.\n- **Sécurité :** Intégration de HashiCorp Vault pour l'injection dynamique de secrets (AppRole), éliminant les identifiants codés en dur. Mise en place de Network Security Groups (NSG) stricts et isolation des sous-réseaux.\n- **Optimisation CI/CD :** Conception d'agents auto-hébergés basés sur Docker pour Azure DevOps et GitLab CI afin de contourner les limites de concurrence, permettant une exécution efficace du Docker-in-Docker pour les workloads intenses.\n- **Architecture K8s Sécurisée et Intégration Vault :** Architecture d'une plateforme Kubernetes durcie et auto-gérée sur Azure avec segmentation réseau stricte (5 sous-réseaux dédiés pour Bastions/Control-Plane/Workers/DBs), configurée via Ansible et Cloud-init pour un bootstrap idempotent et intégrée à HashiCorp Vault (AppRole) pour la livraison dynamique de secrets.\n- **Reprise après Sinistre :** Architecture d'une stratégie de Point-in-Time Recovery (PITR) pour PostgreSQL utilisant l'archivage WAL et des snapshots d'infrastructure, validée par des simulations de pannes destructives.\n- **Gouvernance Qualité Automatisée :** Architecture d'une couche d'inspection continue intégrant des outils d'analyse statique dans le pipeline GitLab CI. Implémentation d'un moteur d'ingestion personnalisé pour traiter les artefacts de build, transformant des métriques de qualité disparates en insights structurés et exploitables pour piloter un refactoring basé sur des preuves.\n\n### DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD Sécurisés :** Conception de pipelines de bout en bout avec Jenkins pour Spring Boot et Next.js, intégrant des Quality Gates SonarQube pour bloquer les builds non conformes.\n- **Automatisation Infrastructure :** Standardisation des environnements de test via Vagrant et Ansible, garantissant l'idempotence et réduisant la dérive de configuration (configuration drift).\n- **Gestion du Trafic :** Configuration de Reverse Proxies NGINX avec certificats SSL/TLS Let's Encrypt auto-renouvelés pour sécuriser les endpoints.\n- **Déploiement Kubernetes :** Gestion des déploiements via ArgoCD, utilisant des charts Helm pour le contrôle de version et les capacités de rollback.",
+          "similarity": 0.8633,
+          "distance": 0.2733,
+          "metadata": {
+            "lang": "fr",
+            "source": "resume",
+            "section": "Expérience",
+            "stack": "azure",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8632,
+          "distance": 0.2737,
+          "metadata": {
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "azure",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8545,
+          "distance": 0.2911,
+          "metadata": {
+            "source": "resume",
+            "section": "Profil Professionnel",
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr"
+          }
+        }
+      ]
+    },
+    {
+      "title": "OnaCVG - Ingénieur DevOps Senior H/F",
+      "company": "Civils de la Défense - Ministère des Armées",
+      "location": "punctual",
+      "url": "https://www.welcometothejungle.com/fr/companies/ministere-des-armees-fr/jobs/onacvg-ingenieur-devops-senior-h-f_paris",
+      "source": "wttj",
+      "date_posted": "2026-02-27T23:06:12Z",
+      "description": "<b>Profil recherché</b><br><br>Compétences clés :<br>  - Infrastructure as Code (Terraform, Ansible) end-to-end<br>  - Conception et maintenance de pipelines CI/CD industrialisés<br>  - Expérience en migration d'infrastructure (VMware<br>&bull; Proxmox ou équivalent)<br>  - Maîtrise avancée de Linux et de l'administration système<br>  - Conteneurisation avec Docker et orchestration des déploiements<br>  - Sensibilité sécurité (DevSecOps, hardening, audit)<br>  - Autonomie sur le scripting (Bash, | Contract: full_time",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8628,
+      "matched_stack": "general",
+      "relevant_chunks": [
+        {
+          "text": "## Compétences Techniques\n\n- **Cloud et Infrastructure**: AWS (EC2, S3, Lambda, RDS, VPC, IAM), Azure, VMware ESXi, Proxmox.\n- **Conteneurisation**: Kubernetes (EKS, AKS, On-premise), Helm, Operators, GitOps (ArgoCD), Docker.\n- **IaC et Automatisation**: Terraform (Modules, Workspaces), Ansible, Cloud-init, Packer, Vagrant.\n- **CI/CD**: GitLab CI, GitHub Actions, Jenkins, Azure DevOps.\n- **Sécurité**: AWS IAM, Security Groups, KMS (HashiCorp Vault), SSL/TLS, VPNs, Nginx, GitGuardian.\n- **Scripting et Dev**: Bash, Python (Automation), PowerShell, Java (Spring Boot), TypeScript (Angular).\n- **AIOps**: Vector databases, Ollama, LangChain, Infrastructure GPU (AWS G-series), RAG, Agents.",
+          "similarity": 0.8628,
+          "distance": 0.2745,
+          "metadata": {
+            "lang": "fr",
+            "source": "resume",
+            "section": "Compétences Techniques",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "aws"
+          }
+        },
+        {
+          "text": "## Competences Techniques\n\n- **Plateformes Cloud**: Azure, AWS, Cloud hybride, VMware ESXi, Proxmox.\n- **Conteneurisation et Orchestration**: Kubernetes (AKS, EKS, On-prem), Helm, ArgoCD, Docker, Docker Swarm.\n- **IaC et Automatisation**: Terraform (modules, workspaces, verrouillage du state), Ansible, Cloud-init, Vagrant, Packer.\n- **CI/CD**: GitLab CI, GitHub Actions, Jenkins, Azure DevOps.\n- **Securite et Reseau**: HashiCorp Vault, Azure Policy, IAM, NSG/Security Groups, SSL/TLS, Nginx, VPN.\n- **Scripting et Developpement**: Python, Bash, PowerShell, Node.js, Java (Spring Boot), TypeScript.\n- **AI et MLOps**: Ollama, LangChain, RAG, agents IA, bases vectorielles, toolchain NVIDIA GPU, Open WebUI.",
+          "similarity": 0.8622,
+          "distance": 0.2757,
+          "metadata": {
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Competences Techniques",
+            "source": "resume",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Compétences Techniques\n\n- **Cloud et Infrastructure**: AWS, Azure, VMware ESXi, Proxmox, Cloud Hybride.\n- **Conteneurisation**: Kubernetes (AKS, EKS, GKE, On-premise), Helm, Operators, GitOps (ArgoCD), Docker, Docker Swarm.\n- **IaC et Automatisation**: Terraform (Modules, Workspaces, State Locking), Ansible, Cloud-init, Vagrant.\n- **CI/CD**: GitLab CI, GitHub Actions, Azure DevOps, Jenkins.\n- **Sécurité et Networking**: KMS (HashiCorp Vault, Azure Key Vault), SSL/TLS, Iptables, VPNs, Nginx, GitGuardian, Azure Policy.\n- **Scripting et Dev**: Bash, PowerShell, Python(Automation), Java (Spring Boot), TypeScript (Angular).\n- **AIOps**: Vector databases, Ollama, LangChain, Infrastructure GPU, RAG, MCP, Agents.",
+          "similarity": 0.8541,
+          "distance": 0.2918,
+          "metadata": {
+            "section": "Compétences Techniques",
+            "source": "resume",
+            "stack": "azure",
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ingénieure / Ingénieur Cloud DevOps - Alternance",
+      "company": "Capgemini",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/capgemini/jobs/ingenieure-ingenieur-cloud-devops-alternance_toulouse-occitanie-france",
+      "source": "wttj",
+      "date_posted": "2026-03-02T12:20:27Z",
+      "description": "<span>Description du profil :<br><br></span> Votre profil   <ul> <li>Actuellement en M1/M2 en informatique, la culture DevOps vous intrigue• Première expérience en qualité d'Ingénieur DevOps</li> <li>Vous avez des connaissances dans les environnements Linux, Cloud (AWS, Azure, GCP),</li> <li> Vous avec une première maitrise des solutions Kubernetes, Openshift, Docker,</li> <li>Qualités synthétiques et de communication</li> <li>Maîtrise de l'anglais (niveau B2)</li> </ul> Quelques raisons de nous | Contract: apprenticeship",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8628,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.8628,
+          "distance": 0.2743,
+          "metadata": {
+            "section": "Résumé Professionnel",
+            "lang": "fr",
+            "stack": "ai",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8548,
+          "distance": 0.2903,
+          "metadata": {
+            "source": "resume",
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Competences Techniques\n\n- **Plateformes Cloud**: Azure, AWS, Cloud hybride, VMware ESXi, Proxmox.\n- **Conteneurisation et Orchestration**: Kubernetes (AKS, EKS, On-prem), Helm, ArgoCD, Docker, Docker Swarm.\n- **IaC et Automatisation**: Terraform (modules, workspaces, verrouillage du state), Ansible, Cloud-init, Vagrant, Packer.\n- **CI/CD**: GitLab CI, GitHub Actions, Jenkins, Azure DevOps.\n- **Securite et Reseau**: HashiCorp Vault, Azure Policy, IAM, NSG/Security Groups, SSL/TLS, Nginx, VPN.\n- **Scripting et Developpement**: Python, Bash, PowerShell, Node.js, Java (Spring Boot), TypeScript.\n- **AI et MLOps**: Ollama, LangChain, RAG, agents IA, bases vectorielles, toolchain NVIDIA GPU, Open WebUI.",
+          "similarity": 0.8528,
+          "distance": 0.2944,
+          "metadata": {
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "general",
+            "section": "Competences Techniques"
+          }
+        }
+      ]
+    },
+    {
+      "title": "DevOps Cloud Azure",
+      "company": "Shape It",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/shape-it/jobs/devops-cloud-azure_lille",
+      "source": "wttj",
+      "date_posted": "2026-02-27T16:19:30Z",
+      "description": "Tu es notre personne idéale si tu maîtrises certaines des compétences ci-dessous :\n\n* Tu es diplômé.e d’un Bac+3/Bac+5 en Informatique\n    \n* Tu as au moins 4 ans d’expériences significatives en intégration / industrialisation / automatisation en tant que DevOps\n    \n* Tu maîtrises le scripting Bash, PowerShell\n    \n* En tant que DevOps, tu maitrise l'environnement Cloud Azure, ainsi que de Kubernetes et Terraform\n    \n* Tu as déjà développé en Java Spring\n    \n* Tu possèdes une excellente maitr | Contract: full_time | Salary: 38000-50000 EUR",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8626,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8626,
+          "distance": 0.2747,
+          "metadata": {
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "lang": "fr",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8575,
+          "distance": 0.285,
+          "metadata": {
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "lang": "fr",
+            "stack": "ai",
+            "section": "Expériences Professionnelles"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.852,
+          "distance": 0.2959,
+          "metadata": {
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "lang": "fr",
+            "source": "resume",
+            "stack": "azure"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Cloud Architect F/H",
+      "company": "Atos",
+      "location": "punctual",
+      "url": "https://www.welcometothejungle.com/fr/companies/atos/jobs/cloud-architect-f-h_bezons_ATOS_MQzjM0z",
+      "source": "wttj",
+      "date_posted": "2026-03-02T16:20:45Z",
+      "description": "<span>Description du profil :<br><br></span><p>De formation supérieure (Bac+4/5) en informatique ou ingénierie, vous justifiez d’au moins cinq ans d’expérience en architecture et gestion d’infrastructures IT, et maîtrisez les environnements Cloud publics, privés et hybrides. Des certifications (AWS, Azure, GCP) seraient un atout.</p><p>Vous combinez expertise technique et qualités humaines : curiosité, créativité et pragmatisme pour concevoir des solutions innovantes et réalisables, leadership e | Contract: full_time | Salary: 70000-100000 EUR",
+      "keyword": "Cloud Architect",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8617,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8617,
+          "distance": 0.2766,
+          "metadata": {
+            "source": "resume",
+            "stack": "general",
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.8428,
+          "distance": 0.3143,
+          "metadata": {
+            "source": "resume",
+            "section": "Résumé Professionnel",
+            "lang": "fr",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "ai"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.841,
+          "distance": 0.318,
+          "metadata": {
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "azure",
+            "section": "Profil Professionnel"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architect Cloud",
+      "company": "Capgemini",
+      "location": "no",
+      "url": "https://www.welcometothejungle.com/fr/companies/capgemini/jobs/architect-cloud_issy-les-moulineaux_CAPGE_GKaMP6y",
+      "source": "wttj",
+      "date_posted": "2026-03-04T14:20:40Z",
+      "description": "<span>Description du profil :<br><br></span><p>Être Architecte Cloud Azure, c’est être à la pointe des technologies et services disponibles sur la plateforme Azure pour construire les nouvelles architectures SI, ou identifier et concevoir les trajectoires de migration / modernisation des applications en utilisant le plus efficacement possible les solutions Cloud IaaS, CaaS, PaaS ou SaaS chez Microsoft, que ce soit sous l’angle performance, résilience, économie ou écologie.</p><p></p><p>C’est aus | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.861,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.861,
+          "distance": 0.278,
+          "metadata": {
+            "section": "Profil Professionnel",
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "azure"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8544,
+          "distance": 0.2912,
+          "metadata": {
+            "source": "resume",
+            "lang": "fr",
+            "stack": "general",
+            "section": "Profil Professionnel",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8427,
+          "distance": 0.3147,
+          "metadata": {
+            "lang": "fr",
+            "source": "resume",
+            "stack": "aws",
+            "section": "Profil Professionnel",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Cloud - Amazon Web Services (AWS)",
+      "company": "Capgemini",
+      "location": "",
+      "url": "https://www.welcometothejungle.com/fr/companies/capgemini/jobs/architecte-cloud-amazon-web-services-aws_toulouse",
+      "source": "wttj",
+      "date_posted": "2026-02-27T10:20:58Z",
+      "description": "<span>Description du profil :<br><br></span><p><strong>Votre profil :</strong></p>   <p>Vous avez une solide expérience en <strong>architecture cloud</strong>, idéalement acquise dans un environnement industriel, critique ou fortement normé.</p> <p>Vous maîtrisez les services <strong>AWS</strong> (EKS, Lambda, EC2, RDS, DynamoDB, S3, API Gateway, VPC, IAM) ainsi que les outils d’Infrastructure as Code tels que <strong>Terraform</strong> ou <strong>CloudFormation</strong>. Vous disposez également | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8603,
+      "matched_stack": "aws",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8603,
+          "distance": 0.2793,
+          "metadata": {
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "source": "resume",
+            "lang": "fr",
+            "stack": "aws"
+          }
+        },
+        {
+          "text": "## Expérience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Présent | We Are Beebay (Client : Marjane Holding) | Casablanca, Maroc\n\n- **Infrastructure AWS as Code :** Architecture d'environnements Terraform modulaires pour charges critiques, déployant VPC, Bastions EC2 et RDS PostgreSQL avec réplication S3 inter-région automatisée.\n- **Automatisation Serverless :** Développement de fonctions Lambda Node.js pour opérations automatisées (seed RDS, backups, réplication S3), orchestrées via EventBridge et triggers S3 pour garantir la cohérence événementielle.\n- **Sécurité et Gouvernance IAM :** Application du moindre privilège via des rôles IAM dédiés (EC2/Lambda) et des Security Groups restreints. Implémentation de reverse proxies Nginx avec SSL/TLS Let's Encrypt auto-renouvelable.\n- **Reporting de Sécurité Automatisé :** Développement d'un moteur Python personnalisé pour agréger les rapports de sécurité (SonarQube, Gitleaks, Dependency-Check) en synthèses exécutives, intégrant l'analyse LLM pour des insights de remédiation.\n- **Gouvernance Qualité :** Intégration d'outils d'analyse statique dans les pipelines Gitlab CI, bloquant les builds non conformes et imposant des standards de qualité de code à travers l'organisation.\n\n### Cloud DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD Sécurisés :** Conception de pipelines de bout en bout avec Jenkins pour Spring Boot et Next.js, intégrant des Quality Gates SonarQube pour bloquer les builds non conformes.\n- **Automatisation Infrastructure :** Standardisation des environnements de test via Vagrant et Ansible, garantissant l'idempotence et réduisant la dérive de configuration (configuration drift).\n- **Gestion du Trafic :** Configuration de Reverse Proxies NGINX avec certificats SSL/TLS Let's Encrypt auto-renouvelés pour sécuriser les endpoints.\n- **Déploiement Kubernetes :** Gestion des déploiements via ArgoCD, utilisant des charts Helm pour le contrôle de version et les capacités de rollback.",
+          "similarity": 0.847,
+          "distance": 0.3059,
+          "metadata": {
+            "lang": "fr",
+            "stack": "aws",
+            "section": "Expérience",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Projets Spécialisés\n\n### **Infrastructure LLM sur AWS** | *Terraform, AWS G-Series, Ollama*\n2024 -- 2025\n\n- **Architecture Workloads GPU :** Conception d'environnements GPU haute performance utilisant des instances AWS g4dn/g5, automatisés via Terraform avec logique \"Spot Instance\" dynamique pour optimiser les coûts de calcul.\n- **Déploiement Sécurisé :** Implémentation de réseaux privés avec Security Groups stricts, ségrégation IAM User/Role et terminaison HTTPS sécurisée via Nginx.\n- **Gouvernance :** Gestion des Service Quotas AWS pour les familles de GPU et application de procédures de destruction automatisées pour contrôler les dépenses cloud.\n\n### **Plateforme Kubernetes Agent LLM** | *K8s, LangChain, Plugin NVIDIA*\n2025\n\n- Orchestration d'une plateforme locale d'agents IA sur Kubernetes avec support du plugin device NVIDIA pour l'inférence GPU.\n- Implémentation d'un workflow GitHub Actions automatisé pour le build, le test et le déploiement du backend FastAPI et du frontend JavaScript.",
+          "similarity": 0.8395,
+          "distance": 0.321,
+          "metadata": {
+            "stack": "aws",
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Projets Spécialisés"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ingénieur DevOps CI/CD (F/H)",
+      "company": "Atos",
+      "location": "",
+      "url": "https://www.welcometothejungle.com/fr/companies/atos/jobs/ingenieur-devops-ci-cd-f-h_valbonne",
+      "source": "wttj",
+      "date_posted": "2026-03-04T12:21:00Z",
+      "description": "<span>Description du profil :<br><br></span><p><strong>Votre profil :</strong></p><p><br>•    Expérience significative dans un rôle d'Ingénieur DevOps, Ingénieur SRE (Site Reliability Engineering)<br>•    Maîtrise de la création de pipelines.<br>•    Expérience dans l'implémentation de la philosophie GitOps, gestion des environnements via ArgoCD, et <br>création/maintenance de charts Helm.<br>•    Connaissance approfondie des services Cloud pertinents (Azure, Oracle,..) et leurs bonnes pratiques | Contract: full_time",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8597,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on Azure and AWS. Experienced in Infrastructure as Code (Terraform), Kubernetes orchestration, and \"Shift-Left\" security integration. Proven track record of implementing reliable CI/CD pipelines and automating cloud environments for enterprise clients.",
+          "similarity": 0.8597,
+          "distance": 0.2806,
+          "metadata": {
+            "source": "resume",
+            "stack": "azure",
+            "source_file": "az_eng_zakaria_el_moumnoaui/main.md",
+            "section": "Professional Summary",
+            "lang": "en"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8503,
+          "distance": 0.2995,
+          "metadata": {
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "azure",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8481,
+          "distance": 0.3039,
+          "metadata": {
+            "stack": "ai",
+            "section": "Expériences Professionnelles",
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md"
+          }
+        }
+      ]
+    },
+    {
+      "title": "DevOps SRE Cloud AWS H/F - Paris",
+      "company": "Webnet",
+      "location": "punctual",
+      "url": "https://www.welcometothejungle.com/fr/companies/webnet/jobs/devops-sre-cloud-aws-h-f-paris_paris",
+      "source": "wttj",
+      "date_posted": "2026-02-23T11:00:17Z",
+      "description": "<p>De formation Ingénieur en informatique, vous avez au moins 10 ans d’expérience DevOps en environnement Cloud et notamment dans la construction et l’exploitation de plateformes Cloud.</p><p>Expertise en CI/CD (TeamCity, Bitbucket Pipelines); maîtrise de Terraform et Ansible.</p><p>Vous avez également une expérience en mise en place d’outils d’observabilité (Datadog, Prometheus, OpenTelemetry…)</p><p>Solide compréhension des environnements AWS.</p><p>Bon niveau d’anglais principalement à l'écri | Contract: full_time | Salary: 73000-80000 EUR",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8596,
+      "matched_stack": "general",
+      "relevant_chunks": [
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8596,
+          "distance": 0.2807,
+          "metadata": {
+            "stack": "ai",
+            "lang": "fr",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "section": "Expériences Professionnelles"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8586,
+          "distance": 0.2828,
+          "metadata": {
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "general",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8429,
+          "distance": 0.3143,
+          "metadata": {
+            "section": "Profil Professionnel",
+            "lang": "fr",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "azure"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ingénieur de Production DevOps H/F",
+      "company": "NEXTON",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/nexton-consulting/jobs/ingenieur-de-production-devops-h-f_paris_NEXTO_LA9Y4J3",
+      "source": "wttj",
+      "date_posted": "2026-03-02T23:00:52Z",
+      "description": "\n\n<p>De formation supérieure (<strong>Bac+4/5</strong>), tu justifies d'une expérience de <strong>plus de 5 ans</strong> sur un poste similaire alliant ingénierie de production et culture DevOps.</p><p><strong>Tes compétences techniques :</strong></p><ul><li><p><strong>Cloud &amp; Containers (Indispensable) :</strong> Maîtrise de l'environnement <strong>MS Azure</strong>, Docker, Azure App Service et Azure Container Apps.</p></li><li><p><strong>Systèmes :</strong> Expertise mixte <strong>Linux e | Contract: full_time",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8593,
+      "matched_stack": "general",
+      "relevant_chunks": [
+        {
+          "text": "## Expérience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Présent | We Are Beebay (Client : Marjane Holding) | Casablanca, Maroc\n\n- **Gouvernance IaC Stratégique :** Architecture d'environnements Terraform modulaires avec intégration Azure Policy (tags, régions, restrictions SKU) et verrouillage d'état via Azure Blob Storage pour assurer la cohérence entre les envs Dev/Prod.\n- **Sécurité :** Intégration de HashiCorp Vault pour l'injection dynamique de secrets (AppRole), éliminant les identifiants codés en dur. Mise en place de Network Security Groups (NSG) stricts et isolation des sous-réseaux.\n- **Optimisation CI/CD :** Conception d'agents auto-hébergés basés sur Docker pour Azure DevOps et GitLab CI afin de contourner les limites de concurrence, permettant une exécution efficace du Docker-in-Docker pour les workloads intenses.\n- **Architecture K8s Sécurisée et Intégration Vault :** Architecture d'une plateforme Kubernetes durcie et auto-gérée sur Azure avec segmentation réseau stricte (5 sous-réseaux dédiés pour Bastions/Control-Plane/Workers/DBs), configurée via Ansible et Cloud-init pour un bootstrap idempotent et intégrée à HashiCorp Vault (AppRole) pour la livraison dynamique de secrets.\n- **Reprise après Sinistre :** Architecture d'une stratégie de Point-in-Time Recovery (PITR) pour PostgreSQL utilisant l'archivage WAL et des snapshots d'infrastructure, validée par des simulations de pannes destructives.\n- **Gouvernance Qualité Automatisée :** Architecture d'une couche d'inspection continue intégrant des outils d'analyse statique dans le pipeline GitLab CI. Implémentation d'un moteur d'ingestion personnalisé pour traiter les artefacts de build, transformant des métriques de qualité disparates en insights structurés et exploitables pour piloter un refactoring basé sur des preuves.\n\n### DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD Sécurisés :** Conception de pipelines de bout en bout avec Jenkins pour Spring Boot et Next.js, intégrant des Quality Gates SonarQube pour bloquer les builds non conformes.\n- **Automatisation Infrastructure :** Standardisation des environnements de test via Vagrant et Ansible, garantissant l'idempotence et réduisant la dérive de configuration (configuration drift).\n- **Gestion du Trafic :** Configuration de Reverse Proxies NGINX avec certificats SSL/TLS Let's Encrypt auto-renouvelés pour sécuriser les endpoints.\n- **Déploiement Kubernetes :** Gestion des déploiements via ArgoCD, utilisant des charts Helm pour le contrôle de version et les capacités de rollback.",
+          "similarity": 0.8593,
+          "distance": 0.2815,
+          "metadata": {
+            "source": "resume",
+            "section": "Expérience",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "azure",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8447,
+          "distance": 0.3106,
+          "metadata": {
+            "stack": "general",
+            "section": "Profil Professionnel",
+            "lang": "fr",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Competences Techniques\n\n- **Plateformes Cloud**: Azure, AWS, Cloud hybride, VMware ESXi, Proxmox.\n- **Conteneurisation et Orchestration**: Kubernetes (AKS, EKS, On-prem), Helm, ArgoCD, Docker, Docker Swarm.\n- **IaC et Automatisation**: Terraform (modules, workspaces, verrouillage du state), Ansible, Cloud-init, Vagrant, Packer.\n- **CI/CD**: GitLab CI, GitHub Actions, Jenkins, Azure DevOps.\n- **Securite et Reseau**: HashiCorp Vault, Azure Policy, IAM, NSG/Security Groups, SSL/TLS, Nginx, VPN.\n- **Scripting et Developpement**: Python, Bash, PowerShell, Node.js, Java (Spring Boot), TypeScript.\n- **AI et MLOps**: Ollama, LangChain, RAG, agents IA, bases vectorielles, toolchain NVIDIA GPU, Open WebUI.",
+          "similarity": 0.8368,
+          "distance": 0.3264,
+          "metadata": {
+            "source": "resume",
+            "stack": "general",
+            "section": "Competences Techniques",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Cloud (H/F)",
+      "company": "Daveo",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/daveo/jobs/architecte-cloud-h-f_paris",
+      "source": "wttj",
+      "date_posted": "2026-01-19T17:35:09Z",
+      "description": "* 5+ ans d’expérience, avec une forte exposition à AWS et une bonne connaissance de GCP\n    \n* Maîtrise des environnements multi-comptes: AWS Organizations, IAM, SCP, sécurité, gouvernance\n    \n* Solides bases d’architecture cloud et de choix de services (AWS en priorité)\n    \n* Développement Python orienté objet: applications/APIs, tests unitaires; maîtrise des SDK cloud\n    \n* Observabilité: bonnes pratiques et mise en œuvre, idéalement DataDog\n    \n* Soft skills: communication, autonomie, sen | Contract: full_time | Salary: 75000-90000 EUR",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8589,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8589,
+          "distance": 0.2822,
+          "metadata": {
+            "stack": "general",
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8498,
+          "distance": 0.3003,
+          "metadata": {
+            "section": "Expériences Professionnelles",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "ai",
+            "lang": "fr",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8491,
+          "distance": 0.3018,
+          "metadata": {
+            "source": "resume",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "stack": "aws"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Cloud Infrastructure & Software Engineer",
+      "company": "SpotLight Earth",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/spotlight-earth/jobs/cloud-infrastructure-software-engineer_massy",
+      "source": "wttj",
+      "date_posted": "2026-03-05T13:26:33Z",
+      "description": "• 3 à 5 ans d’expérience\n\n**Expérience pratique attendue :**\n\n• Capacité à lire de la documentation technique en anglais\n\n• Cloud (AWS ou équivalent).\n\n• CICD : GitHub, GitHub Actions, Docker, Terraform (ou équivalents).\n\n• Python\n\n• Script (shell, bash ou cmd)\n\n• Compétences théoriques : systèmes d’exploitation, réseaux, DNS, reverse proxy, load balancing\n\n• Connaissance des bonnes pratiques de cybersecurité\n\n• Systèmes distribués: authentification, caching strategies, deployment strategies, ob | Contract: full_time | Salary: 41000-45000 EUR",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8588,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Professional Experience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Present | We Are Beebay (Client: Marjane Holding) | Casablanca, Morocco\n\n- **AI-Driven Automation:** Developed a Python automation module that leverages **LLMs (via API)** to analyze security reports (SonarQube, Gitleaks) and generate intelligent, context-aware executive summaries.\n- **Secure Cloud Architecture:** Designed modular Terraform environments for Azure/AWS, integrating HashiCorp Vault for dynamic secrets and ensuring strict network isolation.\n- **Advanced CI/CD:** Built robust GitLab CI pipelines with automated quality gates and containerized build agents.\n\n### Cloud DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Morocco\n\n- **CI/CD Pipelines:** Industrialized deployment pipelines for Spring Boot and Next.js applications using Jenkins and ArgoCD.\n- **Kubernetes Operations:** Managed Kubernetes clusters and developed Helm charts for microservices deployment.",
+          "similarity": 0.8588,
+          "distance": 0.2825,
+          "metadata": {
+            "lang": "en",
+            "source": "resume",
+            "source_file": "ai_eng_zakaria_el_moumnaoui/main.md",
+            "section": "Professional Experience",
+            "stack": "ai"
+          }
+        },
+        {
+          "text": "## Professional Summary\n\nDevOps and Cloud Engineer specializing in the design and operation of secure, resilient architectures on AWS and Azure.\nExperienced in Infrastructure as Code (Terraform), Serverless computing (Lambda), and Kubernetes orchestration.\nProven track record of implementing reliable CI/CD pipelines, automating compliance, and optimizing cloud costs for enterprise clients.",
+          "similarity": 0.8561,
+          "distance": 0.2877,
+          "metadata": {
+            "section": "Professional Summary",
+            "source_file": "aws_eng_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "aws",
+            "lang": "en"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8537,
+          "distance": 0.2927,
+          "metadata": {
+            "stack": "ai",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "section": "Expériences Professionnelles",
+            "lang": "fr"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Consultant(e) Cloud GCP",
+      "company": "Les Filles & Les Garçons de la Tech",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/fgtech/jobs/consultant-cloud-gcp_paris",
+      "source": "wttj",
+      "date_posted": "2026-03-04T13:29:34Z",
+      "description": "**Compétences techniques requises :**\n\n* **Expertise avancée de GCP :** conception d’architectures Cloud et hybrides intégrant Compute, réseau, IAM et gestion des coûts\n    \n* **Maîtrise de Kubernetes / GKE en production :** déploiement, exploitation et sécurisation de clusters dans des environnements critiques\n    \n* **Compétences solides en sécurité Cloud, réseau et système :** IAM, segmentation réseau, isolation des environnements, durcissement des workloads\n    \n* **Expérience de l’industria | Contract: full_time | Salary: 50000-70000 EUR",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8585,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8585,
+          "distance": 0.283,
+          "metadata": {
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr",
+            "source": "resume",
+            "section": "Profil Professionnel"
+          }
+        },
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.8492,
+          "distance": 0.3017,
+          "metadata": {
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr",
+            "section": "Résumé Professionnel",
+            "stack": "ai",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8204,
+          "distance": 0.3591,
+          "metadata": {
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "source": "resume",
+            "stack": "azure",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Cloud - Google Cloud Platform (GCP)",
+      "company": "Capgemini",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/capgemini/jobs/architecte-cloud-google-cloud-platform-gcp_toulouse_CAPGE_Z8AkwPq",
+      "source": "wttj",
+      "date_posted": "2026-02-27T09:20:45Z",
+      "description": "<span>Description du profil :<br><br></span>    <strong>Votre profil :</strong>    <p>Vous avez une solide expérience en <strong>architecture cloud, </strong>idéalement acquise dans un environnement industriel ou critique. </p> <p>Vous maîtrisez les services <strong>GCP (GKE, Cloud Run, Pub/Sub, BigQuery, IAM, VPC)</strong> et les outils d’Infrastructure as Code comme <strong>Terraform</strong> ou <strong>Deployment </strong>Manager. Vous possédez des compétences en <strong>sécurité cloud, résea | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8563,
+      "matched_stack": "aws",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8563,
+          "distance": 0.2873,
+          "metadata": {
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "source": "resume",
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.8369,
+          "distance": 0.3261,
+          "metadata": {
+            "lang": "fr",
+            "section": "Résumé Professionnel",
+            "source": "resume",
+            "stack": "ai",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Projets Spécialisés\n\n### **Infrastructure LLM sur AWS** | *Terraform, AWS G-Series, Ollama*\n2024 -- 2025\n\n- **Architecture Workloads GPU :** Conception d'environnements GPU haute performance utilisant des instances AWS g4dn/g5, automatisés via Terraform avec logique \"Spot Instance\" dynamique pour optimiser les coûts de calcul.\n- **Déploiement Sécurisé :** Implémentation de réseaux privés avec Security Groups stricts, ségrégation IAM User/Role et terminaison HTTPS sécurisée via Nginx.\n- **Gouvernance :** Gestion des Service Quotas AWS pour les familles de GPU et application de procédures de destruction automatisées pour contrôler les dépenses cloud.\n\n### **Plateforme Kubernetes Agent LLM** | *K8s, LangChain, Plugin NVIDIA*\n2025\n\n- Orchestration d'une plateforme locale d'agents IA sur Kubernetes avec support du plugin device NVIDIA pour l'inférence GPU.\n- Implémentation d'un workflow GitHub Actions automatisé pour le build, le test et le déploiement du backend FastAPI et du frontend JavaScript.",
+          "similarity": 0.8314,
+          "distance": 0.3373,
+          "metadata": {
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "aws",
+            "lang": "fr",
+            "section": "Projets Spécialisés",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Cloud AWS / GCP H/F",
+      "company": "Daveo",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/daveo/jobs/architecte-cloud-h-f_lille",
+      "source": "wttj",
+      "date_posted": "2026-02-09T16:31:21Z",
+      "description": "**C’est donc le moment de rejoindre l’aventure si :** \n\n1.  5+ ans d’expérience, avec une forte exposition à AWS et une bonne connaissance de GCP \n    \n\n2.  Maîtrise des environnements multi-comptes: AWS Organizations, IAM, SCP, sécurité, gouvernance \n    \n\n3.  Solides bases d’architecture cloud et de choix de services (AWS en priorité) \n    \n\n4.  Développement Python orienté objet: applications/APIs, tests unitaires; maîtrise des SDK cloud  \n    \n\n5.  Observabilité: bonnes pratiques et mise en  | Contract: full_time | Salary: 50000-55000 EUR",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8554,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8554,
+          "distance": 0.2892,
+          "metadata": {
+            "source": "resume",
+            "lang": "fr",
+            "stack": "general",
+            "section": "Profil Professionnel",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Expériences Professionnelles\n\n### Ingénieur DevOps and Cloud Senior\nJan 2024 -- Présent | We Are Beebay (Client: Marjane Holding) | Casablanca, Maroc\n\n- **Automatisation IA :** Développement d'un module Python intégrant un **modèle LLM (via API)** pour analyser automatiquement les rapports de sécurité (SonarQube, Gitleaks) et générer des résumés exécutifs enrichis.\n- **Architecture Cloud Sécurisée :** Conception d'environnements AWS/Azure modulaires avec Terraform, intégrant HashiCorp Vault pour la gestion des secrets et Azure Policy pour la gouvernance.\n- **CI/CD and Qualité :** Mise en place de pipelines GitLab CI avancés avec analyseurs statiques et reporting automatisé.\n\n### Ingénieur DevOps Cloud\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD :** Industrialisation des déploiements pour applications Spring Boot et Next.js via Jenkins et ArgoCD.\n- **Kubernetes :** Gestion de clusters K8s et écriture de charts Helm pour le déploiement de microservices.",
+          "similarity": 0.8508,
+          "distance": 0.2984,
+          "metadata": {
+            "section": "Expériences Professionnelles",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "lang": "fr",
+            "stack": "ai",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8372,
+          "distance": 0.3256,
+          "metadata": {
+            "lang": "fr",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "aws",
+            "source": "resume",
+            "section": "Profil Professionnel"
+          }
+        }
+      ]
+    },
+    {
+      "title": "MLOps Engineer F/H",
+      "company": "KPMG France",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/kpmg-france/jobs/mlops-engineer-f-h_courbevoie_KF_dgG8Aqx",
+      "source": "wttj",
+      "date_posted": "2026-02-10T16:10:19Z",
+      "description": "<ul>\r\n<li>Diplôme en informatique, data science ou IA.</li>\r\n<li><strong>3 à 5 ans d'expérience</strong> en MLOps, DataOps ou ingénierie logicielle.</li>\r\n<li>Maîtrise de <strong>Python</strong>, Bash et des outils MLOps (Kubernetes, Docker, MLflow, Kubeflow, Airflow).</li>\r\n<li>Connaissance des services cloud (<strong>Azure ML</strong>, <strong>Azure DevOp</strong>s).</li>\r\n<li>Compréhension des concepts ML et du cycle de vie des modèles.</li>\r\n<li>Anglais professionnel pour collaborer avec nos | Contract: full_time",
+      "keyword": "MLOps Engineer",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.855,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.855,
+          "distance": 0.2899,
+          "metadata": {
+            "section": "Résumé Professionnel",
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "lang": "fr",
+            "stack": "ai"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8215,
+          "distance": 0.3571,
+          "metadata": {
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "stack": "general"
+          }
+        },
+        {
+          "text": "## Professional Experience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Present | We Are Beebay (Client: Marjane Holding) | Casablanca, Morocco\n\n- **AI-Driven Automation:** Developed a Python automation module that leverages **LLMs (via API)** to analyze security reports (SonarQube, Gitleaks) and generate intelligent, context-aware executive summaries.\n- **Secure Cloud Architecture:** Designed modular Terraform environments for Azure/AWS, integrating HashiCorp Vault for dynamic secrets and ensuring strict network isolation.\n- **Advanced CI/CD:** Built robust GitLab CI pipelines with automated quality gates and containerized build agents.\n\n### Cloud DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Morocco\n\n- **CI/CD Pipelines:** Industrialized deployment pipelines for Spring Boot and Next.js applications using Jenkins and ArgoCD.\n- **Kubernetes Operations:** Managed Kubernetes clusters and developed Helm charts for microservices deployment.",
+          "similarity": 0.8215,
+          "distance": 0.3571,
+          "metadata": {
+            "stack": "ai",
+            "source_file": "ai_eng_zakaria_el_moumnaoui/main.md",
+            "lang": "en",
+            "section": "Professional Experience",
+            "source": "resume"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Responsable gestion services Cloud privés - Île-de-France",
+      "company": "Sopra Steria",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/sopra-steria/jobs/responsable-gestion-services-cloud-prives-ile-de-france_courbevoie",
+      "source": "wttj",
+      "date_posted": "2026-02-28T22:12:53Z",
+      "description": "<p><strong>Votre profil : </strong></p><p>Issu(e) d’une formation Bac+5 (Diplôme Ingénieur / Master 2 en Informatique, Systèmes d’Information ou équivalent), vous justifiez d’une expérience significative dans la gestion de projets Cloud et le pilotage d’environnements techniques complexes.</p><p>Vous disposez d’une expertise approfondie des architectures et solutions Cloud, incluant AWS, GCP et OVH. Vous conduisez et gérez des projets selon une approche agile, en garantissant le respect des obje | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8541,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8541,
+          "distance": 0.2917,
+          "metadata": {
+            "lang": "fr",
+            "stack": "general",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "source": "resume"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8484,
+          "distance": 0.3032,
+          "metadata": {
+            "section": "Profil Professionnel",
+            "source": "resume",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "aws",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Expérience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Présent | We Are Beebay (Client : Marjane Holding) | Casablanca, Maroc\n\n- **Gouvernance IaC Stratégique :** Architecture d'environnements Terraform modulaires avec intégration Azure Policy (tags, régions, restrictions SKU) et verrouillage d'état via Azure Blob Storage pour assurer la cohérence entre les envs Dev/Prod.\n- **Sécurité :** Intégration de HashiCorp Vault pour l'injection dynamique de secrets (AppRole), éliminant les identifiants codés en dur. Mise en place de Network Security Groups (NSG) stricts et isolation des sous-réseaux.\n- **Optimisation CI/CD :** Conception d'agents auto-hébergés basés sur Docker pour Azure DevOps et GitLab CI afin de contourner les limites de concurrence, permettant une exécution efficace du Docker-in-Docker pour les workloads intenses.\n- **Architecture K8s Sécurisée et Intégration Vault :** Architecture d'une plateforme Kubernetes durcie et auto-gérée sur Azure avec segmentation réseau stricte (5 sous-réseaux dédiés pour Bastions/Control-Plane/Workers/DBs), configurée via Ansible et Cloud-init pour un bootstrap idempotent et intégrée à HashiCorp Vault (AppRole) pour la livraison dynamique de secrets.\n- **Reprise après Sinistre :** Architecture d'une stratégie de Point-in-Time Recovery (PITR) pour PostgreSQL utilisant l'archivage WAL et des snapshots d'infrastructure, validée par des simulations de pannes destructives.\n- **Gouvernance Qualité Automatisée :** Architecture d'une couche d'inspection continue intégrant des outils d'analyse statique dans le pipeline GitLab CI. Implémentation d'un moteur d'ingestion personnalisé pour traiter les artefacts de build, transformant des métriques de qualité disparates en insights structurés et exploitables pour piloter un refactoring basé sur des preuves.\n\n### DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Maroc\n\n- **Pipelines CI/CD Sécurisés :** Conception de pipelines de bout en bout avec Jenkins pour Spring Boot et Next.js, intégrant des Quality Gates SonarQube pour bloquer les builds non conformes.\n- **Automatisation Infrastructure :** Standardisation des environnements de test via Vagrant et Ansible, garantissant l'idempotence et réduisant la dérive de configuration (configuration drift).\n- **Gestion du Trafic :** Configuration de Reverse Proxies NGINX avec certificats SSL/TLS Let's Encrypt auto-renouvelés pour sécuriser les endpoints.\n- **Déploiement Kubernetes :** Gestion des déploiements via ArgoCD, utilisant des charts Helm pour le contrôle de version et les capacités de rollback.",
+          "similarity": 0.8432,
+          "distance": 0.3136,
+          "metadata": {
+            "lang": "fr",
+            "source": "resume",
+            "section": "Expérience",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "azure"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Devops IBM Cloud H/F",
+      "company": "NEXTON",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/nexton-consulting/jobs/devops-ibm-cloud-h-f_paris",
+      "source": "wttj",
+      "date_posted": "2026-03-02T23:01:01Z",
+      "description": "\n\n<p>Tu es un profil <strong>Expérimenté ou Senior</strong> avec un minimum de <strong>5&#xa0;ans d'expérience</strong> en DevOps.</p><ul><li><p><strong>Tu maîtrises l'écosystème IBM Cloud :</strong> tu as une expérience significative sur les services PaaS/IaaS d'IBM, la gestion des clusters <strong>OpenShift (ROKS)</strong> ou <strong>Kubernetes (IKS)</strong>, et l'Infrastructure as Code (Terraform).</p></li><li><p><strong>Tu es expert en CI/CD :</strong> tu maîtrises <strong>Jenkins</strong>, | Contract: full_time",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8539,
+      "matched_stack": "aws",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8539,
+          "distance": 0.2921,
+          "metadata": {
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "stack": "aws"
+          }
+        },
+        {
+          "text": "## Professional Experience\n\n### Senior Cloud DevOps Engineer\nJan 2024 -- Present | We Are Beebay (Client: Marjane Holding) | Casablanca, Morocco\n\n- **AI-Driven Automation:** Developed a Python automation module that leverages **LLMs (via API)** to analyze security reports (SonarQube, Gitleaks) and generate intelligent, context-aware executive summaries.\n- **Secure Cloud Architecture:** Designed modular Terraform environments for Azure/AWS, integrating HashiCorp Vault for dynamic secrets and ensuring strict network isolation.\n- **Advanced CI/CD:** Built robust GitLab CI pipelines with automated quality gates and containerized build agents.\n\n### Cloud DevOps Engineer\n2022 -- 2024 | MTS System | Marrakech, Morocco\n\n- **CI/CD Pipelines:** Industrialized deployment pipelines for Spring Boot and Next.js applications using Jenkins and ArgoCD.\n- **Kubernetes Operations:** Managed Kubernetes clusters and developed Helm charts for microservices deployment.",
+          "similarity": 0.8525,
+          "distance": 0.2951,
+          "metadata": {
+            "source": "resume",
+            "section": "Professional Experience",
+            "stack": "ai",
+            "lang": "en",
+            "source_file": "ai_eng_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8507,
+          "distance": 0.2986,
+          "metadata": {
+            "source": "resume",
+            "lang": "fr",
+            "section": "Profil Professionnel",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "general"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ingénieur(e) DevOps Kubernetes expérimenté(e) - Spatial - Toulouse",
+      "company": "CS",
+      "location": "",
+      "url": "https://www.welcometothejungle.com/fr/companies/cs-group/jobs/ingenieur-devops-kubernetes-experimente-spatial-toulouse_toulouse_CS_GDZ3MOX",
+      "source": "wttj",
+      "date_posted": "2026-02-25T22:01:27Z",
+      "description": "<p>De formation<strong> Bac+5 écoles d&#39;ingénieur ou équivalent</strong>, vous avez une expérience minimum de <strong>3 ans dans un environnement DevOps.</strong> La maîtrise de <strong>Docker, </strong><strong>Kubernetes </strong>ainsi que du <strong>scripting en Python </strong>et/ou <strong>Shell</strong> est indispensable à l’exercice de votre fonction. Des compétences sécurité en environnement Cloud (offre de services managés, gestion multi-tenant, cloisonnement des données) sont égaleme | Contract: full_time",
+      "keyword": "devops",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8536,
+      "matched_stack": "azure",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures Azure et AWS sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), orchestration Kubernetes et intégration de la sécurité \"Shift-Left\". Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8536,
+          "distance": 0.2928,
+          "metadata": {
+            "section": "Profil Professionnel",
+            "stack": "azure",
+            "lang": "fr",
+            "source": "resume",
+            "source_file": "az_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8515,
+          "distance": 0.297,
+          "metadata": {
+            "stack": "general",
+            "source": "resume",
+            "section": "Profil Professionnel",
+            "lang": "fr",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8426,
+          "distance": 0.3149,
+          "metadata": {
+            "stack": "aws",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "source": "resume",
+            "section": "Profil Professionnel",
+            "lang": "fr"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Architecte Solution - Cloud – Energy & Utilities – Ile-de-France",
+      "company": "Sopra Steria",
+      "location": "partial",
+      "url": "https://www.welcometothejungle.com/fr/companies/sopra-steria/jobs/architecte-solution-cloud-energy-utilities-ile-de-france_courbevoie_SS_JWWMQJ6",
+      "source": "wttj",
+      "date_posted": "2026-01-27T22:09:29Z",
+      "description": "<p><strong>Votre profil </strong></p><ul><li>Vous êtes doté(e) d’une réelle force de proposition en portant les sujets techniques ardus, et un comportement proactif pour embarquer l’équipe et le client dans le succès des projets.</li><li>Vous êtes sensible à une démarche agile/Devops</li><li>Vous avez obtenu une certification Architecte Cloud (GCP / Microsoft / AWS)</li><li>Vous êtes diplômé(e) d&#39;une école d&#39;Ingénieurs ou équivalent.</li><li>Vous disposez d&#39;au moins 5 ans en tant qu& | Contract: full_time",
+      "keyword": "cloud",
+      "region": "france",
+      "scraped_at": "2026-03-05T23:26:08.893570",
+      "semantic_score": 0.8508,
+      "matched_stack": "ai",
+      "relevant_chunks": [
+        {
+          "text": "## Profil Professionnel\n\nSenior DevOps and Cloud Engineer specialise dans la conception et l'exploitation de plateformes securisees sur Azure et AWS. Solide experience en Terraform, Kubernetes, CI/CD et securite cloud, avec des realisations concretes en infrastructures AI et MLOps (GPU, services LLM, agents). Oriente automatisation, gouvernance et optimisation des couts pour des environnements entreprise.",
+          "similarity": 0.8508,
+          "distance": 0.2984,
+          "metadata": {
+            "source": "resume",
+            "section": "Profil Professionnel",
+            "source_file": "devops_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "general",
+            "lang": "fr"
+          }
+        },
+        {
+          "text": "## Résumé Professionnel\n\nIngénieur **MLOps and Cloud** spécialisé dans la conception d'infrastructures évolutives pour l'Intelligence Artificielle. Expert dans le déploiement de **LLMs** sur environnements **GPU (Azure/AWS)** et l'orchestration de pipelines IA via **Kubernetes**. Passionné par l'industrialisation des modèles (Ollama, LangChain) et l'intégration des pratiques DevOps dans le cycle de vie de l'IA.",
+          "similarity": 0.8323,
+          "distance": 0.3354,
+          "metadata": {
+            "source_file": "ai_fr_zakaria_el_moumnaoui/main.md",
+            "stack": "ai",
+            "source": "resume",
+            "lang": "fr",
+            "section": "Résumé Professionnel"
+          }
+        },
+        {
+          "text": "## Profil Professionnel\n\nIngénieur Cloud et DevOps spécialisé dans la conception et l'exploitation d'architectures AWS et Azure sécurisées et résilientes. Expérimenté en Infrastructure as Code (Terraform), Computing Serverless (Lambda) et orchestration Kubernetes. Expérience confirmée dans la mise en œuvre de pipelines CI/CD fiables et l'automatisation d'environnements Cloud pour des clients grands comptes.",
+          "similarity": 0.8301,
+          "distance": 0.3398,
+          "metadata": {
+            "source": "resume",
+            "stack": "aws",
+            "source_file": "aws_fr_zakaria_el_moumnaoui/main.md",
+            "section": "Profil Professionnel",
+            "lang": "fr"
+          }
+        }
+      ]
+    }
+  ]
+}

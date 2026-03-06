@@ -19,7 +19,7 @@ ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 # ─── Claude Settings ─────────────────────────────────────────────────────────
 
 CLAUDE_MODEL = "claude-sonnet-4-5-20250929"
-CLAUDE_MAX_TOKENS = 8192
+CLAUDE_MAX_TOKENS = 16384
 
 # ─── Job Analysis Defaults ───────────────────────────────────────────────────
 

@@ -6,14 +6,21 @@ from pathlib import Path
 from .models import Job
 
 
-def save_jobs(jobs: list[Job], output_dir: str = None) -> str:
-    """Save jobs to a daily JSON file. Returns the file path."""
-    if output_dir is None:
-        output_dir = str(Path(__file__).parent.parent / "output")
-    os.makedirs(output_dir, exist_ok=True)
+def save_jobs(jobs: list[Job], output_dir: str = None, run_dir: str = None) -> str:
+    """Save jobs to a daily JSON file. Returns the file path.
 
-    now_stamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filepath = os.path.join(output_dir, f"scraped_{now_stamp}.json")
+    If run_dir is provided, saves as {run_dir}/scraped.json (no timestamp in name).
+    Otherwise falls back to legacy timestamped filename in output_dir.
+    """
+    if run_dir is not None:
+        os.makedirs(run_dir, exist_ok=True)
+        filepath = os.path.join(run_dir, "scraped.json")
+    else:
+        if output_dir is None:
+            output_dir = str(Path(__file__).parent.parent / "output")
+        os.makedirs(output_dir, exist_ok=True)
+        now_stamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        filepath = os.path.join(output_dir, f"scraped_{now_stamp}.json")
 
     # Dedup by URL
     seen = set()

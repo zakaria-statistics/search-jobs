@@ -18,6 +18,7 @@ Usage:
 import argparse
 import json
 import logging
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -34,6 +35,34 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 logger = logging.getLogger("pipeline")
+
+RUNS_DIR = OUTPUT_DIR / "runs"
+
+
+def _create_run_dir(timestamp: str = None) -> Path:
+    """Create output/runs/{timestamp}/ and update output/latest symlink.
+
+    Returns the Path to the new run directory.
+    """
+    if timestamp is None:
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    run_dir = RUNS_DIR / timestamp
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    # Atomic symlink update: create temp symlink then rename over old one
+    latest = OUTPUT_DIR / "latest"
+    rel_target = Path("runs") / timestamp
+    tmp_link = OUTPUT_DIR / f".latest_tmp_{os.getpid()}"
+    try:
+        tmp_link.symlink_to(rel_target)
+        tmp_link.rename(latest)
+    except OSError:
+        # Fallback: remove then create
+        latest.unlink(missing_ok=True)
+        latest.symlink_to(rel_target)
+        tmp_link.unlink(missing_ok=True)
+
+    return run_dir
 
 
 # ─── Scrape ──────────────────────────────────────────────────────────────────
@@ -81,7 +110,9 @@ def cmd_scrape(args):
             logger.error(f"  {source} failed: {e}")
 
     if all_jobs:
-        filepath = save_jobs(all_jobs, str(OUTPUT_DIR))
+        run_dir = getattr(args, "_run_dir", None) or _create_run_dir()
+        args._run_dir = run_dir
+        filepath = save_jobs(all_jobs, str(OUTPUT_DIR), run_dir=str(run_dir))
         print_summary(all_jobs)
         print(f"Saved {len(all_jobs)} jobs to {filepath}")
     else:
@@ -292,14 +323,23 @@ def cmd_filter(args):
 
     print(f"{'='*60}")
 
+    # Determine run dir: use the one from the source scraped file, or create a new one
+    run_dir = getattr(args, "_run_dir", None)
+    if run_dir is None:
+        # Check if source file is inside a run dir
+        if RUNS_DIR in filepath.resolve().parents:
+            run_dir = filepath.resolve().parent
+        else:
+            run_dir = _create_run_dir()
+        args._run_dir = run_dir
+
     # Save each bucket as a separate file
-    now_stamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     saved_files = []
     for name, lo, hi, desc in SCORE_BUCKETS:
         bucket_jobs = buckets[name]
         if not bucket_jobs:
             continue
-        outpath = OUTPUT_DIR / f"filtered_{name}_{now_stamp}.json"
+        outpath = Path(run_dir) / f"filtered_{name}.json"
         data = {
             "filtered_at": datetime.now().isoformat(),
             "source_file": str(filepath),
@@ -330,20 +370,49 @@ def cmd_filter(args):
 # ─── Rank ────────────────────────────────────────────────────────────────────
 
 def _find_latest_file(prefix: str) -> Path | None:
-    """Find the most recent file matching prefix in output dir."""
+    """Find the most recent file matching prefix.
+
+    Search order:
+    1. output/latest/{name}.json  (run-dir style, e.g. "scraped" for prefix "scraped_")
+    2. output/runs/*/{name}.json  (scan all run dirs, sorted by dir name descending)
+    3. output/{prefix}*.json      (legacy flat files)
+    """
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Derive the run-dir filename from the prefix (e.g. "scraped_" -> "scraped.json",
+    # "filtered_top_" -> "filtered_top.json")
+    run_name = prefix.rstrip("_") + ".json"
+
+    # 1. Check output/latest/ symlink
+    latest_dir = OUTPUT_DIR / "latest"
+    if latest_dir.is_symlink() or latest_dir.is_dir():
+        candidate = latest_dir / run_name
+        if candidate.exists():
+            return candidate.resolve()
+
+    # 2. Scan output/runs/*/
+    if RUNS_DIR.is_dir():
+        run_dirs = sorted(RUNS_DIR.iterdir(), reverse=True)
+        for rd in run_dirs:
+            if rd.is_dir():
+                candidate = rd / run_name
+                if candidate.exists():
+                    return candidate
+
+    # 3. Legacy flat files in output/
     files = sorted(OUTPUT_DIR.glob(f"{prefix}*.json"), reverse=True)
     return files[0] if files else None
 
 
-def cmd_rank(args):
-    """Rank jobs using Claude. Uses filtered file if available, otherwise scraped."""
-    from ranker.rank import load_scraped_jobs, rank_jobs, save_ranked
+# ─── Prepare (Slim for Claude) ─────────────────────────────────────────────
+
+def cmd_prepare(args):
+    """Slim filtered jobs into exactly what Claude will receive. Saves prepared.json for inspection."""
+    from ranker.rank import load_scraped_jobs, prepare_jobs
 
     if args.file:
         filepath = Path(args.file)
     else:
-        # Prefer top bucket, then strong bucket, then scraped
         filepath = _find_latest_file("filtered_top_")
         if filepath:
             print(f"Found top-bucket file: {filepath.name}")
@@ -362,16 +431,121 @@ def cmd_rank(args):
         print("No jobs found in file.")
         sys.exit(1)
 
-    # If loading from a filtered file, skip semantic filter in rank_jobs
-    is_filtered = "filtered_" in filepath.name
-    if is_filtered:
-        print(f"Loaded {len(jobs)} pre-filtered jobs. Sending to Claude for ranking...")
+    print(f"Preparing {len(jobs)} jobs for Claude...")
+    slim_jobs = prepare_jobs(jobs)
+
+    # Determine run dir
+    run_dir = getattr(args, "_run_dir", None)
+    if run_dir is None:
+        if RUNS_DIR in filepath.resolve().parents:
+            run_dir = filepath.resolve().parent
+        else:
+            run_dir = _create_run_dir()
+        args._run_dir = run_dir
+
+    # Save prepared.json
+    outpath = Path(run_dir) / "prepared.json"
+    data = {
+        "prepared_at": datetime.now().isoformat(),
+        "source_file": str(filepath),
+        "total_jobs": len(slim_jobs),
+        "jobs": slim_jobs,
+    }
+    outpath.write_text(json.dumps(data, indent=2, ensure_ascii=False, default=str))
+
+    # Token estimate (~4 chars per token for English/French mixed text)
+    payload_chars = len(json.dumps(slim_jobs, default=str))
+    token_est = payload_chars // 4
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"  PREPARED FOR CLAUDE")
+    print(f"{'='*60}")
+    print(f"  Jobs:           {len(slim_jobs)}")
+    print(f"  Payload size:   {payload_chars:,} chars (~{token_est:,} tokens est.)")
+    print(f"  Max output:     {8192} tokens (CLAUDE_MAX_TOKENS)")
+
+    # Fields per job
+    if slim_jobs:
+        sample = slim_jobs[0]
+        fields = list(sample.keys())
+        print(f"  Fields per job: {', '.join(fields)}")
+        has_rag = sum(1 for j in slim_jobs if j.get("resume_context"))
+        print(f"  With RAG ctx:   {has_rag}/{len(slim_jobs)} jobs")
+
+    # Top 5 preview
+    print(f"\n  Top 5 preview:")
+    print(f"    {'Title':<35} {'Company':<20} {'Stack':<8} {'Desc len':>8}")
+    print(f"    {'─'*35} {'─'*20} {'─'*8} {'─'*8}")
+    for j in slim_jobs[:5]:
+        print(f"    {j.get('title', '?')[:35]:<35} "
+              f"{j.get('company', '?')[:20]:<20} "
+              f"{j.get('matched_stack', '-'):<8} "
+              f"{len(j.get('description', '')):>8}")
+
+    print(f"{'='*60}")
+    print(f"\nSaved to {outpath}")
+    print(f"\nInspect the file, then rank:")
+    print(f"  python scripts/pipeline.py rank")
+
+    return slim_jobs
+
+
+# ─── Rank ────────────────────────────────────────────────────────────────────
+
+def cmd_rank(args):
+    """Rank jobs using Claude. Uses prepared.json if available, otherwise filtered/scraped."""
+    from ranker.rank import load_scraped_jobs, rank_jobs, save_ranked
+
+    if args.file:
+        filepath = Path(args.file)
+        is_prepared = "prepared" in filepath.name
     else:
-        print(f"Loaded {len(jobs)} jobs. Filtering + sending to Claude for ranking...")
+        # Prefer prepared.json, then filtered, then scraped
+        filepath = _find_latest_file("prepared_")
+        is_prepared = filepath is not None
+        if filepath:
+            print(f"Found prepared file: {filepath.name}")
+        else:
+            filepath = _find_latest_file("filtered_top_")
+            if filepath:
+                print(f"Found top-bucket file: {filepath.name}")
+            elif _find_latest_file("filtered_strong_"):
+                filepath = _find_latest_file("filtered_strong_")
+                print(f"Found strong-bucket file: {filepath.name}")
+            else:
+                filepath = _find_latest_file("scraped_")
+        if not filepath:
+            print("No prepared, filtered, or scraped files found. Run 'prepare', 'filter', or 'scrape' first.")
+            sys.exit(1)
 
-    ranked = rank_jobs(jobs, target_role=args.role, skip_filter=is_filtered)
+    print(f"Loading jobs from {filepath}...")
+    jobs = load_scraped_jobs(str(filepath))
+    if not jobs:
+        print("No jobs found in file.")
+        sys.exit(1)
 
-    outpath = save_ranked(ranked, str(OUTPUT_DIR))
+    is_filtered = "filtered_" in filepath.name
+
+    if is_prepared:
+        print(f"Loaded {len(jobs)} pre-prepared jobs. Sending to Claude...")
+    elif is_filtered:
+        print(f"Loaded {len(jobs)} pre-filtered jobs. Preparing + sending to Claude...")
+    else:
+        print(f"Loaded {len(jobs)} jobs. Filtering + preparing + sending to Claude...")
+
+    ranked = rank_jobs(jobs, target_role=args.role, skip_filter=(is_filtered or is_prepared), prepared=is_prepared)
+
+    # Determine run dir
+    run_dir = getattr(args, "_run_dir", None)
+    if run_dir is None:
+        if RUNS_DIR in filepath.resolve().parents:
+            run_dir = filepath.resolve().parent
+        else:
+            run_dir = _create_run_dir()
+        args._run_dir = run_dir
+
+    outpath = save_ranked(ranked, str(OUTPUT_DIR), run_dir=str(run_dir))
     print(f"\nRanked results saved to {outpath}")
 
     # Print summary
@@ -536,31 +710,47 @@ def cmd_review(args):
 def cmd_run(args):
     """Run full pipeline: scrape → enrich → rank → review."""
     print("=" * 60)
-    print("  FULL PIPELINE: Scrape → Enrich → Rank → Review")
+    print("  FULL PIPELINE: Scrape → Enrich → Filter → Prepare → Rank → Review")
     print("=" * 60)
 
+    # Create ONE run dir for the entire pipeline
+    run_dir = _create_run_dir()
+    args._run_dir = run_dir
+    logger.info(f"Run directory: {run_dir}")
+
     # Step 1: Scrape
-    print("\n[1/4] SCRAPING...")
+    print("\n[1/6] SCRAPING...")
     jobs = cmd_scrape(args)
     if not jobs:
         print("No jobs scraped. Pipeline stopped.")
         return
 
     # Step 2: Enrich Indeed descriptions
-    print("\n[2/4] ENRICHING...")
-    args.file = None  # Use latest scraped file
+    print("\n[2/6] ENRICHING...")
+    args.file = None
     args.max_enrich = getattr(args, "max_enrich", 50)
     cmd_enrich(args)
 
-    # Step 3: Rank
-    print("\n[3/4] RANKING...")
-    args.file = None  # Use latest scraped file
+    # Step 3: Filter
+    print("\n[3/6] FILTERING...")
+    args.file = None
+    args.threshold = getattr(args, "threshold", None)
+    cmd_filter(args)
+
+    # Step 4: Prepare
+    print("\n[4/6] PREPARING...")
+    args.file = None
+    cmd_prepare(args)
+
+    # Step 5: Rank
+    print("\n[5/6] RANKING...")
+    args.file = None
     args.role = getattr(args, "role", None)
     ranked = cmd_rank(args)
 
-    # Step 4: Review
-    print("\n[4/4] REVIEW...")
-    args.file = None  # Use latest ranked file
+    # Step 6: Review
+    print("\n[6/6] REVIEW...")
+    args.file = None
     cmd_review(args)
 
 
@@ -581,8 +771,9 @@ def cmd_status(args):
     print(f"  PIPELINE STATUS")
     print(f"{'='*50}")
 
-    # Scraped files
-    scraped_files = sorted(OUTPUT_DIR.glob("scraped_*.json"), reverse=True)
+    # Scraped files (run dirs + legacy flat files)
+    scraped_files = sorted(RUNS_DIR.glob("*/scraped.json"), reverse=True) if RUNS_DIR.is_dir() else []
+    scraped_files += sorted(OUTPUT_DIR.glob("scraped_*.json"), reverse=True)
     total_scraped = 0
     for f in scraped_files[:5]:
         try:
@@ -594,11 +785,12 @@ def cmd_status(args):
 
     print(f"\n  Scraped files: {len(scraped_files)}")
     if scraped_files:
-        print(f"  Latest: {scraped_files[0].name}")
+        print(f"  Latest: {scraped_files[0]}")
         print(f"  Total jobs (last 5 files): {total_scraped}")
 
-    # Ranked files
-    ranked_files = sorted(OUTPUT_DIR.glob("ranked_*.json"), reverse=True)
+    # Ranked files (run dirs + legacy flat files)
+    ranked_files = sorted(RUNS_DIR.glob("*/ranked.json"), reverse=True) if RUNS_DIR.is_dir() else []
+    ranked_files += sorted(OUTPUT_DIR.glob("ranked_*.json"), reverse=True)
     total_ranked = 0
     for f in ranked_files[:5]:
         try:
@@ -609,7 +801,7 @@ def cmd_status(args):
 
     print(f"\n  Ranked files: {len(ranked_files)}")
     if ranked_files:
-        print(f"  Latest: {ranked_files[0].name}")
+        print(f"  Latest: {ranked_files[0]}")
         print(f"  Total ranked (last 5 files): {total_ranked}")
 
     # Tracker
@@ -676,9 +868,13 @@ def main():
     p_filter.add_argument("--file", help="Path to scraped JSON (default: latest)")
     p_filter.add_argument("--threshold", type=float, help="Override similarity threshold (default: 0.65)")
 
+    # prepare
+    p_prepare = sub.add_parser("prepare", help="Slim jobs for Claude — inspect before ranking (no API call)")
+    p_prepare.add_argument("--file", help="Path to filtered JSON (default: latest)")
+
     # rank
-    p_rank = sub.add_parser("rank", help="Rank jobs with Claude (uses filtered file if available)")
-    p_rank.add_argument("--file", help="Path to scraped JSON (default: latest)")
+    p_rank = sub.add_parser("rank", help="Rank jobs with Claude (uses prepared.json if available)")
+    p_rank.add_argument("--file", help="Path to prepared/filtered JSON (default: latest)")
     p_rank.add_argument("--role", help="Target role focus for ranking")
 
     # review
@@ -711,6 +907,7 @@ def main():
         "index": cmd_index,
         "enrich": cmd_enrich,
         "filter": cmd_filter,
+        "prepare": cmd_prepare,
         "rank": cmd_rank,
         "review": cmd_review,
         "run": cmd_run,

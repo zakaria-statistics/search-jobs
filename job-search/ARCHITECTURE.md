@@ -40,65 +40,7 @@ A job search pipeline that automates scraping, uses semantic filtering to pre-sc
 
 ## Project Structure
 
-```
-job-search/
-├── scraper/                     Job scrapers (one per source)
-│   ├── base.py                    BaseScraper ABC — delay(), dedup()
-│   ├── config.py                  Keywords, regions, per-source settings, match_job()
-│   ├── models.py                  Job dataclass (title, company, location, url, ...)
-│   ├── storage.py                 save_jobs() — timestamped JSON, dedup, merge
-│   ├── indeed.py                  IndeedScraper — StealthyFetcher, multi-region
-│   ├── remoteok.py                RemoteOKScraper — REST API
-│   ├── arbeitnow.py               ArbeitnowScraper — REST API, location filtering
-│   ├── rekrute.py                 RekruteScraper — Fetcher, Morocco-only
-│   └── wttj.py                    WTTJScraper — Fetcher, Welcome to the Jungle
-│
-├── ranker/                      Semantic filtering + Claude-powered ranking
-│   ├── config.py                  Candidate context, skill keywords, Claude & semantic settings
-│   ├── prompts.py                 System prompt with scoring criteria, RAG instructions
-│   ├── rank.py                    slim (+ RAG context) → Claude API → parse → save (accepts pre-filtered input)
-│   ├── vectorstore.py             ChromaDB management: index resumes, query by job text
-│   └── semantic_filter.py         Semantic pre-filter: embed jobs, compare to resume chunks
-│
-├── resumes/                     Resume variants (8 total, indexed into ChromaDB)
-│   ├── ai_eng_.../main.md         AI/MLOps stack, English
-│   ├── ai_fr_.../main.md          AI/MLOps stack, French
-│   ├── aws_eng_.../main.md        AWS cloud stack, English
-│   ├── aws_fr_.../main.md         AWS cloud stack, French
-│   ├── az_eng_.../main.md         Azure cloud stack, English
-│   ├── az_fr_.../main.md          Azure cloud stack, French
-│   ├── devops_eng_.../main.md     DevOps stack, English
-│   └── devops_fr_.../main.md      DevOps stack, French
-│
-├── scripts/                     CLI tools
-│   ├── pipeline.py                Orchestrator: scrape | enrich | index | filter | rank | review | run | manual | status
-│   ├── opportunity_tracker.py     Application tracking: add | list | update | stats | import | due
-│   ├── contact_pipeline.py        Recruiter outreach: add | list | update | stats | due
-│   └── job_search_queries.sh      Opens pre-built search URLs in browser
-│
-├── docs/                        Strategy & planning (static reference)
-│   ├── 01_candidate_target.md     Profile, target roles, tech stack, positioning
-│   ├── 02_company_goals.md        Hiring focus by sector (banking, telecom, retail, ESN)
-│   ├── 03_opportunities_map.md    Platforms, company career URLs, search keywords
-│   ├── 04_job_platforms.md        Tier-1/2/3 platform strategy, daily cadence
-│   ├── 05_recruiter_contacts.md   Outreach templates, follow-up cadence, networking
-│   └── 06_90_day_plan.md          12-week execution plan with KPIs
-│
-├── output/                      Generated data (gitignored)
-│   ├── .chromadb/                 ChromaDB persistent vector store
-│   ├── scraped_YYYY-MM-DD-HH-MM-SS.json   Timestamped scraped jobs
-│   ├── filtered_YYYY-MM-DD-HH-MM-SS.json  Semantically filtered jobs
-│   ├── ranked_YYYY-MM-DD-HH-MM-SS.json    Claude-ranked jobs
-│   ├── opportunities.json         Application tracker state
-│   └── contacts.json              Contact tracker state
-│
-├── ARCHITECTURE.md              This file
-├── WORKFLOW.md                  Daily/weekly execution guide
-├── WALKTHROUGH.md               Detailed execution examples & timelines
-├── VECTORDB_BREAKDOWN.md        How the vector DB and embeddings work
-├── requirements.txt             Python dependencies
-└── .env                         ANTHROPIC_API_KEY (gitignored)
-```
+See [README.md](README.md#project-structure) for the full project tree.
 
 ## Modules
 
@@ -214,82 +156,305 @@ Auto-sets follow-up date 5 days after applying. The `import` subcommand bulk-imp
 
 Tracks recruiter and tech lead outreach with automated follow-up cadence (Day 0 → Day 3 → Day 7 → Day 21 pause).
 
-## Data Formats
+## Pipeline Data Flow — Stage by Stage
 
-### scraped_YYYY-MM-DD-HH-MM-SS.json
+Read sequentially. Each stage's output becomes the next stage's input. Fields added at each stage are marked with `[+NEW]`.
+
+---
+
+### Stage 1: Scrape — External Calls and Raw Output
+
+**What happens:** 5 scrapers call external sources, normalize responses into `Job` dataclass, deduplicate by URL.
+
+**External calls per source:**
+
+| Source | Call | Request | Response (relevant fields) |
+|--------|------|---------|---------------------------|
+| Indeed | `StealthyFetcher.fetch(url, headless=True)` | GET `https://{domain}/jobs?q={keyword}&l={location}&start={page*10}` | HTML → parse `.job_seen_beacon` cards → title, company, location, snippet |
+| RemoteOK | `requests.get(REMOTEOK_API_URL)` | GET `https://remoteok.com/api` | JSON array: `{position, company, location, tags[], description, date, slug}` |
+| Arbeitnow | `requests.get(ARBEITNOW_API_URL, params={page})` | GET `https://www.arbeitnow.com/api/job-board-api?page=N` | JSON: `{data: [{title, company_name, location, tags[], description, url, remote, created_at}]}` |
+| WTTJ | `requests.post(ALGOLIA_URL, json={query, page, hitsPerPage})` | POST Algolia search index | JSON: `{hits: [{name, organization{name,slug}, profile, office{city,country_code}, remote, salary_*, contract_type, sectors[], slug}]}` |
+| Rekrute | `Fetcher.fetch(url)` | GET `https://www.rekrute.com/...` | HTML → parse job cards |
+
+**Schema transformation:** Each source maps differently into the `Job` dataclass:
+
+```
+RemoteOK.position     → Job.title          Indeed card h2.jobTitle  → Job.title
+RemoteOK.company      → Job.company        Indeed [data-testid]    → Job.company
+RemoteOK.tags[]       → used for matching   WTTJ.organization.name → Job.company
+RemoteOK.description  → Job.description[:500]
+```
+
+**Output:** `output/runs/{ts}/scraped.json`
 
 ```json
 {
-  "scraped_at": "2026-03-05T23:27:53",
+  "scraped_at": "2026-03-06T15:20:10",
   "total_jobs": 509,
-  "jobs": [
-    {
-      "title": "DevOps Engineer",
-      "company": "Sopra Steria",
-      "location": "Paris, France",
-      "url": "https://...",
-      "source": "wttj",
-      "date_posted": "2026-03-01",
-      "description": "First 500 chars of job description...",
-      "keyword": "DevOps Engineer",
-      "region": "france",
-      "scraped_at": "2026-03-05T23:27:53"
-    }
-  ]
+  "jobs": [{
+    "title":       "DevOps Engineer",        // from source
+    "company":     "Sopra Steria",           // from source
+    "location":    "Paris, France",          // from source, normalized
+    "url":         "https://...",            // built from source slugs/hrefs
+    "source":      "wttj",                   // which scraper
+    "date_posted": "2026-03-01",             // from source or ""
+    "description": "First 500 chars...",     // truncated, raw
+    "keyword":     "DevOps Engineer",        // which search keyword matched
+    "region":      "france",                 // detected from location
+    "scraped_at":  "2026-03-06T15:20:10"     // when scraped
+  }]
 }
 ```
 
-### filtered_YYYY-MM-DD-HH-MM-SS.json
+**10 fields per job.** This is the base schema — all downstream stages build on it.
+
+---
+
+### Stage 2: Enrich — Indeed Full Descriptions
+
+**What happens:** Fetches full job pages for Indeed jobs with short descriptions (<100 chars). Extracts skill-relevant sentences using NLP-lite heuristics.
+
+**External call:**
+```
+StealthyFetcher.fetch(job.url, headless=True)
+  → parse #jobDescriptionText
+  → extract_skill_sentences(html) → keeps only lines containing skill keywords
+  → job["description"] = skill_text  (in-place mutation)
+```
+
+**Schema drift:** No new fields. `description` field gets **replaced** (was snippet → now skill-relevant sentences, up to 800 chars).
+
+**Input:** `scraped.json` (same file, mutated in-place before saving)
+**Output:** Same `scraped.json` with enriched descriptions for Indeed jobs
+
+---
+
+### Stage 3: Filter — Semantic Matching + Composite Scoring
+
+**What happens:** Each job is embedded and compared to resume chunks in ChromaDB. Five scoring signals are computed. Jobs below threshold are dropped. Survivors are bucketed by score.
+
+**Internal calls (no external API):**
+
+```
+For each job:
+  1. query_text = job.title + "\n" + job.description
+  2. ChromaDB query(query_text, n_results=5)
+     → returns [{text, distance, metadata{stack, lang, section, source}}]
+     → similarity = 1 - (distance / 2)
+  3. If best_similarity < 0.65 → DROP job
+  4. Else → compute_composite_score(job):
+     → semantic:       best_similarity (from ChromaDB)
+     → skill_match:    count(CANDIDATE_SKILL_KEYWORDS in job text) / 8, capped at 1.0
+     → title_match:    count(TARGET_TITLE_PATTERNS regex in title) / 2, capped at 1.0
+     → location_match: 1.0 if TARGET_LOCATIONS in location, 0.8 if "remote" in desc, else 0.0
+     → stack_depth:    chunk stack agreement ratio × bonus for specific stack
+     → composite = Σ(weight × signal)
+```
+
+**Schema drift — 5 fields added per job:**
 
 ```json
 {
-  "filtered_at": "2026-03-05T23:30:00",
-  "source_file": "output/scraped_2026-03-05-23-27-53.json",
-  "total_input": 509,
-  "total_filtered": 320,
-  "jobs": [
+  // ... all 10 base fields from Stage 1 ...
+  "semantic_score":  0.84,                    // [+NEW] best cosine similarity
+  "matched_stack":   "aws",                   // [+NEW] dominant resume stack
+  "relevant_chunks": [                        // [+NEW] top 3 resume chunks (RAG context)
     {
-      "title": "DevOps Engineer",
-      "company": "Sopra Steria",
-      "location": "Paris, France",
-      "url": "https://...",
-      "source": "wttj",
-      "description": "...",
-      "semantic_score": 0.84,
-      "matched_stack": "aws",
-      "relevant_chunks": [
-        {"text": "...", "similarity": 0.84, "metadata": {"stack": "aws", "section": "Professional Summary"}}
-      ]
+      "text": "Professional Summary: 5+ years DevOps...",
+      "similarity": 0.84,
+      "metadata": {"stack": "aws", "lang": "en", "section": "Professional Summary", "source": "aws_eng_*/main.md"}
     }
-  ]
+  ],
+  "composite_score": 0.7823,                  // [+NEW] weighted multi-signal score
+  "score_breakdown": {                         // [+NEW] per-signal scores
+    "semantic": 0.84,
+    "skill_match": 0.875,
+    "title_match": 1.0,
+    "location_match": 1.0,
+    "stack_depth": 0.8
+  }
 }
 ```
 
-### ranked_YYYY-MM-DD-HH-MM-SS.json
+**Output:** 3 bucket files in `output/runs/{ts}/`:
+
+| File | Score Range | Purpose |
+|------|-------------|---------|
+| `filtered_top.json` | 0.75 -- 1.0 | Send to Claude first |
+| `filtered_strong.json` | 0.60 -- 0.75 | Rank if top bucket is thin |
+| `filtered_moderate.json` | 0.45 -- 0.60 | Rank as last resort |
+
+Each file wraps jobs in metadata:
+```json
+{
+  "filtered_at": "2026-03-06T15:20:15",
+  "source_file": "output/runs/2026-03-06-15-20-10/scraped.json",
+  "bucket": "top",
+  "score_range": "0.75-1.01",
+  "total_input": 509,
+  "total_in_bucket": 67,
+  "jobs": [/* 15-field job objects sorted by composite_score desc */]
+}
+```
+
+**15 fields per job** (10 base + 5 added).
+
+---
+
+### Stage 4: Prepare — Slim for Claude (no API call)
+
+**What happens:** Filtered jobs are slimmed into exactly what Claude will receive. Saved as `prepared.json` for inspection before spending API tokens.
+
+**Transformation — `slim_job()` per job:**
+
+```
+15-field filtered job → ~12-field slim job (for token efficiency)
+
+Kept:    title, company, location, url, source, date_posted, keyword, region
+Changed: description → extract_skill_sentences() if > 600 chars
+Added:   resume_context (formatted RAG text from relevant_chunks)
+         semantic_score (float, passed through)
+         matched_stack (string, passed through)
+Dropped: relevant_chunks (raw array), composite_score, score_breakdown
+```
+
+**Output:** `output/runs/{ts}/prepared.json`
+
+```json
+{
+  "prepared_at": "2026-03-06T15:25:00",
+  "source_file": "output/runs/2026-03-06-15-20-10/filtered_top.json",
+  "total_jobs": 67,
+  "jobs": [/* slim job objects — this IS the Claude payload */]
+}
+```
+
+**Terminal output includes:** job count, payload size in chars, token estimate, fields per job, RAG context coverage, top 5 preview.
+
+---
+
+### Stage 5: Rank — Claude API Call
+
+**What happens:** Prepared jobs are sent to Claude. Claude returns scored + ranked JSON.
+
+**How Claude knows the candidate profile:**
+
+Claude receives two things — the candidate profile as the **system prompt**, and the jobs as the **user message**. They come from different places:
+
+```
+ranker/config.py
+  └── CANDIDATE_CONTEXT (string) ─── your skills, experience, target roles, locations, differentiators
+        ↓ imported by
+ranker/prompts.py
+  └── SYSTEM_PROMPT_JOBS = f"...{CANDIDATE_CONTEXT}..." ─── full system prompt with scoring criteria
+        ↓ sent as system message
+rank_jobs()
+  └── client.messages.create(
+         system=SYSTEM_PROMPT_JOBS,    ←── candidate profile + scoring rules
+         messages=[{user: jobs_json}]  ←── prepared jobs (from prepared.json)
+       )
+```
+
+The candidate profile is **not** in `prepared.json` — it's sent separately as the system prompt. `prepared.json` contains only the job data. To update what Claude knows about you, edit `CANDIDATE_CONTEXT` in `ranker/config.py`.
+
+**External call — Anthropic API (streaming, batched):**
+
+Jobs are auto-split into batches of 30 (`BATCH_SIZE` in `rank.py`) to stay within output token limits. Each batch is a separate streamed API call:
+
+```
+For each batch of ~30 jobs:
+  POST https://api.anthropic.com/v1/messages (streamed)
+  {
+    "model": "claude-sonnet-4-5-20250929",
+    "max_tokens": 16384,
+    "stream": true,
+    "system": SYSTEM_PROMPT_JOBS,
+    "messages": [{"role": "user", "content": "Analyze and rank the following 30 job postings...\n\n{batch_json}"}]
+  }
+```
+
+**Batching and merge flow:**
+```
+67 jobs → split into 3 batches (30 + 30 + 7)
+  ↓
+_call_claude(batch 1) → {ranked_jobs: [...], global_insights: {...}}
+_call_claude(batch 2) → {ranked_jobs: [...], global_insights: {...}}
+_call_claude(batch 3) → {ranked_jobs: [...], global_insights: {...}}
+  ↓
+_merge_results() → combine ranked_jobs, re-sort by overall score,
+                   re-number ranks 1..N, deduplicate insights
+  ↓
+ranked.json (single merged output, same schema as single-batch)
+```
+
+**Progress feedback during streaming:**
+```
+  Analyzing 67 jobs with claude-sonnet-4-5-20250929...
+  Split into 3 batches of ~30 jobs each
+  [1/3] Sending 30 jobs (~20,000 tokens in, 16,384 max out)
+  [1/3] Streaming response...
+  [1/3] Receiving... 5,000 tokens (~60s)
+  [1/3] Done in 85.0s (35000 in / 8500 out)
+  [2/3] Sending 30 jobs (...)
+  ...
+  Merging 3 batch results and re-ranking globally...
+  Total time: 210.5s for 67 jobs
+```
+
+**Truncation safety:** Each batch of 30 needs ~7500 output tokens, well within the 16384 limit. If a batch still truncates, it's skipped with a warning and the remaining batches continue. Rule of thumb: ~250 output tokens per job.
+
+**What Claude receives per job (slim schema):**
+```json
+{
+  "title": "DevOps Engineer",
+  "company": "Sopra Steria",
+  "location": "Paris, France",
+  "url": "https://...",
+  "source": "wttj",
+  "date_posted": "2026-03-01",
+  "description": "Skill-relevant sentences...",
+  "keyword": "DevOps Engineer",
+  "region": "france",
+  "semantic_score": 0.84,
+  "matched_stack": "aws",
+  "resume_context": "### Relevant Resume Context (stack: aws)\n\n**Chunk 1** (similarity=0.84):\n5+ years DevOps..."
+}
+```
+
+**What Claude returns (completely new schema):**
 
 ```json
 {
   "search_summary": {
-    "total_jobs_analyzed": 38,
+    "total_jobs_analyzed": 67,
     "average_fit_score": 62,
     "top_fit_score": 89,
-    "score_distribution": {"excellent_80_plus": 4, "good_60_79": 12, "fair_40_59": 15, "poor_below_40": 7}
-  },
-  "ranked_jobs": [
-    {
-      "rank": 1,
-      "title": "DevOps Engineer",
-      "company": "Sopra Steria",
-      "location": "Paris, France",
-      "url": "https://...",
-      "scores": {"skills_match": 85, "experience_fit": 90, "location_fit": 95, "growth_potential": 80, "overall": 87},
-      "matching_skills": ["Kubernetes", "Terraform", "Azure", "CI/CD", "Docker"],
-      "missing_skills": ["GCP"],
-      "resume_tweaks": ["Emphasize AKS production experience"],
-      "priority": "apply_now"
+    "score_distribution": {
+      "excellent_80_plus": 4,
+      "good_60_79": 12,
+      "fair_40_59": 15,
+      "poor_below_40": 7
     }
-  ],
-  "global_insights": {
+  },
+  "ranked_jobs": [{
+    "rank":            1,                                      // [+NEW] Claude's ranking
+    "title":           "DevOps Engineer",                      // passed through
+    "company":         "Sopra Steria",                         // passed through
+    "location":        "Paris, France",                        // passed through
+    "url":             "https://...",                           // passed through
+    "scores": {                                                // [+NEW] Claude's 4-dimension scoring
+      "skills_match":    85,                                   //   0-100
+      "experience_fit":  90,                                   //   0-100
+      "location_fit":    95,                                   //   0-100
+      "growth_potential": 80,                                  //   0-100
+      "overall":         87                                    //   weighted average
+    },
+    "matching_skills": ["Kubernetes", "Terraform", "Azure"],   // [+NEW] what matched
+    "missing_skills":  ["GCP"],                                // [+NEW] what's missing
+    "resume_tweaks":   ["Emphasize AKS production experience"],// [+NEW] actionable advice
+    "priority":        "apply_now"                             // [+NEW] apply_now|strong_match|worth_trying|long_shot|skip
+  }],
+  "global_insights": {                                         // [+NEW] cross-job analysis
     "most_demanded_skills": ["Kubernetes", "Terraform", "AWS"],
     "skills_to_learn": ["GCP", "Datadog"],
     "market_observations": ["Strong demand for multi-cloud in France"],
@@ -298,48 +463,91 @@ Tracks recruiter and tech lead outreach with automated follow-up cadence (Day 0 
 }
 ```
 
-### opportunities.json
+**Output:** `output/runs/{ts}/ranked.json`
+
+**Schema is completely replaced.** Claude's output has its own structure — the 15-field filtered job is gone, replaced by Claude's 9-field ranked job + global insights.
+
+---
+
+### Stage 6: Review — Human Approval → Tracker
+
+**What happens:** User reviews ranked jobs interactively. Approved jobs are written to `opportunities.json`.
+
+**Schema transformation — ranked job → opportunity:**
+
+```
+ranked_job.title    → opportunity.role
+ranked_job.company  → opportunity.company
+ranked_job.location → opportunity.location
+ranked_job.url      → opportunity.url
+ranked_job.scores   → opportunity.notes (formatted as "Score: 87/100 | Priority: apply_now | Skills: ...")
+(source = "scraper") → opportunity.source
+(status = "New")    → opportunity.status
+```
+
+**Output:** `output/opportunities.json` (persistent, accumulates across runs)
 
 ```json
 {
   "next_id": 5,
-  "opportunities": [
-    {
-      "id": 1,
-      "company": "Sopra Steria",
-      "role": "DevOps Engineer",
-      "location": "Paris, France",
-      "status": "Applied",
-      "source": "scraper",
-      "url": "https://...",
-      "applied_date": "2026-03-02",
-      "follow_up_date": "2026-03-07",
-      "notes": "Score: 87/100 | Priority: apply_now | Skills: Kubernetes, Terraform, Azure",
-      "history": [{"from": "New", "to": "Applied", "date": "2026-03-02T14:00:00"}]
-    }
-  ]
+  "opportunities": [{
+    "id":              1,
+    "company":         "Sopra Steria",
+    "role":            "DevOps Engineer",
+    "location":        "Paris, France",
+    "status":          "New",                    // → Applied → Screening → Interview → ...
+    "source":          "scraper",
+    "url":             "https://...",
+    "applied_date":    null,                     // set when status → Applied
+    "follow_up_date":  null,                     // auto-set 5 days after applied
+    "notes":           "Score: 87/100 | Priority: apply_now",
+    "history":         []                        // [{from, to, date}] on each status change
+  }]
 }
 ```
 
-## Dependencies
+---
 
-| Package | Purpose |
-|---------|---------|
-| `scrapling[all]` | HTML scraping (Fetcher for basic sites, StealthyFetcher for anti-bot) |
-| `requests` | HTTP for REST API scrapers (RemoteOK, Arbeitnow) |
-| `anthropic` | Claude API for job ranking |
-| `python-dotenv` | Load ANTHROPIC_API_KEY from .env |
-| `chromadb` | Persistent vector database for semantic resume search |
-| `sentence-transformers` | Local embedding model (all-MiniLM-L6-v2, 384-dim) |
+### Full Schema Drift Summary
 
-## Configuration
+```
+Stage 1 (scrape):   10 fields  → base Job schema
+Stage 2 (enrich):   10 fields  → description replaced in-place (no new fields)
+Stage 3 (filter):   15 fields  → +semantic_score, +matched_stack, +relevant_chunks, +composite_score, +score_breakdown
+Stage 4 (prepare):  ~12 fields → slim_job() drops chunks/scores, adds resume_context (INSPECTABLE)
+Stage 5 (rank):     NEW SCHEMA → Claude returns rank, scores{4}, matching_skills, missing_skills, resume_tweaks, priority
+Stage 6 (review):   NEW SCHEMA → opportunity with id, status, dates, history (persistent tracker)
+```
 
-All tunable settings are in two config files:
-
-**`scraper/config.py`** — search keywords, target regions, per-source rate limits and page limits, keyword matching patterns.
-
-**`ranker/config.py`** — candidate profile context (skills, experience, target roles, location preferences), skill keywords for pre-filtering, Claude model and token settings, semantic filter settings (model, threshold, paths).
-
-To change target roles, keywords, or regions: edit these two files. No other files need modification.
-
-To update resumes: edit the `main.md` files under `resumes/`, then run `pipeline.py index --force` (or let the next `filter` auto-detect the change).
+```
+                    ┌─────────────────────────────────────────────┐
+  scrape            │ title company location url source           │
+  10 fields         │ date_posted description keyword region      │
+                    │ scraped_at                                  │
+                    └──────────────────┬──────────────────────────┘
+                                       │ enrich (description replaced)
+                    ┌──────────────────▼──────────────────────────┐
+  filter            │ ... all 10 base fields ...                  │
+  +5 fields = 15    │ +semantic_score  +matched_stack             │
+                    │ +relevant_chunks +composite_score           │
+                    │ +score_breakdown                            │
+                    └──────────────────┬──────────────────────────┘
+                                       │ prepare: slim_job() strips to ~12 fields
+                    ┌──────────────────▼──────────────────────────┐
+  prepared.json     │ title company location url source ...       │
+  ~12 fields        │ description (skill-extracted)               │
+  (INSPECT HERE)    │ +resume_context (formatted RAG text)        │
+                    │ semantic_score, matched_stack                │
+                    └──────────────────┬──────────────────────────┘
+                                       │ rank: sends to Claude API
+                    ┌──────────────────▼──────────────────────────┐
+  Claude API        │ receives: COMPLETELY NEW schema             │
+  output            │ rank, scores{4+overall}, matching_skills,   │
+                    │ missing_skills, resume_tweaks, priority     │
+                    └──────────────────┬──────────────────────────┘
+                                       │ user approves
+                    ┌──────────────────▼──────────────────────────┐
+  opportunities     │ ANOTHER NEW schema (tracker)                │
+  persistent DB     │ id, role, company, status, dates, history   │
+                    └─────────────────────────────────────────────┘
+```
