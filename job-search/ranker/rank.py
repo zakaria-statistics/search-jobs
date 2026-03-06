@@ -77,14 +77,17 @@ def slim_job(job: dict) -> dict:
     return slim
 
 
-def rank_jobs(jobs: list[dict], target_role: str = None) -> dict:
+def rank_jobs(jobs: list[dict], target_role: str = None, skip_filter: bool = False) -> dict:
     """Send job listings to Claude for ranked analysis against candidate profile."""
     if not ANTHROPIC_KEY:
         print("ANTHROPIC_API_KEY not set. Add it to .env or export it.")
         sys.exit(1)
 
-    # Pre-filter: semantic (primary) or keyword (fallback)
-    if USE_SEMANTIC_FILTER:
+    # Pre-filter: skip if already filtered, else semantic (primary) or keyword (fallback)
+    if skip_filter:
+        log(f"Skipping filter (pre-filtered input): {len(jobs)} jobs")
+        relevant = jobs
+    elif USE_SEMANTIC_FILTER:
         try:
             from .semantic_filter import semantic_filter_jobs
             relevant = semantic_filter_jobs(jobs)
@@ -159,8 +162,8 @@ def save_ranked(ranked_data: dict, output_dir: str = None) -> str:
         output_dir = str(Path(__file__).parent.parent / "output")
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-    today = datetime.now().strftime("%Y-%m-%d")
-    filepath = str(Path(output_dir) / f"ranked_{today}.json")
+    now_stamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filepath = str(Path(output_dir) / f"ranked_{now_stamp}.json")
 
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(ranked_data, f, indent=2, ensure_ascii=False)

@@ -12,8 +12,8 @@ def save_jobs(jobs: list[Job], output_dir: str = None) -> str:
         output_dir = str(Path(__file__).parent.parent / "output")
     os.makedirs(output_dir, exist_ok=True)
 
-    today = datetime.now().strftime("%Y-%m-%d")
-    filepath = os.path.join(output_dir, f"scraped_{today}.json")
+    now_stamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filepath = os.path.join(output_dir, f"scraped_{now_stamp}.json")
 
     # Dedup by URL
     seen = set()

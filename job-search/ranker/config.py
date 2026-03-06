@@ -117,3 +117,41 @@ CHROMADB_DIR = str(ROOT / "output" / ".chromadb")
 RESUMES_DIR = str(ROOT / "resumes")
 HF_API_TOKEN = os.getenv("HF_API_TOKEN", "")
 USE_SEMANTIC_FILTER = True
+
+# ─── Composite Scoring Weights ────────────────────────────────────────────
+
+COMPOSITE_WEIGHTS = {
+    "semantic":      0.35,   # Cosine similarity to resume chunks
+    "skill_match":   0.30,   # How many CANDIDATE_SKILL_KEYWORDS appear in job text
+    "title_match":   0.20,   # Does title contain target role terms
+    "location_match": 0.10,  # Is job in a target region
+    "stack_depth":   0.05,   # How focused the resume chunk matches are (same stack)
+}
+
+# Title patterns that signal a strong role match (case-insensitive)
+TARGET_TITLE_PATTERNS = [
+    r"\bdevops\b", r"\bdev\s*ops\b",
+    r"\bcloud\b",
+    r"\bplatform\b",
+    r"\bsre\b", r"\bsite reliability\b",
+    r"\bdevsecops\b",
+    r"\bmlops\b", r"\bml\s*ops\b",
+    r"\bkubernetes\b", r"\bk8s\b",
+    r"\binfrastructure\b",
+]
+
+# Target regions for location scoring (lowercase, partial match)
+TARGET_LOCATIONS = [
+    "france", "paris", "lyon", "marseille", "toulouse", "nantes", "rennes",
+    "germany", "berlin", "munich", "frankfurt", "hamburg",
+    "netherlands", "amsterdam", "rotterdam", "den haag",
+    "belgium", "brussels", "bruxelles",
+    "luxembourg",
+    "switzerland", "zurich", "geneva", "bern",
+    "uk", "london", "manchester", "edinburgh",
+    "morocco", "casablanca", "rabat",
+    "remote",
+    "spain", "madrid", "barcelona",
+    "canada", "toronto", "montreal", "vancouver",
+    "saudi", "qatar", "dubai",
+]

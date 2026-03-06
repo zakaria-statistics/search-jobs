@@ -12,12 +12,13 @@ This document walks through every execution path with concrete input/output exam
 3. [Scrape Only — API Sources (Fast)](#3-scrape-only--api-sources-fast)
 4. [Scrape with Custom Keywords & Regions](#4-scrape-with-custom-keywords--regions)
 5. [Index Resumes (Semantic Setup)](#5-index-resumes-semantic-setup)
-6. [Rank a Scraped File](#6-rank-a-scraped-file)
-7. [Interactive Review](#7-interactive-review)
-8. [Application Tracking](#8-application-tracking)
-9. [Contact Pipeline](#9-contact-pipeline)
-10. [Pipeline Status Check](#10-pipeline-status-check)
-11. [Manual Search URLs](#11-manual-search-urls)
+6. [Semantic Filter (Standalone)](#6-semantic-filter-standalone)
+7. [Rank (Claude AI Scoring)](#7-rank-claude-ai-scoring)
+8. [Interactive Review](#8-interactive-review)
+9. [Application Tracking](#9-application-tracking)
+10. [Contact Pipeline](#10-contact-pipeline)
+11. [Pipeline Status Check](#11-pipeline-status-check)
+12. [Manual Search URLs](#12-manual-search-urls)
 
 ---
 
@@ -54,25 +55,28 @@ python scripts/pipeline.py run
 **Timeline:**
 ```
 00:00  Start
-00:00  [1/4] SCRAPING — launches all 5 scrapers sequentially
+00:00  [1/5] SCRAPING — launches all 5 scrapers sequentially
 00:10  Indeed finishes (9 domains x 8 keywords x 3 pages, headless browser) — ~1000 jobs
 00:45  RemoteOK finishes (REST API, lenient matching) — ~45 jobs
 01:15  Arbeitnow finishes (REST API, 15 pages, lenient matching) — ~70 jobs
 01:30  Rekrute finishes (Morocco only) — ~10 jobs
 03:30  WTTJ finishes (Algolia API, 8 keywords x 3 pages) — ~400 jobs
-03:30  Scraped file saved: output/scraped_2026-03-04.json
-03:30  [2/4] ENRICHING — fetches full Indeed job descriptions
+03:30  Scraped file saved: output/scraped_2026-03-05-10-30-00.json
+03:30  [2/5] ENRICHING — fetches full Indeed job descriptions
 03:30  Picks top 50 Indeed jobs with short/empty descriptions
 03:30  Fetches each job page (8-12s delay per request)
 11:30  Enrichment done, skill-relevant sentences extracted
-11:30  [3/4] RANKING — semantic filter + Claude API
+11:30  [3/5] FILTERING — semantic pre-filter (no Claude API call)
 11:30  Auto-index resumes (skips if already indexed)
 11:31  Semantic filter: embed each job, query ChromaDB, drop low-similarity
-11:31  Attach RAG context (matched resume chunks) to surviving jobs
+11:31  Attach semantic_score, matched_stack, relevant_chunks to surviving jobs
+11:31  Filtered file saved: output/filtered_2026-03-05-11-31-00.json
+11:31  [4/5] RANKING — Claude API with RAG context
+11:31  Load filtered jobs (skips re-filtering)
 11:32  Send to Claude Sonnet with per-job resume context
 12:00  Claude responds with scored JSON
-12:00  Ranked file saved: output/ranked_2026-03-04.json
-12:00  [4/4] REVIEW — interactive terminal review begins
+12:00  Ranked file saved: output/ranked_2026-03-05-12-00-00.json
+12:00  [5/5] REVIEW — interactive terminal review begins
 12:00  You approve/skip jobs one by one
 ~20:00 Review complete, approved jobs imported to tracker
 ```
@@ -80,10 +84,10 @@ python scripts/pipeline.py run
 **Terminal output:**
 ```
 ============================================================
-  FULL PIPELINE: Scrape → Enrich → Rank → Review
+  FULL PIPELINE: Scrape → Enrich → Filter → Rank → Review
 ============================================================
 
-[1/4] SCRAPING...
+[1/5] SCRAPING...
 10:30:00 [pipeline] INFO: Running indeed scraper...
 10:30:45 [pipeline] INFO:   indeed: 1076 jobs
 10:30:46 [pipeline] INFO: Running remoteok scraper...
@@ -102,30 +106,69 @@ python scripts/pipeline.py run
   rekrute:     6 jobs
   wttj:      404 jobs
   TOTAL:    1600 jobs (1520 after dedup)
-Saved 1520 jobs to output/scraped_2026-03-04.json
+Saved 1520 jobs to output/scraped_2026-03-05-10-30-00.json
 
-[2/4] ENRICHING...
+[2/5] ENRICHING...
 Enriching up to 50 Indeed jobs...
   Enriching 1/50: Senior DevOps Engineer...
   Enriched (420 chars)
   ...
 Enrichment done. 47 Indeed jobs now have descriptions.
 
-[3/4] RANKING...
-Loading jobs from output/scraped_2026-03-03.json...
-Loaded 73 jobs. Sending to Claude for ranking...
-  Semantic filter: kept 48/73 jobs (threshold=0.65)
-  Analyzing 48 jobs with claude-sonnet-4-5-20250929...
+[3/5] FILTERING...
+Loading jobs from output/scraped_2026-03-05-10-30-00.json...
+Loaded 1520 jobs. Running semantic filter...
+  Semantic filter: kept 820/1520 jobs (threshold=0.65)
+
+============================================================
+  SEMANTIC FILTER RESULTS
+============================================================
+  Input:    1520 jobs
+  Kept:     820 jobs
+  Dropped:  700 jobs
+
+  By matched stack:
+    aws: 310
+    azure: 280
+    ai: 130
+    general: 100
+
+  By source:
+    wttj: 390
+    indeed: 280
+    arbeitnow: 85
+    remoteok: 45
+    rekrute: 20
+
+  Semantic scores:
+    Best:  0.912
+    Worst: 0.651
+    Avg:   0.743
+
+  Top 10 by semantic score:
+    [0.91] [    aws] Senior DevOps Engineer @ Sopra Steria
+    [0.89] [  azure] Cloud Platform Engineer @ ING Bank
+    ...
+============================================================
+
+Filtered jobs saved to output/filtered_2026-03-05-11-31-00.json
+
+[4/5] RANKING...
+Found filtered file: filtered_2026-03-05-11-31-00.json
+Loading jobs from output/filtered_2026-03-05-11-31-00.json...
+Loaded 820 pre-filtered jobs. Sending to Claude for ranking...
+  Skipping filter (pre-filtered input): 820 jobs
+  Analyzing 820 jobs with claude-sonnet-4-5-20250929...
   Done in 26.1s (14200 in / 7100 out)
 
-  Jobs analyzed: 51
+  Jobs analyzed: 820
   Average fit:   58
   Top fit:       91
   Distribution:  6 excellent, 14 good, 20 fair, 11 poor
 
-Ranked results saved to output/ranked_2026-03-03.json
+Ranked results saved to output/ranked_2026-03-05-12-00-00.json
 
-[3/3] REVIEW...
+[5/5] REVIEW...
 Loading ranked jobs from output/ranked_2026-03-03.json...
 
 ============================================================
@@ -169,9 +212,10 @@ Review complete. Approved: 8, Skipped: 43
 
 **Files created:**
 ```
-output/scraped_2026-03-03.json   # 73 raw job listings
-output/ranked_2026-03-03.json    # 51 scored/ranked jobs
-output/opportunities.json        # 8 approved jobs added to tracker
+output/scraped_2026-03-05-10-30-00.json    # raw job listings
+output/filtered_2026-03-05-11-31-00.json   # semantically filtered jobs
+output/ranked_2026-03-05-12-00-00.json     # Claude-scored/ranked jobs
+output/opportunities.json                   # approved jobs added to tracker
 ```
 
 ---
@@ -403,48 +447,71 @@ Vector store already up-to-date (use --force to reindex).
 
 ---
 
-## 6. Rank a Scraped File
+## 6. Semantic Filter (Standalone)
 
-**Command (auto-find latest):**
+**Command (auto-find latest scraped file):**
 ```bash
-python scripts/pipeline.py rank
+python scripts/pipeline.py filter
 ```
 
 **Command (specific file):**
 ```bash
-python scripts/pipeline.py rank --file output/scraped_2026-03-03.json
+python scripts/pipeline.py filter --file output/scraped_2026-03-05-23-27-53.json
 ```
 
-**Command (with role focus):**
+**Command (stricter threshold):**
 ```bash
-python scripts/pipeline.py rank --role "Platform Engineer"
+python scripts/pipeline.py filter --threshold 0.7
 ```
 
-**Timeline: ~30-60 seconds**
+**Timeline: ~5-15 seconds** (no API calls, runs locally)
 ```
 00:00  Load scraped JSON
 00:01  Auto-index resumes if needed (skips if up-to-date)
-00:02  Semantic filter: embed each job, query ChromaDB, drop low-similarity jobs
-00:03  Slim: strip heavy fields, attach RAG context from matched resume chunks
-00:04  Send to Claude Sonnet API (with per-job resume context)
-00:35  Response received, parse JSON
-00:35  Save ranked file
+00:02  Embed each job's title + description
+00:03  Query ChromaDB for top 5 matching resume chunks per job
+00:04  Drop jobs below similarity threshold (0.65)
+00:05  Save filtered file with breakdown
 ```
 
 **Terminal output:**
 ```
-Loading jobs from output/scraped_2026-03-03.json...
-Loaded 73 jobs. Sending to Claude for ranking...
-  Semantic filter: kept 48/73 jobs (threshold=0.65)
-  Analyzing 48 jobs with claude-sonnet-4-5-20250929...
-  Done in 26.1s (14200 in / 7100 out)
+Loading jobs from output/scraped_2026-03-05-23-27-53.json...
+Loaded 509 jobs. Running semantic filter...
+  Semantic filter: kept 320/509 jobs (threshold=0.65)
 
-  Jobs analyzed: 48
-  Average fit:   64
-  Top fit:       93
-  Distribution:  8 excellent, 16 good, 18 fair, 6 poor
+============================================================
+  SEMANTIC FILTER RESULTS
+============================================================
+  Input:    509 jobs
+  Kept:     320 jobs
+  Dropped:  189 jobs
 
-Ranked results saved to output/ranked_2026-03-03.json
+  By matched stack:
+    aws: 120
+    azure: 95
+    ai: 60
+    general: 45
+
+  By source:
+    wttj: 250
+    arbeitnow: 40
+    remoteok: 30
+
+  Semantic scores:
+    Best:  0.912
+    Worst: 0.651
+    Avg:   0.743
+
+  Top 10 by semantic score:
+    [0.91] [    aws] Senior DevOps Engineer @ Sopra Steria
+    [0.89] [  azure] Cloud Platform Engineer @ ING Bank
+    [0.87] [     ai] MLOps Engineer @ Dataiku
+    [0.85] [    aws] Platform Engineer @ Booking.com
+    ...
+============================================================
+
+Filtered jobs saved to output/filtered_2026-03-05-23-30-00.json
 ```
 
 **How semantic filtering works per job:**
@@ -460,15 +527,80 @@ Job: "Senior Platform Engineer — Kubernetes, Terraform, AWS"
 Job: "Head Pastry Chef — French Cuisine, Restaurant Management"
   ↓ embed title + description
   ↓ query ChromaDB (top 5 chunks)
-  ↓ Best match: aws_fr resume "Langues" section (similarity=0.60)
-  ↓ Below threshold (0.60 < 0.65) → DROP
+  ↓ Best match: aws_fr resume "Langues" section (similarity=0.31)
+  ↓ Below threshold (0.31 < 0.65) → DROP
 ```
 
-**Compared to old keyword filter:**
-- Old: drops jobs missing exact keywords like "kubernetes", "terraform", "docker"
-- New: understands that "container orchestration platform" relates to Kubernetes experience
-- New: matches "infrastructure automation" to Terraform skills even without the word "terraform"
-- New: attaches the best-matching resume variant (AI/AWS/Azure) so Claude gets stack-specific context
+**Compared to keyword filter:**
+- Keyword: drops jobs missing exact keywords like "kubernetes", "terraform", "docker"
+- Semantic: understands that "container orchestration platform" relates to Kubernetes experience
+- Semantic: matches "infrastructure automation" to Terraform skills even without the word "terraform"
+- Semantic: attaches the best-matching resume variant (AI/AWS/Azure/DevOps) so Claude gets stack-specific context
+
+**What the filtered file contains per job:**
+- All original scraped fields (title, company, url, etc.)
+- `semantic_score` — cosine similarity (0.0–1.0)
+- `matched_stack` — which resume stack matched best (ai/aws/azure/general)
+- `relevant_chunks` — top 3 resume sections for RAG context
+
+---
+
+## 7. Rank (Claude AI Scoring)
+
+**Command (auto-find latest filtered file):**
+```bash
+python scripts/pipeline.py rank
+```
+
+**Command (specific file):**
+```bash
+python scripts/pipeline.py rank --file output/filtered_2026-03-05-23-30-00.json
+```
+
+**Command (with role focus):**
+```bash
+python scripts/pipeline.py rank --role "Platform Engineer"
+```
+
+**Timeline: ~30-60 seconds**
+```
+00:00  Auto-detect latest filtered_*.json (or fall back to scraped_*.json)
+00:01  Load pre-filtered jobs (skip semantic filter if using filtered file)
+00:02  Slim: strip heavy fields, attach RAG context from matched resume chunks
+00:03  Send to Claude Sonnet API (with per-job resume context)
+00:35  Response received, parse JSON
+00:35  Save ranked file
+```
+
+**Terminal output (from filtered file):**
+```
+Found filtered file: filtered_2026-03-05-23-30-00.json
+Loading jobs from output/filtered_2026-03-05-23-30-00.json...
+Loaded 320 pre-filtered jobs. Sending to Claude for ranking...
+  Skipping filter (pre-filtered input): 320 jobs
+  Analyzing 320 jobs with claude-sonnet-4-5-20250929...
+  Done in 26.1s (14200 in / 7100 out)
+
+  Jobs analyzed: 320
+  Average fit:   64
+  Top fit:       93
+  Distribution:  8 excellent, 16 good, 18 fair, 6 poor
+
+Ranked results saved to output/ranked_2026-03-05-23-35-00.json
+```
+
+**Terminal output (from scraped file, no filtered file available):**
+```
+Loading jobs from output/scraped_2026-03-05-23-27-53.json...
+Loaded 509 jobs. Filtering + sending to Claude for ranking...
+  Semantic filter: kept 320/509 jobs (threshold=0.65)
+  Analyzing 320 jobs with claude-sonnet-4-5-20250929...
+  ...
+```
+
+**How rank auto-detects input:**
+1. Looks for latest `filtered_*.json` → if found, loads it and skips re-filtering
+2. If no filtered file → falls back to latest `scraped_*.json` and runs filter internally
 
 **Example output file** (`output/ranked_2026-03-03.json`):
 ```json
@@ -575,7 +707,7 @@ Job: "Head Pastry Chef — French Cuisine, Restaurant Management"
 
 ---
 
-## 7. Interactive Review
+## 8. Interactive Review
 
 **Command:**
 ```bash
@@ -647,7 +779,7 @@ Review ended. Approved: 1, Skipped: 1
 
 ---
 
-## 8. Application Tracking
+## 9. Application Tracking
 
 ### Add a job manually
 
@@ -811,7 +943,7 @@ python scripts/opportunity_tracker.py export
 
 ---
 
-## 9. Contact Pipeline
+## 10. Contact Pipeline
 
 ### Add a recruiter
 
@@ -925,7 +1057,7 @@ python scripts/contact_pipeline.py stats
 
 ---
 
-## 10. Pipeline Status Check
+## 11. Pipeline Status Check
 
 **Command:**
 ```bash
@@ -960,7 +1092,7 @@ python scripts/pipeline.py status
 
 ---
 
-## 11. Manual Search URLs
+## 12. Manual Search URLs
 
 **Command (print all):**
 ```bash
@@ -1003,7 +1135,9 @@ python scripts/pipeline.py status
 | Enrich Indeed descriptions | `pipeline.py enrich --max-enrich 10` | ~2 min |
 | Index resumes | `pipeline.py index` | ~3 sec (skips if unchanged) |
 | Force reindex | `pipeline.py index --force` | ~3 sec |
-| Rank latest scrape | `pipeline.py rank` | ~30 sec (semantic + Claude) |
+| Semantic filter only | `pipeline.py filter` | ~5-15 sec (no API call) |
+| Stricter filter | `pipeline.py filter --threshold 0.7` | ~5-15 sec |
+| Rank (Claude scoring) | `pipeline.py rank` | ~30 sec (auto-uses filtered file) |
 | Review ranked jobs | `pipeline.py review` | ~5-15 min |
 | Check what to follow up | `opportunity_tracker.py due` | instant |
 | Add job from LinkedIn | `opportunity_tracker.py add` | ~1 min |
@@ -1021,8 +1155,8 @@ python scripts/pipeline.py status
 | Day | Scraping | Manual Search | Focus |
 |-----|----------|---------------|-------|
 | Monday | `pipeline.py run` (all sources) | LinkedIn | Full sweep + applications |
-| Tuesday | `scrape --sources remoteok arbeitnow` | WTTJ | EU remote jobs |
-| Wednesday | `scrape --sources remoteok arbeitnow` | Company career pages | Direct applications |
+| Tuesday | `scrape` + `filter` + `rank` (API only) | WTTJ | EU remote jobs |
+| Wednesday | `scrape` + `filter` + `rank` (API only) | Company career pages | Direct applications |
 | Thursday | `pipeline.py run` (all sources) | LinkedIn | Full sweep + follow-ups |
-| Friday | `scrape --sources remoteok arbeitnow` | StepStone/Germany | EU expansion |
+| Friday | `scrape` + `filter` + `rank` (API only) | StepStone/Germany | EU expansion |
 | Sunday | — | — | `stats` + `export` + weekly review |

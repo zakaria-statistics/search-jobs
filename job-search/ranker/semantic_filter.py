@@ -58,6 +58,7 @@ def semantic_filter_jobs(jobs: list[dict], threshold: float = None) -> list[dict
         return pre_filter_jobs(jobs)
 
     from .vectorstore import query_jobs
+    from .composite_score import compute_composite_score
 
     filtered = []
     for job in jobs:
@@ -85,10 +86,16 @@ def semantic_filter_jobs(jobs: list[dict], threshold: float = None) -> list[dict
         job["semantic_score"] = best_score
         job["matched_stack"] = matched_stack
         job["relevant_chunks"] = chunks[:3]  # Top 3 for RAG context
+
+        # Compute composite score from all signals
+        composite = compute_composite_score(job)
+        job["composite_score"] = composite["composite_score"]
+        job["score_breakdown"] = composite["score_breakdown"]
+
         filtered.append(job)
 
-    # Sort by semantic score descending
-    filtered.sort(key=lambda j: j.get("semantic_score", 0), reverse=True)
+    # Sort by composite score descending (not just semantic)
+    filtered.sort(key=lambda j: j.get("composite_score", 0), reverse=True)
 
     dropped = len(jobs) - len(filtered)
     logger.info(

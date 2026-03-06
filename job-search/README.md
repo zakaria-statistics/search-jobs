@@ -1,15 +1,14 @@
 # Job Search Pipeline
 
-An automated job search system that scrapes jobs from 5 platforms, uses Claude AI to rank them against your candidate profile, provides interactive human-in-the-loop review, and tracks applications and recruiter outreach through their full lifecycle.
+An automated job search system that scrapes jobs from 5 platforms, uses semantic filtering to pre-screen against your resumes, then Claude AI to rank survivors, provides interactive human-in-the-loop review, and tracks applications and recruiter outreach through their full lifecycle.
 
 ## Architecture
 
 ```
-[SCRAPE]          [ENRICH]       [INDEX]           [RANK]              [REVIEW]          [TRACK]
-5 job sources --> Indeed desc -> Resumes into  --> Semantic filter --> Human review  --> Application &
-~500+ jobs       fetch (top 50)  ChromaDB          + Claude AI        approve/skip      contact management
-                 skill-filter    (one-time)        RAG-enhanced       view details       follow-up reminders
-                                                   scores 0-100
+[SCRAPE]          [ENRICH]       [INDEX]           [FILTER]            [RANK]            [REVIEW]          [TRACK]
+5 job sources --> Indeed desc -> Resumes into  --> Semantic filter --> Claude AI     --> Human review  --> Application &
+~500+ jobs       fetch (top 50)  ChromaDB          drop low-match     RAG-enhanced      approve/skip      contact management
+                 skill-filter    (one-time)        save filtered_*    scores 0-100      view details       follow-up reminders
 ```
 
 ## Quick Start
@@ -29,14 +28,15 @@ HF_API_TOKEN=hf_...              # Optional: only needed if sentence-transformer
 # Index resumes into ChromaDB (one-time, auto-reindexes on resume changes)
 python scripts/pipeline.py index
 
-# Run the full pipeline (scrape + enrich + rank + review)
-python scripts/pipeline.py run
+# Run each step individually (controlled pace)
+python scripts/pipeline.py scrape                    # Scrape job sources
+python scripts/pipeline.py enrich                    # Fetch full Indeed descriptions
+python scripts/pipeline.py filter                    # Semantic filter (no Claude API call)
+python scripts/pipeline.py rank                      # Claude ranking (uses filtered file)
+python scripts/pipeline.py review                    # Interactive human review
 
-# Or run each step individually
-python scripts/pipeline.py scrape
-python scripts/pipeline.py enrich             # Fetch full Indeed descriptions
-python scripts/pipeline.py rank               # Semantic filter + Claude ranking
-python scripts/pipeline.py review
+# Or run the full pipeline at once
+python scripts/pipeline.py run
 
 # Check pipeline health
 python scripts/pipeline.py status
@@ -63,12 +63,12 @@ job-search/
 ├── ranker/                      # Semantic filtering + Claude-powered ranking
 │   ├── config.py                # Candidate profile, skill keywords, Claude & semantic settings
 │   ├── prompts.py               # System prompt with scoring criteria + RAG instructions
-│   ├── rank.py                  # Filter, slim, Claude API call, parse
+│   ├── rank.py                  # Slim, Claude API call, parse (accepts pre-filtered input)
 │   ├── vectorstore.py           # ChromaDB vector store: index resumes, query jobs
 │   └── semantic_filter.py       # Semantic job filtering using resume embeddings
 │
 ├── scripts/                     # CLI tools
-│   ├── pipeline.py              # Main orchestrator (scrape|rank|review|run|manual|status)
+│   ├── pipeline.py              # Main orchestrator (scrape|enrich|index|filter|rank|review|run|manual|status)
 │   ├── opportunity_tracker.py   # Application tracking (add|list|update|stats|export|due|import)
 │   ├── contact_pipeline.py      # Recruiter outreach (add|list|update|stats|export|due)
 │   └── job_search_queries.sh    # 100+ pre-built search URLs across 15+ platforms
@@ -79,24 +79,28 @@ job-search/
 │   ├── 03_opportunities_map.md  # Platform URLs, company career pages
 │   └── 04_job_platforms.md      # Platform tiers & daily/weekly cadence
 │
-├── resumes/                     # Resume variants (6 total, gitignored)
+├── resumes/                     # Resume variants (8 total, gitignored)
 │   ├── ai_eng_.../main.md       # AI stack, English
 │   ├── ai_fr_.../main.md        # AI stack, French
 │   ├── aws_eng_.../main.md      # AWS stack, English
 │   ├── aws_fr_.../main.md       # AWS stack, French
 │   ├── az_eng_.../main.md       # Azure stack, English
-│   └── az_fr_.../main.md        # Azure stack, French
+│   ├── az_fr_.../main.md        # Azure stack, French
+│   ├── devops_eng_.../main.md   # DevOps stack, English
+│   └── devops_fr_.../main.md    # DevOps stack, French
 │
 ├── output/                      # Generated data (gitignored)
 │   ├── .chromadb/               # ChromaDB vector store (auto-created)
-│   ├── scraped_YYYY-MM-DD.json  # Daily raw job listings
-│   ├── ranked_YYYY-MM-DD.json   # Daily ranked + scored jobs
+│   ├── scraped_YYYY-MM-DD-HH-MM-SS.json   # Timestamped raw job listings
+│   ├── filtered_YYYY-MM-DD-HH-MM-SS.json  # Semantically filtered jobs
+│   ├── ranked_YYYY-MM-DD-HH-MM-SS.json    # Claude-ranked + scored jobs
 │   ├── opportunities.json       # Application tracker state
 │   └── contacts.json            # Contact tracker state
 │
 ├── ARCHITECTURE.md              # System design documentation
 ├── WORKFLOW.md                  # Daily/weekly execution guide
 ├── WALKTHROUGH.md               # Detailed execution examples & timelines
+├── VECTORDB_BREAKDOWN.md        # How the vector DB and embeddings work
 └── requirements.txt             # Python dependencies
 ```
 
@@ -108,10 +112,11 @@ job-search/
 |---------|-------------|
 | `scrape` | Run all or selected scrapers |
 | `enrich` | Fetch full Indeed job descriptions (top 50) |
-| `index` | Index resumes into ChromaDB (auto-runs on first `rank`) |
-| `rank` | Semantic filter + Claude AI scoring |
+| `index` | Index resumes into ChromaDB (auto-runs on first `filter`) |
+| `filter` | Semantic pre-filter only — no Claude API call, saves `filtered_*.json` |
+| `rank` | Claude AI scoring (auto-uses `filtered_*.json` if available, skips re-filtering) |
 | `review` | Interactive terminal review (approve/skip/view) |
-| `run` | Full chain: scrape + enrich + rank + review |
+| `run` | Full chain: scrape + enrich + filter + rank + review |
 | `manual` | Add a job manually to the tracker |
 | `status` | Show pipeline health and statistics |
 
@@ -172,27 +177,38 @@ Tier 5 catches jobs with non-standard titles (e.g. "Infrastructure Specialist" w
 
 ## Semantic Filtering + AI Ranking
 
-### Stage 1: Semantic Pre-filter (Vector DB + Embeddings)
+### Stage 1: Semantic Pre-filter (`pipeline.py filter`)
 
-Before jobs reach Claude, they pass through a semantic filter powered by ChromaDB and sentence-transformers:
+A standalone step that runs before Claude. Powered by ChromaDB and sentence-transformers:
 
-1. **Indexing** (one-time): 6 resume variants (AI/AWS/Azure x EN/FR) and the candidate context are chunked by `##` headings, embedded with `all-MiniLM-L6-v2`, and stored in ChromaDB at `output/.chromadb/`
+1. **Indexing** (one-time): 8 resume variants (AI/AWS/Azure/DevOps x EN/FR) and the candidate context are chunked by `##` headings, embedded with `all-MiniLM-L6-v2`, and stored in ChromaDB at `output/.chromadb/`
 2. **Per-job query**: Each job's `title + description` is embedded and compared against resume chunks via cosine similarity
 3. **Filtering**: Jobs below the similarity threshold (default 0.65) are dropped
 4. **Enrichment**: Surviving jobs get `semantic_score`, `matched_stack` (ai/aws/azure), and `relevant_chunks` attached
+5. **Output**: Saves `filtered_YYYY-MM-DD-HH-MM-SS.json` with breakdown (stacks, sources, score distribution, top 10)
 
-This replaces the old keyword-based pre-filter (40+ hardcoded terms) with semantic understanding. A "Kubernetes Platform Engineer" job now matches even if none of the exact keywords appear in its description.
+```bash
+python scripts/pipeline.py filter                    # Default threshold (0.65)
+python scripts/pipeline.py filter --threshold 0.7    # Stricter filtering
+python scripts/pipeline.py filter --file output/scraped_2026-03-05-23-27-53.json  # Specific file
+```
 
-**Fallback chain**: If ChromaDB or sentence-transformers are unavailable, the system falls back to keyword-based filtering automatically.
+**Fallback chain**: If ChromaDB or sentence-transformers are unavailable, falls back to keyword-based filtering automatically.
 
-### Stage 2: RAG-Enhanced Claude Ranking
+### Stage 2: RAG-Enhanced Claude Ranking (`pipeline.py rank`)
 
-Jobs that pass the semantic filter are sent to Claude with their matched resume chunks included as context. Claude sees:
+Automatically picks up the latest `filtered_*.json` and skips re-filtering. If no filtered file exists, it runs the semantic filter internally first.
+
+Jobs are sent to Claude with their matched resume chunks included as context. Claude sees:
 - The slimmed job data (title, description, location, etc.)
 - The most relevant resume sections for that specific job (stack-aware)
 - The pre-computed semantic score
 
-This gives Claude richer, per-job candidate context instead of a single generic profile.
+```bash
+python scripts/pipeline.py rank                      # Auto-uses latest filtered file
+python scripts/pipeline.py rank --file output/filtered_2026-03-05-23-30-00.json  # Specific file
+python scripts/pipeline.py rank --role "Platform Engineer"   # Role focus
+```
 
 ### Scoring Dimensions
 
@@ -264,15 +280,18 @@ Day 10: Follow-up #2            --> pause (max follow-ups reached)
 
 ## Recommended Daily Routine (~1 hour)
 
-1. `python scripts/pipeline.py run` — automated scrape + semantic rank + review (10 min)
-2. `python scripts/opportunity_tracker.py due` — check follow-ups (5 min)
-3. Manual search on LinkedIn/WTTJ (20 min)
-4. Apply to top-ranked jobs (20 min)
-5. `python scripts/contact_pipeline.py due` — recruiter follow-ups (5 min)
+1. `python scripts/pipeline.py scrape --sources remoteok arbeitnow wttj` — quick scrape (2 min)
+2. `python scripts/pipeline.py filter` — see what passes semantic filter (instant)
+3. `python scripts/pipeline.py rank` — Claude scoring on filtered jobs (30 sec)
+4. `python scripts/pipeline.py review` — approve/skip ranked jobs (5 min)
+5. `python scripts/opportunity_tracker.py due` — check follow-ups (5 min)
+6. Manual search on LinkedIn/WTTJ (20 min)
+7. Apply to top-ranked jobs (20 min)
+8. `python scripts/contact_pipeline.py due` — recruiter follow-ups (5 min)
 
 ## Resume Management
 
-The system uses 6 resume variants under `resumes/`, each tailored to a different stack and language:
+The system uses 8 resume variants under `resumes/`, each tailored to a different stack and language:
 
 | Directory | Stack | Language |
 |-----------|-------|----------|
@@ -282,5 +301,7 @@ The system uses 6 resume variants under `resumes/`, each tailored to a different
 | `aws_fr_*/main.md` | AWS Cloud | French |
 | `az_eng_*/main.md` | Azure Cloud | English |
 | `az_fr_*/main.md` | Azure Cloud | French |
+| `devops_eng_*/main.md` | DevOps | English |
+| `devops_fr_*/main.md` | DevOps | French |
 
-When you update a resume, the vector store auto-reindexes on the next `rank` run (hash-based change detection). To force reindex: `python scripts/pipeline.py index --force`.
+When you update a resume, the vector store auto-reindexes on the next `filter` run (hash-based change detection). To force reindex: `python scripts/pipeline.py index --force`.

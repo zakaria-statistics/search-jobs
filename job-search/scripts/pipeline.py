@@ -170,18 +170,30 @@ def cmd_index(args):
         sys.exit(1)
 
 
-# ─── Rank ────────────────────────────────────────────────────────────────────
+# ─── Filter (Semantic Pre-filter) ─────────────────────────────────────────────
 
-def _find_latest_file(prefix: str) -> Path | None:
-    """Find the most recent file matching prefix in output dir."""
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    files = sorted(OUTPUT_DIR.glob(f"{prefix}*.json"), reverse=True)
-    return files[0] if files else None
+SCORE_BUCKETS = [
+    ("top",      0.75, 1.01, "Best composite matches — send to Claude first"),
+    ("strong",   0.60, 0.75, "Good composite matches — worth ranking"),
+    ("moderate", 0.45, 0.60, "Partial matches — rank if top bucket is thin"),
+]
 
 
-def cmd_rank(args):
-    """Rank scraped jobs using Claude."""
-    from ranker.rank import load_scraped_jobs, rank_jobs, save_ranked
+def _bucket_jobs(filtered: list[dict]) -> dict[str, list[dict]]:
+    """Split filtered jobs into score-based buckets using composite score."""
+    buckets = {name: [] for name, _, _, _ in SCORE_BUCKETS}
+    for j in filtered:
+        score = j.get("composite_score", j.get("semantic_score", 0))
+        for name, lo, hi, _ in SCORE_BUCKETS:
+            if lo <= score < hi:
+                buckets[name].append(j)
+                break
+    return buckets
+
+
+def cmd_filter(args):
+    """Run semantic filter only — no Claude API call. Saves jobs in score buckets."""
+    from ranker.rank import load_scraped_jobs
 
     if args.file:
         filepath = Path(args.file)
@@ -197,8 +209,167 @@ def cmd_rank(args):
         print("No jobs found in file.")
         sys.exit(1)
 
-    print(f"Loaded {len(jobs)} jobs. Sending to Claude for ranking...")
-    ranked = rank_jobs(jobs, target_role=args.role)
+    print(f"Loaded {len(jobs)} jobs. Running semantic filter...")
+
+    threshold = args.threshold if hasattr(args, "threshold") and args.threshold else None
+
+    try:
+        from ranker.semantic_filter import semantic_filter_jobs
+        filtered = semantic_filter_jobs(jobs, threshold=threshold)
+    except Exception as e:
+        print(f"Semantic filter failed: {e}")
+        print("Falling back to keyword pre-filter...")
+        from ranker.rank import pre_filter_jobs
+        filtered = pre_filter_jobs(jobs)
+
+    if not filtered:
+        print("No jobs passed the filter.")
+        return
+
+    # Bucket by score
+    buckets = _bucket_jobs(filtered)
+
+    # Show breakdown
+    print(f"\n{'='*60}")
+    print(f"  SEMANTIC FILTER RESULTS")
+    print(f"{'='*60}")
+    print(f"  Input:    {len(jobs)} jobs")
+    print(f"  Kept:     {len(filtered)} jobs")
+    print(f"  Dropped:  {len(jobs) - len(filtered)} jobs")
+
+    # Score buckets
+    print(f"\n  Score buckets:")
+    for name, lo, hi, desc in SCORE_BUCKETS:
+        count = len(buckets[name])
+        bar = "#" * min(count, 40)
+        print(f"    {name:>8} ({lo:.2f}-{hi:.2f}): {count:>4} jobs  {bar}")
+        print(f"             {desc}")
+
+    # By matched stack
+    stacks = {}
+    for j in filtered:
+        s = j.get("matched_stack", "unknown")
+        stacks[s] = stacks.get(s, 0) + 1
+    print(f"\n  By matched stack:")
+    for stack, count in sorted(stacks.items(), key=lambda x: -x[1]):
+        print(f"    {stack}: {count}")
+
+    # By source
+    sources = {}
+    for j in filtered:
+        s = j.get("source", "unknown")
+        sources[s] = sources.get(s, 0) + 1
+    print(f"\n  By source:")
+    for src, count in sorted(sources.items(), key=lambda x: -x[1]):
+        print(f"    {src}: {count}")
+
+    # Composite score stats
+    c_scores = [j.get("composite_score", 0) for j in filtered]
+    s_scores = [j.get("semantic_score", 0) for j in filtered]
+    if c_scores:
+        print(f"\n  Composite scores:")
+        print(f"    Best:  {max(c_scores):.3f}")
+        print(f"    Worst: {min(c_scores):.3f}")
+        print(f"    Avg:   {sum(c_scores)/len(c_scores):.3f}")
+        print(f"  Semantic scores (sub-signal):")
+        print(f"    Best:  {max(s_scores):.3f}")
+        print(f"    Worst: {min(s_scores):.3f}")
+        print(f"    Avg:   {sum(s_scores)/len(s_scores):.3f}")
+
+    # Top 10 preview with breakdown
+    print(f"\n  Top 10 by composite score:")
+    print(f"    {'Comp':>5} {'Sem':>5} {'Skill':>5} {'Title':>5} {'Loc':>5} {'Stack':>5}  Job")
+    print(f"    {'─'*5} {'─'*5} {'─'*5} {'─'*5} {'─'*5} {'─'*5}  {'─'*40}")
+    for j in filtered[:10]:
+        cs = j.get("composite_score", 0)
+        bd = j.get("score_breakdown", {})
+        print(
+            f"    {cs:.2f}  {bd.get('semantic', 0):.2f}  {bd.get('skill_match', 0):.2f}  "
+            f"{bd.get('title_match', 0):.2f}  {bd.get('location_match', 0):.2f}  "
+            f"{bd.get('stack_depth', 0):.2f}  "
+            f"{j.get('title', '?')[:35]} @ {j.get('company', '?')[:15]}"
+        )
+
+    print(f"{'='*60}")
+
+    # Save each bucket as a separate file
+    now_stamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    saved_files = []
+    for name, lo, hi, desc in SCORE_BUCKETS:
+        bucket_jobs = buckets[name]
+        if not bucket_jobs:
+            continue
+        outpath = OUTPUT_DIR / f"filtered_{name}_{now_stamp}.json"
+        data = {
+            "filtered_at": datetime.now().isoformat(),
+            "source_file": str(filepath),
+            "bucket": name,
+            "score_range": f"{lo:.2f}-{hi:.2f}",
+            "total_input": len(jobs),
+            "total_in_bucket": len(bucket_jobs),
+            "jobs": bucket_jobs,
+        }
+        outpath.write_text(json.dumps(data, indent=2, ensure_ascii=False, default=str))
+        saved_files.append((name, len(bucket_jobs), outpath))
+
+    print(f"\nSaved {len(saved_files)} bucket files:")
+    for name, count, path in saved_files:
+        print(f"  {name:>8}: {count:>4} jobs → {path.name}")
+
+    # Show weight config for transparency
+    from ranker.config import COMPOSITE_WEIGHTS
+    print(f"\n  Composite weights: {COMPOSITE_WEIGHTS}")
+
+    print(f"\nTo rank a specific bucket:")
+    if saved_files:
+        print(f"  python scripts/pipeline.py rank --file {saved_files[0][2]}")
+
+    return filtered
+
+
+# ─── Rank ────────────────────────────────────────────────────────────────────
+
+def _find_latest_file(prefix: str) -> Path | None:
+    """Find the most recent file matching prefix in output dir."""
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    files = sorted(OUTPUT_DIR.glob(f"{prefix}*.json"), reverse=True)
+    return files[0] if files else None
+
+
+def cmd_rank(args):
+    """Rank jobs using Claude. Uses filtered file if available, otherwise scraped."""
+    from ranker.rank import load_scraped_jobs, rank_jobs, save_ranked
+
+    if args.file:
+        filepath = Path(args.file)
+    else:
+        # Prefer top bucket, then strong bucket, then scraped
+        filepath = _find_latest_file("filtered_top_")
+        if filepath:
+            print(f"Found top-bucket file: {filepath.name}")
+        elif _find_latest_file("filtered_strong_"):
+            filepath = _find_latest_file("filtered_strong_")
+            print(f"Found strong-bucket file: {filepath.name}")
+        else:
+            filepath = _find_latest_file("scraped_")
+        if not filepath:
+            print("No filtered or scraped files found. Run 'filter' or 'scrape' first.")
+            sys.exit(1)
+
+    print(f"Loading jobs from {filepath}...")
+    jobs = load_scraped_jobs(str(filepath))
+    if not jobs:
+        print("No jobs found in file.")
+        sys.exit(1)
+
+    # If loading from a filtered file, skip semantic filter in rank_jobs
+    is_filtered = "filtered_" in filepath.name
+    if is_filtered:
+        print(f"Loaded {len(jobs)} pre-filtered jobs. Sending to Claude for ranking...")
+    else:
+        print(f"Loaded {len(jobs)} jobs. Filtering + sending to Claude for ranking...")
+
+    ranked = rank_jobs(jobs, target_role=args.role, skip_filter=is_filtered)
 
     outpath = save_ranked(ranked, str(OUTPUT_DIR))
     print(f"\nRanked results saved to {outpath}")
@@ -500,8 +671,13 @@ def main():
     p_enrich.add_argument("--max-enrich", type=int, default=50,
                           help="Max Indeed jobs to enrich (default: 50)")
 
+    # filter
+    p_filter = sub.add_parser("filter", help="Semantic filter only (no Claude API call)")
+    p_filter.add_argument("--file", help="Path to scraped JSON (default: latest)")
+    p_filter.add_argument("--threshold", type=float, help="Override similarity threshold (default: 0.65)")
+
     # rank
-    p_rank = sub.add_parser("rank", help="Rank scraped jobs with Claude")
+    p_rank = sub.add_parser("rank", help="Rank jobs with Claude (uses filtered file if available)")
     p_rank.add_argument("--file", help="Path to scraped JSON (default: latest)")
     p_rank.add_argument("--role", help="Target role focus for ranking")
 
@@ -534,6 +710,7 @@ def main():
         "scrape": cmd_scrape,
         "index": cmd_index,
         "enrich": cmd_enrich,
+        "filter": cmd_filter,
         "rank": cmd_rank,
         "review": cmd_review,
         "run": cmd_run,
