@@ -52,8 +52,11 @@
 | Contact pipeline | `contact_pipeline.py` -- recruiter outreach with auto-cadence (Day 0/3/10) |
 | Interactive review | `pipeline.py review` -- approve/skip/view per job, auto-imports to tracker |
 | Pipeline status | `pipeline.py status` -- health check across all stages |
-| Output organization | Timestamped run directories (`scraped_*`, `filtered_*`, `ranked_*`) |
-| Commit | Incremental across `a7d4130` .. `705ab8f` |
+| Output organization | Timestamped run dirs (`output/runs/{ts}/`) with `latest` symlink |
+| Prepare stage | Externalized `slim_job()` — inspect `prepared.json` before API call |
+| Batched ranking | Auto-splits into batches of 30, streams with progress, merges globally |
+| Docs consolidation | GUIDE.md, MILESTONE.md, CLAUDE.md; trimmed README/ARCHITECTURE |
+| Commit | `fbf10f5` (2026-03-06) |
 
 ## What's Next (ideas)
 
