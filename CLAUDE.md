@@ -13,7 +13,7 @@ scraper/          ranker/                    scripts/
  config.py       composite_score.py          opportunity_tracker.py
  storage.py       vectorstore.py             contact_pipeline.py
  models.py        rank.py (Claude API)
-                   config.py
+ url_validator.py  config.py
                    prompts.py
 ```
 
@@ -23,6 +23,8 @@ scraper/          ranker/                    scripts/
 scrape -> output/runs/{ts}/scraped.json
        -> enrich (Indeed full descriptions)
        -> filter -> filtered_top.json, filtered_strong.json, filtered_moderate.json
+       -> validate -> validated.json (live), closed.json (dropped)
+       -> prepare -> prepared.json (slim for Claude, inspectable)
        -> rank   -> ranked.json  (Claude API call)
        -> review -> opportunities.json (persistent, shared)
 ```
@@ -30,10 +32,11 @@ scrape -> output/runs/{ts}/scraped.json
 ### Dependency Direction (who imports who)
 
 ```
-pipeline.py --> scraper/* (scrape), ranker/* (filter, rank)
+pipeline.py --> scraper/* (scrape, validate), ranker/* (filter, rank)
 semantic_filter.py --> vectorstore.py, composite_score.py, config.py
 rank.py --> semantic_filter.py (when skip_filter=False), config.py, prompts.py
 composite_score.py --> config.py (weights, patterns, locations)
+url_validator.py --> scraper/config.py (delay constants), scrapling, requests
 storage.py --> models.py
 all scrapers --> base.py, config.py, models.py
 ```
@@ -41,7 +44,7 @@ all scrapers --> base.py, config.py, models.py
 ### Global Shared State vs Local
 
 - **Global (persistent):** `output/opportunities.json`, `output/contacts.json`, `output/.chromadb/`
-- **Per-run (ephemeral):** `output/runs/{timestamp}/` — scraped, filtered, ranked files
+- **Per-run (ephemeral):** `output/runs/{timestamp}/` — scraped, filtered, validated, prepared, ranked files
 - **Symlink:** `output/latest -> runs/{most-recent-timestamp}/`
 - **Config (shared constants):** `scraper/config.py` (keywords, regions), `ranker/config.py` (profile, weights, thresholds)
 
@@ -53,6 +56,7 @@ all scrapers --> base.py, config.py, models.py
 - `semantic_filter_jobs()` (ranker/semantic_filter.py) — main filter entry point
 - `compute_composite_score()` (ranker/composite_score.py) — 5-signal scorer
 - `rank_jobs()` (ranker/rank.py) — Claude API ranking
+- `validate_jobs()` (scraper/url_validator.py) — batch URL liveness checking
 - `cmd_*()` functions in pipeline.py — CLI command handlers
 
 **Helpers & utils:**
@@ -63,9 +67,11 @@ all scrapers --> base.py, config.py, models.py
 - `extract_skill_sentences()` (scraper/description_utils.py) — NLP-lite skill extraction
 - `_create_run_dir()` (scripts/pipeline.py) — output dir management
 - `_find_latest_file()` (scripts/pipeline.py) — file discovery with fallback chain
+- `check_single_url()` (scraper/url_validator.py) — single URL liveness check
+- `drop_closed()` (scraper/url_validator.py) — split jobs into live/closed
 
 **Config:**
-- `scraper/config.py` — search keywords, regions, rate limits, `match_job()` 5-tier matching
+- `scraper/config.py` — search keywords, regions, rate limits, validation delays, `match_job()` 5-tier matching
 - `ranker/config.py` — candidate profile, skill keywords, composite weights, semantic settings
 
 ## Working Rules
@@ -148,7 +154,7 @@ CONSTRAINTS: {what NOT to change, backward compat needs}
 
 Be aware of the pipeline's execution chain:
 - **Timestamps:** Each run creates `output/runs/{YYYY-MM-DD-HH-MM-SS}/`
-- **Stages:** scrape -> enrich -> filter -> prepare -> rank -> review (sequential)
+- **Stages:** scrape -> enrich -> filter -> validate -> prepare -> rank -> review (sequential)
 - **Milestones:** Tracked in MILESTONE.md by phase
 - **State:** `_run_dir` passed through `args` across stages within `cmd_run()`
 - **Discovery:** `_find_latest_file()` checks latest symlink -> runs dirs -> legacy flat files
@@ -200,7 +206,15 @@ After completing a task or when context reveals an opportunity, suggest next ste
 - Tag with the milestone phase it belongs to (existing or "Phase N+1")
 - Don't implement unless asked — just surface the idea
 
-### 12. Versioning at Milestones
+### 12. Memory Sync on Commit / Session End
+
+Update the auto-memory file (`/root/.claude/projects/-root-search/memory/MEMORY.md`) whenever:
+- **Committing work:** After a `git commit`, update memory with what changed — new features, architectural decisions, config changes, current state
+- **Finishing a session:** Before ending a conversation, capture any session-discovered context — gotchas, user corrections, new preferences, state changes
+- **What to update:** Current state, new architectural decisions, updated phase/milestone info, newly discovered user preferences
+- **What NOT to update:** Temporary debug findings, speculative ideas not yet validated, anything already in CLAUDE.md
+
+### 13. Versioning at Milestones
 
 When a major milestone is completed (new pipeline stage, new scoring system, structural change):
 - Suggest creating a git commit with a descriptive message tagging the milestone phase

@@ -58,6 +58,20 @@
 | Docs consolidation | GUIDE.md, MILESTONE.md, CLAUDE.md; trimmed README/ARCHITECTURE |
 | Commit | `fbf10f5` (2026-03-06) |
 
+## Phase 6: URL Validation -- Dead Posting Detection
+
+| What | Detail |
+|------|--------|
+| URL liveness checking | New `scraper/url_validator.py` module detects closed/expired job postings |
+| Per-source detection | Pattern-based detection for Indeed, WTTJ, RemoteOK, Arbeitnow, Rekrute |
+| Detection logic | HTTP status (404/410) → redirect signals → page content regex → default live |
+| New pipeline stage | `validate` between filter and prepare (step 4/7) |
+| Output artifacts | `validated.json` (live jobs) + `closed.json` (dropped) per run |
+| Review integration | `[c]heck url` option in interactive review for quick re-check |
+| Optional stage | `--skip-validate` flag on `run` command to bypass |
+| Rate limiting | Grouped by source, random delay (3-6s), max 200 URLs per run |
+| Commit | `TBD` |
+
 ## What's Next (ideas)
 
 - Auto-application drafting (cover letter generation per job)

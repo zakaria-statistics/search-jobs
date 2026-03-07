@@ -47,7 +47,17 @@ python scripts/pipeline.py filter                  # default threshold 0.65
 python scripts/pipeline.py filter --threshold 0.7  # stricter
 ```
 
-### Step 4: Prepare -- inspect what Claude will receive (instant, no API cost)
+### Step 4: Validate -- check for closed/expired postings (1-10 min, no API cost)
+
+```bash
+python scripts/pipeline.py validate                    # auto-uses latest filtered file
+python scripts/pipeline.py validate --max-validate 50  # check fewer URLs (faster)
+python scripts/pipeline.py validate --recheck          # re-check previously checked URLs
+```
+
+Drops dead postings before spending Claude API tokens. Saves `validated.json` (live) and `closed.json` (dropped) in the run directory.
+
+### Step 5: Prepare -- inspect what Claude will receive (instant, no API cost)
 
 ```bash
 python scripts/pipeline.py prepare                       # auto-uses latest filtered file
@@ -55,7 +65,7 @@ python scripts/pipeline.py prepare                       # auto-uses latest filt
 
 Check `output/latest/prepared.json` — this is exactly what gets sent to Claude. Adjust if needed.
 
-### Step 5: Rank -- Claude AI scoring (~1-4 min depending on job count)
+### Step 6: Rank -- Claude AI scoring (~1-4 min depending on job count)
 
 ```bash
 python scripts/pipeline.py rank                          # auto-uses prepared.json
@@ -64,15 +74,15 @@ python scripts/pipeline.py rank --role "Platform Engineer"
 
 Auto-batches into groups of 30 jobs per API call. 67 jobs = 3 batches, streamed with progress feedback. Results are merged and re-ranked globally.
 
-### Step 6: Review -- human-in-the-loop (5-15 min)
+### Step 7: Review -- human-in-the-loop (5-15 min)
 
 ```bash
 python scripts/pipeline.py review
 ```
 
-Actions per job: `[a]pprove` (imports to tracker), `[s]kip`, `[v]iew` full details, `[q]uit`.
+Actions per job: `[a]pprove` (imports to tracker), `[s]kip`, `[v]iew` full details, `[c]heck url` (quick liveness re-check), `[q]uit`.
 
-### Step 7: Follow-ups and outreach
+### Step 8: Follow-ups and outreach
 
 ```bash
 python scripts/opportunity_tracker.py due   # application follow-ups
@@ -84,7 +94,8 @@ Act on follow-ups before searching for new roles.
 ### Full pipeline shortcut
 
 ```bash
-python scripts/pipeline.py run   # scrape + enrich + filter + prepare + rank + review
+python scripts/pipeline.py run                 # scrape + enrich + filter + validate + prepare + rank + review
+python scripts/pipeline.py run --skip-validate # skip URL validation (faster)
 ```
 
 ---
@@ -105,13 +116,17 @@ python scripts/pipeline.py run   # scrape + enrich + filter + prepare + rank + r
 | `filter` | Semantic pre-filter, saves `filtered_*.json` | 5-15 sec |
 | `filter --threshold 0.7` | Stricter similarity threshold | 5-15 sec |
 | `filter --file output/scraped_*.json` | Filter a specific file | 5-15 sec |
+| `validate` | Check URLs for closed/expired postings | 1-10 min |
+| `validate --max-validate 50` | Limit URLs to check | 1-3 min |
+| `validate --recheck` | Re-check previously checked URLs | 1-10 min |
 | `prepare` | Slim jobs for Claude — inspect before ranking | instant |
 | `prepare --file output/filtered_*.json` | Prepare a specific file | instant |
 | `rank` | Claude scoring (auto-uses `prepared.json`) | ~30 sec |
 | `rank --file output/filtered_*.json` | Rank a specific file | ~30 sec |
 | `rank --role "Platform Engineer"` | Focus ranking on a role | ~30 sec |
 | `review` | Interactive review of ranked jobs | 5-15 min |
-| `run` | Full chain: scrape + enrich + filter + prepare + rank + review | ~20 min |
+| `run` | Full chain: scrape + enrich + filter + validate + prepare + rank + review | ~25 min |
+| `run --skip-validate` | Skip URL validation stage | ~20 min |
 | `manual` | Add a job manually to tracker | ~1 min |
 | `status` | Pipeline health and statistics | instant |
 

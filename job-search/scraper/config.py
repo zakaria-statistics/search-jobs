@@ -49,6 +49,11 @@ INDEED_ENRICH_MAX = 50
 INDEED_ENRICH_DELAY_MIN = 8
 INDEED_ENRICH_DELAY_MAX = 12
 
+# URL validation settings
+URL_VALIDATE_DELAY_MIN = 3
+URL_VALIDATE_DELAY_MAX = 6
+URL_VALIDATE_MAX_JOBS = 200
+
 # Output directory (relative to job-search/)
 OUTPUT_DIR = "output"
 

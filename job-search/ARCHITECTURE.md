@@ -8,34 +8,35 @@ A job search pipeline that automates scraping, uses semantic filtering to pre-sc
                         AUTOMATED PATH
                         ─────────────
 
-  ┌──────────┐     ┌──────────┐     ┌───────────────────────────────┐     ┌──────────┐     ┌──────────┐
-  │ scraper/ │ ──> │ output/  │ ──> │ ranker/                       │ ──> │ output/  │ ──> │ output/  │
-  │          │     │ scraped_ │     │                               │     │filtered_ │     │ ranked_  │
-  │ Indeed   │     │ *.json   │     │  ┌─────────────┐              │     │ *.json   │     │ *.json   │
-  │ RemoteOK │     │          │     │  │ ChromaDB    │  Semantic    │     │          │     │          │
-  │ Arbeitnow│     └──────────┘     │  │ (resumes)   │──filter──┐  │     └─────┬────┘     └─────┬────┘
-  │ Rekrute  │                      │  └─────────────┘          │  │           │                │
-  │ WTTJ     │                      │        ↑                  ↓  │           │                │
-  └──────────┘     ┌──────────┐     │  ┌─────────────┐  ┌─────────┐│          │                v
-                   │ resumes/ │ ──> │  │ vectorstore │  │ filter  ││          │         ┌──────────────┐
-                   │ 8 resume │     │  │ .py (embed) │  │ (stage1)││          │         │  Claude AI   │
-                   │ variants │     │  └─────────────┘  └─────────┘│          │         │  rank (stage2│
-                   └──────────┘     │                              │          │         │  + RAG ctx)  │
-                                    └──────────────────────────────┘          │         └──────┬───────┘
-                                                                              │                │
-                        MANUAL PATH                                           v                v
-                        ───────────                                    ┌──────────────┐ ┌──────────────┐
-  LinkedIn / APEC /                                                    │ pipeline.py  │ │ pipeline.py  │
-  career pages     ─────────────────────────────────────────────────>  │ review       │ │ review       │
-                      pipeline.py manual                               │ (human-in-   │ │              │
-                                                                       │  the-loop)   │ │              │
-                                                                       └──────┬───────┘ └──────┬───────┘
-                                                                              │                │
-                                                                              v                v
-                                                                       ┌──────────────────────────────┐
-                                                                       │ opportunity_tracker.py        │
-                                                                       │ output/opportunities.json     │
-                                                                       └──────────────────────────────┘
+  ┌──────────┐     ┌──────────┐     ┌───────────────────────────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
+  │ scraper/ │ ──> │ output/  │ ──> │ ranker/                       │ ──> │ output/  │ ──> │ output/  │ ──> │ output/  │
+  │          │     │ scraped  │     │                               │     │filtered_ │     │ prepared │     │ ranked   │
+  │ Indeed   │     │ .json    │     │  ┌─────────────┐              │     │ *.json   │     │ .json    │     │ .json    │
+  │ RemoteOK │     │          │     │  │ ChromaDB    │  Semantic    │     │          │     │          │     │          │
+  │ Arbeitnow│     └──────────┘     │  │ (resumes)   │──filter──┐  │     └─────┬────┘     └─────┬────┘     └─────┬────┘
+  │ Rekrute  │                      │  └─────────────┘          │  │           │                │                │
+  │ WTTJ     │                      │        ↑                  ↓  │           │                │                │
+  └──────────┘     ┌──────────┐     │  ┌─────────────┐  ┌─────────┐│          │                v                v
+                   │ resumes/ │ ──> │  │ vectorstore │  │ filter  ││          │         ┌──────────────┐  ┌──────────────┐
+                   │ 8 resume │     │  │ .py (embed) │  │ (stage1)││          │         │  prepare     │  │  Claude AI   │
+                   │ variants │     │  └─────────────┘  └─────────┘│          │         │  slim_job()  │  │  rank (stage │
+                   └──────────┘     │                              │          │         │  + RAG ctx   │  │  3) batched  │
+                                    └──────────────────────────────┘          │         │  (INSPECT)   │  │  streaming   │
+                                                                              │         └──────┬───────┘  └──────┬───────┘
+                                                                              │                │                │
+                        MANUAL PATH                                           v                v                v
+                        ───────────                                    ┌──────────────┐ ┌──────────────────────────────┐
+  LinkedIn / APEC /                                                    │ pipeline.py  │ │ pipeline.py                  │
+  career pages     ─────────────────────────────────────────────────>  │ review       │ │ review                       │
+                      pipeline.py manual                               │ (human-in-   │ │                              │
+                                                                       │  the-loop)   │ │                              │
+                                                                       └──────┬───────┘ └──────────────┬───────────────┘
+                                                                              │                        │
+                                                                              v                        v
+                                                                       ┌──────────────────────────────────────┐
+                                                                       │ opportunity_tracker.py                │
+                                                                       │ output/opportunities.json             │
+                                                                       └──────────────────────────────────────┘
 ```
 
 ## Project Structure
@@ -130,9 +131,10 @@ Unified CLI that chains everything:
 | `enrich` | Fetches full Indeed job descriptions for top 50 jobs |
 | `index` | Indexes resumes into ChromaDB (auto-runs on first `filter`) |
 | `filter` | Semantic pre-filter only, saves `output/filtered_*.json` with breakdown |
-| `rank` | Claude ranking (auto-uses `filtered_*.json`, skips re-filtering), saves `output/ranked_*.json` |
-| `review` | Interactive terminal — shows ranked jobs by priority, user approves/skips |
-| `run` | Full chain: scrape → enrich → filter → rank → review |
+| `validate` | Check job URLs for closed/expired postings, saves `validated.json` + `closed.json` |
+| `rank` | Claude ranking (auto-uses `prepared.json`), saves `output/ranked_*.json` |
+| `review` | Interactive terminal — shows ranked jobs by priority, user approves/skips, `[c]heck url` |
+| `run` | Full chain: scrape → enrich → filter → validate → prepare → rank → review |
 | `manual` | Delegates to `opportunity_tracker.py add` for manual entry |
 | `status` | Counts across pipeline stages (scraped, filtered, ranked, tracked, by status) |
 
@@ -301,7 +303,61 @@ Each file wraps jobs in metadata:
 
 ---
 
-### Stage 4: Prepare — Slim for Claude (no API call)
+### Stage 4: Validate — URL Liveness Check (no API call)
+
+**What happens:** Each job's URL is checked for liveness. Closed/expired postings are dropped before spending Claude API tokens. Uses per-source detection patterns.
+
+**Detection logic (sequential):**
+1. HTTP status: 404 → `not_found`, 410 → `closed`, 4xx → `error`
+2. Redirect check: final URL contains `/jobs?`, `/expired`, etc. when original didn't
+3. Page content: regex match against first 5K chars (per-source patterns)
+4. No match → `live` (conservative default)
+
+**Per-source configuration:**
+
+| Source | Fetcher | Closed patterns |
+|--------|---------|----------------|
+| indeed | StealthyFetcher | "this job has expired", "cette offre.*n'est plus disponible" |
+| wttj | requests | "cette offre n'est plus disponible", "offre expirée" |
+| remoteok | requests | "this job is no longer available", "position has been filled" |
+| arbeitnow | requests | "job not found", "position is no longer available" |
+| rekrute | StealthyFetcher | "offre expirée", "offre clôturée" |
+
+**Schema drift — 3 fields added per job:**
+
+```json
+{
+  // ... all fields from previous stage ...
+  "url_status":      "live",                    // [+NEW] live|closed|not_found|error
+  "url_status_code": 200,                       // [+NEW] HTTP status code
+  "url_checked_at":  "2026-03-07T10:30:00"      // [+NEW] when checked
+}
+```
+
+**Output:** 2 files in `output/runs/{ts}/`:
+
+| File | Content |
+|------|---------|
+| `validated.json` | Live jobs (passed validation) |
+| `closed.json` | Dropped jobs (reference) |
+
+Each file wraps jobs in metadata:
+```json
+{
+  "validated_at": "2026-03-07T10:30:00",
+  "source_file": "output/runs/.../filtered_top.json",
+  "total_input": 67,
+  "total_live": 58,
+  "total_closed": 9,
+  "jobs": [/* job objects with url_status fields */]
+}
+```
+
+**Rate limiting:** 3-6 second random delay between requests, grouped by source, max 200 URLs per run.
+
+---
+
+### Stage 5: Prepare — Slim for Claude (no API call)
 
 **What happens:** Filtered jobs are slimmed into exactly what Claude will receive. Saved as `prepared.json` for inspection before spending API tokens.
 
@@ -333,7 +389,7 @@ Dropped: relevant_chunks (raw array), composite_score, score_breakdown
 
 ---
 
-### Stage 5: Rank — Claude API Call
+### Stage 6: Rank — Claude API Call
 
 **What happens:** Prepared jobs are sent to Claude. Claude returns scored + ranked JSON.
 
@@ -469,7 +525,7 @@ ranked.json (single merged output, same schema as single-batch)
 
 ---
 
-### Stage 6: Review — Human Approval → Tracker
+### Stage 7: Review — Human Approval → Tracker
 
 **What happens:** User reviews ranked jobs interactively. Approved jobs are written to `opportunities.json`.
 
@@ -511,12 +567,13 @@ ranked_job.scores   → opportunity.notes (formatted as "Score: 87/100 | Priorit
 ### Full Schema Drift Summary
 
 ```
-Stage 1 (scrape):   10 fields  → base Job schema
-Stage 2 (enrich):   10 fields  → description replaced in-place (no new fields)
-Stage 3 (filter):   15 fields  → +semantic_score, +matched_stack, +relevant_chunks, +composite_score, +score_breakdown
-Stage 4 (prepare):  ~12 fields → slim_job() drops chunks/scores, adds resume_context (INSPECTABLE)
-Stage 5 (rank):     NEW SCHEMA → Claude returns rank, scores{4}, matching_skills, missing_skills, resume_tweaks, priority
-Stage 6 (review):   NEW SCHEMA → opportunity with id, status, dates, history (persistent tracker)
+Stage 1 (scrape):    10 fields  → base Job schema
+Stage 2 (enrich):    10 fields  → description replaced in-place (no new fields)
+Stage 3 (filter):    15 fields  → +semantic_score, +matched_stack, +relevant_chunks, +composite_score, +score_breakdown
+Stage 4 (validate):  18 fields  → +url_status, +url_status_code, +url_checked_at (closed jobs dropped)
+Stage 5 (prepare):  ~12 fields → slim_job() drops chunks/scores, adds resume_context (INSPECTABLE)
+Stage 6 (rank):     NEW SCHEMA → Claude returns rank, scores{4}, matching_skills, missing_skills, resume_tweaks, priority
+Stage 7 (review):   NEW SCHEMA → opportunity with id, status, dates, history (persistent tracker)
 ```
 
 ```
@@ -531,6 +588,12 @@ Stage 6 (review):   NEW SCHEMA → opportunity with id, status, dates, history (
   +5 fields = 15    │ +semantic_score  +matched_stack             │
                     │ +relevant_chunks +composite_score           │
                     │ +score_breakdown                            │
+                    └──────────────────┬──────────────────────────┘
+                                       │ validate: check URL liveness
+                    ┌──────────────────▼──────────────────────────┐
+  validate          │ ... all 15 filtered fields ...              │
+  +3 fields = 18    │ +url_status  +url_status_code               │
+  (closed dropped)  │ +url_checked_at                             │
                     └──────────────────┬──────────────────────────┘
                                        │ prepare: slim_job() strips to ~12 fields
                     ┌──────────────────▼──────────────────────────┐

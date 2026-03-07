@@ -7,10 +7,12 @@ Usage:
     python scripts/pipeline.py scrape --sources indeed remoteok
     python scripts/pipeline.py index           # Index resumes into ChromaDB
     python scripts/pipeline.py index --force   # Force reindex even if unchanged
+    python scripts/pipeline.py validate        # Check URLs for closed/expired postings
     python scripts/pipeline.py rank            # Rank latest scraped file with Claude
     python scripts/pipeline.py rank --file output/scraped_2026-03-02.json
     python scripts/pipeline.py review          # Interactive: show ranked jobs, approve/skip
-    python scripts/pipeline.py run             # Full pipeline: scrape → rank → review
+    python scripts/pipeline.py run             # Full pipeline: scrape → validate → rank → review
+    python scripts/pipeline.py run --skip-validate  # Skip URL validation
     python scripts/pipeline.py manual          # Add a job manually (delegates to tracker)
     python scripts/pipeline.py status          # Show pipeline stats
 """
@@ -367,6 +369,101 @@ def cmd_filter(args):
     return filtered
 
 
+# ─── Validate (URL Liveness) ──────────────────────────────────────────────
+
+def cmd_validate(args):
+    """Check job URLs for closed/expired postings. Saves validated.json and closed.json."""
+    from scraper.url_validator import validate_jobs, drop_closed
+    from scraper.config import URL_VALIDATE_DELAY_MIN, URL_VALIDATE_DELAY_MAX, URL_VALIDATE_MAX_JOBS
+    from ranker.rank import load_scraped_jobs
+
+    if args.file:
+        filepath = Path(args.file)
+    else:
+        # Prefer filtered_top, then filtered_strong, then scraped
+        filepath = _find_latest_file("filtered_top_")
+        if filepath:
+            print(f"Found top-bucket file: {filepath.name}")
+        elif _find_latest_file("filtered_strong_"):
+            filepath = _find_latest_file("filtered_strong_")
+            print(f"Found strong-bucket file: {filepath.name}")
+        else:
+            filepath = _find_latest_file("scraped_")
+        if not filepath:
+            print("No filtered or scraped files found. Run 'filter' or 'scrape' first.")
+            sys.exit(1)
+
+    print(f"Loading jobs from {filepath}...")
+    jobs = load_scraped_jobs(str(filepath))
+    if not jobs:
+        print("No jobs found in file.")
+        sys.exit(1)
+
+    max_validate = getattr(args, "max_validate", URL_VALIDATE_MAX_JOBS) or URL_VALIDATE_MAX_JOBS
+    recheck = getattr(args, "recheck", False)
+    delay_min = URL_VALIDATE_DELAY_MIN
+    delay_max = URL_VALIDATE_DELAY_MAX
+
+    print(f"Validating up to {max_validate} URLs (recheck={recheck})...")
+    validate_jobs(jobs, delay_min=delay_min, delay_max=delay_max,
+                  max_jobs=max_validate, recheck=recheck)
+
+    live, closed = drop_closed(jobs)
+
+    # Summary
+    unchecked = sum(1 for j in live if not j.get("url_status"))
+    print(f"\n{'='*60}")
+    print(f"  URL VALIDATION RESULTS")
+    print(f"{'='*60}")
+    print(f"  Total:     {len(jobs)}")
+    print(f"  Live:      {len(live)}")
+    print(f"  Closed:    {len(closed)}")
+    print(f"  Unchecked: {unchecked}")
+    if closed:
+        print(f"\n  Closed jobs:")
+        for j in closed[:10]:
+            print(f"    [{j.get('url_status', '?'):>9}] {j.get('title', '?')[:40]} @ {j.get('company', '?')[:15]}")
+        if len(closed) > 10:
+            print(f"    ... and {len(closed) - 10} more")
+    print(f"{'='*60}")
+
+    # Determine run dir
+    run_dir = getattr(args, "_run_dir", None)
+    if run_dir is None:
+        if RUNS_DIR in filepath.resolve().parents:
+            run_dir = filepath.resolve().parent
+        else:
+            run_dir = _create_run_dir()
+        args._run_dir = run_dir
+
+    # Save validated.json (live jobs)
+    validated_path = Path(run_dir) / "validated.json"
+    validated_data = {
+        "validated_at": datetime.now().isoformat(),
+        "source_file": str(filepath),
+        "total_input": len(jobs),
+        "total_live": len(live),
+        "total_closed": len(closed),
+        "jobs": live,
+    }
+    validated_path.write_text(json.dumps(validated_data, indent=2, ensure_ascii=False, default=str))
+    print(f"\nSaved {len(live)} live jobs to {validated_path.name}")
+
+    # Save closed.json (dropped jobs)
+    if closed:
+        closed_path = Path(run_dir) / "closed.json"
+        closed_data = {
+            "validated_at": datetime.now().isoformat(),
+            "source_file": str(filepath),
+            "total_closed": len(closed),
+            "jobs": closed,
+        }
+        closed_path.write_text(json.dumps(closed_data, indent=2, ensure_ascii=False, default=str))
+        print(f"Saved {len(closed)} closed jobs to {closed_path.name}")
+
+    return live
+
+
 # ─── Rank ────────────────────────────────────────────────────────────────────
 
 def _find_latest_file(prefix: str) -> Path | None:
@@ -413,16 +510,21 @@ def cmd_prepare(args):
     if args.file:
         filepath = Path(args.file)
     else:
-        filepath = _find_latest_file("filtered_top_")
+        # Prefer validated (URL-checked), then filtered, then scraped
+        filepath = _find_latest_file("validated_")
         if filepath:
-            print(f"Found top-bucket file: {filepath.name}")
-        elif _find_latest_file("filtered_strong_"):
-            filepath = _find_latest_file("filtered_strong_")
-            print(f"Found strong-bucket file: {filepath.name}")
+            print(f"Found validated file: {filepath.name}")
         else:
-            filepath = _find_latest_file("scraped_")
+            filepath = _find_latest_file("filtered_top_")
+            if filepath:
+                print(f"Found top-bucket file: {filepath.name}")
+            elif _find_latest_file("filtered_strong_"):
+                filepath = _find_latest_file("filtered_strong_")
+                print(f"Found strong-bucket file: {filepath.name}")
+            else:
+                filepath = _find_latest_file("scraped_")
         if not filepath:
-            print("No filtered or scraped files found. Run 'filter' or 'scrape' first.")
+            print("No validated, filtered, or scraped files found. Run 'validate', 'filter', or 'scrape' first.")
             sys.exit(1)
 
     print(f"Loading jobs from {filepath}...")
@@ -679,7 +781,7 @@ def cmd_review(args):
 
             # Prompt user
             while True:
-                choice = input("  [a]pprove | [s]kip | [v]iew full | [q]uit: ").strip().lower()
+                choice = input("  [a]pprove | [s]kip | [v]iew full | [c]heck url | [q]uit: ").strip().lower()
                 if choice == "a":
                     _import_job_to_tracker(job)
                     approved += 1
@@ -696,11 +798,26 @@ def cmd_review(args):
                         for t in tweaks:
                             print(f"    - {t}")
                     print()
+                elif choice == "c":
+                    url = job.get("url", "")
+                    if not url:
+                        print("  No URL available.")
+                        continue
+                    print(f"  Checking {url}...")
+                    from scraper.url_validator import check_single_url
+                    result = check_single_url(url, job.get("source", ""))
+                    status = result["url_status"]
+                    if status == "live":
+                        print(f"  LIVE (HTTP {result['url_status_code']})")
+                    elif status in ("closed", "not_found"):
+                        print(f"  CLOSED ({status}, HTTP {result['url_status_code']})")
+                    else:
+                        print(f"  Could not verify ({status}, HTTP {result['url_status_code']})")
                 elif choice == "q":
                     print(f"\nReview ended. Approved: {approved}, Skipped: {skipped}")
                     return
                 else:
-                    print("  Invalid choice. Use a/s/v/q.")
+                    print("  Invalid choice. Use a/s/v/c/q.")
 
     print(f"\nReview complete. Approved: {approved}, Skipped: {skipped}")
 
@@ -708,9 +825,16 @@ def cmd_review(args):
 # ─── Run (Full Pipeline) ────────────────────────────────────────────────────
 
 def cmd_run(args):
-    """Run full pipeline: scrape → enrich → rank → review."""
+    """Run full pipeline: scrape → enrich → filter → validate → prepare → rank → review."""
+    skip_validate = getattr(args, "skip_validate", False)
+    total_steps = 6 if skip_validate else 7
+    step = 0
+
     print("=" * 60)
-    print("  FULL PIPELINE: Scrape → Enrich → Filter → Prepare → Rank → Review")
+    if skip_validate:
+        print("  FULL PIPELINE: Scrape → Enrich → Filter → Prepare → Rank → Review")
+    else:
+        print("  FULL PIPELINE: Scrape → Enrich → Filter → Validate → Prepare → Rank → Review")
     print("=" * 60)
 
     # Create ONE run dir for the entire pipeline
@@ -719,37 +843,50 @@ def cmd_run(args):
     logger.info(f"Run directory: {run_dir}")
 
     # Step 1: Scrape
-    print("\n[1/6] SCRAPING...")
+    step += 1
+    print(f"\n[{step}/{total_steps}] SCRAPING...")
     jobs = cmd_scrape(args)
     if not jobs:
         print("No jobs scraped. Pipeline stopped.")
         return
 
     # Step 2: Enrich Indeed descriptions
-    print("\n[2/6] ENRICHING...")
+    step += 1
+    print(f"\n[{step}/{total_steps}] ENRICHING...")
     args.file = None
     args.max_enrich = getattr(args, "max_enrich", 50)
     cmd_enrich(args)
 
     # Step 3: Filter
-    print("\n[3/6] FILTERING...")
+    step += 1
+    print(f"\n[{step}/{total_steps}] FILTERING...")
     args.file = None
     args.threshold = getattr(args, "threshold", None)
     cmd_filter(args)
 
-    # Step 4: Prepare
-    print("\n[4/6] PREPARING...")
+    # Step 4: Validate (optional)
+    if not skip_validate:
+        step += 1
+        print(f"\n[{step}/{total_steps}] VALIDATING URLs...")
+        args.file = None
+        cmd_validate(args)
+
+    # Step N: Prepare
+    step += 1
+    print(f"\n[{step}/{total_steps}] PREPARING...")
     args.file = None
     cmd_prepare(args)
 
-    # Step 5: Rank
-    print("\n[5/6] RANKING...")
+    # Step N+1: Rank
+    step += 1
+    print(f"\n[{step}/{total_steps}] RANKING...")
     args.file = None
     args.role = getattr(args, "role", None)
     ranked = cmd_rank(args)
 
-    # Step 6: Review
-    print("\n[6/6] REVIEW...")
+    # Step N+2: Review
+    step += 1
+    print(f"\n[{step}/{total_steps}] REVIEW...")
     args.file = None
     cmd_review(args)
 
@@ -868,6 +1005,14 @@ def main():
     p_filter.add_argument("--file", help="Path to scraped JSON (default: latest)")
     p_filter.add_argument("--threshold", type=float, help="Override similarity threshold (default: 0.65)")
 
+    # validate
+    p_validate = sub.add_parser("validate", help="Check job URLs for closed/expired postings")
+    p_validate.add_argument("--file", help="Path to filtered/scraped JSON (default: latest)")
+    p_validate.add_argument("--max-validate", type=int, default=200,
+                            help="Max URLs to check (default: 200)")
+    p_validate.add_argument("--recheck", action="store_true",
+                            help="Re-check jobs that already have url_status")
+
     # prepare
     p_prepare = sub.add_parser("prepare", help="Slim jobs for Claude — inspect before ranking (no API call)")
     p_prepare.add_argument("--file", help="Path to filtered JSON (default: latest)")
@@ -889,6 +1034,8 @@ def main():
     p_run.add_argument("--regions", nargs="+", help="Filter by regions")
     p_run.add_argument("--max-pages", type=int, default=3, help="Max pages per source")
     p_run.add_argument("--role", help="Target role focus for ranking")
+    p_run.add_argument("--skip-validate", action="store_true",
+                       help="Skip URL validation stage")
 
     # manual
     sub.add_parser("manual", help="Add a job manually to tracker")
@@ -907,6 +1054,7 @@ def main():
         "index": cmd_index,
         "enrich": cmd_enrich,
         "filter": cmd_filter,
+        "validate": cmd_validate,
         "prepare": cmd_prepare,
         "rank": cmd_rank,
         "review": cmd_review,
