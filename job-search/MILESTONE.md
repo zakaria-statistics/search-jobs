@@ -70,7 +70,7 @@
 | Review integration | `[c]heck url` option in interactive review for quick re-check |
 | Optional stage | `--skip-validate` flag on `run` command to bypass |
 | Rate limiting | Grouped by source, random delay (3-6s), max 200 URLs per run |
-| Commit | `TBD` |
+| Commit | `d158c91` (2026-03-07) |
 
 ## What's Next (ideas)
 
