@@ -60,7 +60,7 @@ Drops dead postings before spending Claude API tokens. Saves `validated.json` (l
 ### Step 5: Prepare -- inspect what Claude will receive (instant, no API cost)
 
 ```bash
-python scripts/pipeline.py prepare                       # auto-uses latest filtered file
+python scripts/pipeline.py prepare                       # auto-uses validated.json (or filtered)
 ```
 
 Check `output/latest/prepared.json` — this is exactly what gets sent to Claude. Adjust if needed.

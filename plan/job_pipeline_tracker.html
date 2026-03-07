@@ -92,15 +92,38 @@
         status: "complete",
         color: "#ef4444",
         icon: "\uD83D\uDE80",
-        dateRange: "Mar 1\u20136",
-        commits: "a7d4130 \u2192 705ab8f",
+        dateRange: "Mar 6",
+        commits: "fbf10f5",
         items: [
           { what: "Indeed enrichment", detail: "Full description fetch with extract_skill_sentences() (top 50 jobs)", done: true },
           { what: "Application tracker", detail: "opportunity_tracker.py \u2014 status flow, follow-up scheduling, import/export", done: true },
           { what: "Contact pipeline", detail: "contact_pipeline.py \u2014 recruiter outreach with auto-cadence (Day 0/3/10)", done: true },
           { what: "Interactive review", detail: "pipeline.py review \u2014 approve/skip/view per job, auto-imports to tracker", done: true },
           { what: "Pipeline status", detail: "pipeline.py status \u2014 health check across all stages", done: true },
-          { what: "Output organization", detail: "Timestamped run directories (scraped_*, filtered_*, ranked_*)", done: true },
+          { what: "Output organization", detail: "Timestamped run dirs (output/runs/{ts}/) with latest symlink", done: true },
+          { what: "Prepare stage", detail: "Externalized slim_job() \u2014 inspect prepared.json before API call", done: true },
+          { what: "Batched ranking", detail: "Auto-splits into batches of 30, streams with progress, merges globally", done: true },
+          { what: "Docs consolidation", detail: "GUIDE.md, MILESTONE.md, CLAUDE.md; trimmed README/ARCHITECTURE", done: true },
+        ],
+      },
+      {
+        id: 6,
+        title: "URL Validation",
+        subtitle: "Dead Posting Detection",
+        status: "complete",
+        color: "#06b6d4",
+        icon: "\uD83D\uDD17",
+        dateRange: "Mar 7",
+        commits: "d158c91",
+        items: [
+          { what: "URL liveness checking", detail: "New scraper/url_validator.py module detects closed/expired job postings", done: true },
+          { what: "Per-source detection", detail: "Pattern-based detection for Indeed, WTTJ, RemoteOK, Arbeitnow, Rekrute", done: true },
+          { what: "Detection logic", detail: "HTTP status (404/410) \u2192 redirect signals \u2192 page content regex \u2192 default live", done: true },
+          { what: "New pipeline stage", detail: "validate between filter and prepare (step 4/7)", done: true },
+          { what: "Output artifacts", detail: "validated.json (live jobs) + closed.json (dropped) per run", done: true },
+          { what: "Review integration", detail: "[c]heck url option in interactive review for quick re-check", done: true },
+          { what: "Optional stage", detail: "--skip-validate flag on run command to bypass", done: true },
+          { what: "Rate limiting", detail: "Grouped by source, random delay (3-6s), max 200 URLs per run", done: true },
         ],
       },
     ];
@@ -304,7 +327,7 @@
     }
 
     function JobPipelineTracker() {
-      const [expanded, setExpanded] = useState(new Set([4]));
+      const [expanded, setExpanded] = useState(new Set([6]));
       const [showAll, setShowAll] = useState(false);
 
       const toggle = (id) => {
@@ -366,7 +389,7 @@
                 Job Search Pipeline
               </h1>
               <p style={{ color: "#64748b", fontSize: 15, margin: "6px 0 0", fontFamily: "'JetBrains Mono', monospace" }}>
-                Scrape \u2192 Filter \u2192 Rank \u2192 Track \u2192 Apply
+                Scrape \u2192 Filter \u2192 Validate \u2192 Rank \u2192 Track \u2192 Apply
               </p>
             </div>
 
@@ -404,7 +427,7 @@
                   {doneItems}/{totalItems} tasks complete
                 </span>
                 <span style={{ fontSize: 12, color: "#64748b", fontFamily: "'JetBrains Mono', monospace" }}>
-                  5 phases \u2022 Mar 1\u20136, 2026
+                  6 phases \u2022 Mar 1\u20137, 2026
                 </span>
               </div>
             </div>
@@ -493,7 +516,7 @@
             </div>
 
             <div style={{ textAlign: "center", marginTop: 40, color: "#334155", fontSize: 11, fontFamily: "'JetBrains Mono', monospace" }}>
-              zack \u00B7 job-search-pipeline \u00B7 last updated Mar 6, 2026
+              zack \u00B7 job-search-pipeline \u00B7 last updated Mar 7, 2026
             </div>
           </div>
         </div>
