@@ -9,12 +9,12 @@ Mono-repo at `/root/search/`, all code under `job-search/`.
 
 ```
 scraper/          ranker/                    scripts/
- 5 scrapers  -->  semantic_filter.py    -->  pipeline.py (orchestrator)
+ 6 scrapers  -->  semantic_filter.py    -->  pipeline.py (orchestrator)
  config.py       composite_score.py          opportunity_tracker.py
  storage.py       vectorstore.py             contact_pipeline.py
  models.py        rank.py (Claude API)
  url_validator.py  config.py
-                   prompts.py
+ linkedin.py      prompts.py
 ```
 
 ### Data Flow (sequential, left-to-right)
@@ -37,6 +37,7 @@ semantic_filter.py --> vectorstore.py, composite_score.py, config.py
 rank.py --> semantic_filter.py (when skip_filter=False), config.py, prompts.py
 composite_score.py --> config.py (weights, patterns, locations)
 url_validator.py --> scraper/config.py (delay constants), scrapling, requests
+linkedin.py --> base.py, config.py, models.py, requests, bs4 (+ DataImpulse proxy via env)
 storage.py --> models.py
 all scrapers --> base.py, config.py, models.py
 ```
@@ -47,6 +48,7 @@ all scrapers --> base.py, config.py, models.py
 - **Per-run (ephemeral):** `output/runs/{timestamp}/` — scraped, filtered, validated, prepared, ranked files
 - **Symlink:** `output/latest -> runs/{most-recent-timestamp}/`
 - **Config (shared constants):** `scraper/config.py` (keywords, regions), `ranker/config.py` (profile, weights, thresholds)
+- **Secrets:** `.env` (gitignored) — API keys, DataImpulse proxy credentials; loaded by `pipeline.py` at startup
 
 ### Component Classification
 
@@ -71,6 +73,7 @@ all scrapers --> base.py, config.py, models.py
 - `drop_closed()` (scraper/url_validator.py) — split jobs into live/closed
 
 **Config:**
+- `scraper/linkedin.py` — LinkedInScraper, guest API + DataImpulse proxy, byte budget tracking
 - `scraper/config.py` — search keywords, regions, rate limits, validation delays, `match_job()` 5-tier matching
 - `ranker/config.py` — candidate profile, skill keywords, composite weights, semantic settings
 
@@ -256,7 +259,7 @@ search/                         # git root
 ├── CLAUDE.md                   # this file
 ├── .gitignore
 └── job-search/                 # all project code
-    ├── scraper/                # 5 job scrapers + config + storage
+    ├── scraper/                # 6 job scrapers + config + storage
     ├── ranker/                 # semantic filter + composite score + Claude ranking
     ├── scripts/                # CLI: pipeline.py, trackers
     ├── resumes/                # 8 resume variants (gitignored)

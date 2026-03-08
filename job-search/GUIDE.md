@@ -29,7 +29,7 @@ cd job-search && source .venv/bin/activate
 ### Step 1: Scrape (2-5 min)
 
 ```bash
-python scripts/pipeline.py scrape                                    # all 5 sources
+python scripts/pipeline.py scrape                                    # all 6 sources
 python scripts/pipeline.py scrape --sources remoteok arbeitnow wttj  # API only (fast)
 ```
 

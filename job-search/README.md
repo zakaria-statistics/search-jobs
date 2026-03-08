@@ -48,7 +48,7 @@ python scripts/pipeline.py review
 
 ```
 job-search/
-├── scraper/                     # Job scraping module (5 sources)
+├── scraper/                     # Job scraping module (6 sources)
 │   ├── base.py                  # BaseScraper abstract class
 │   ├── models.py                # Job dataclass
 │   ├── config.py                # Keywords, regions, rate limits, match_job()

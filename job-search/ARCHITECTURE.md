@@ -166,7 +166,7 @@ Read sequentially. Each stage's output becomes the next stage's input. Fields ad
 
 ### Stage 1: Scrape — External Calls and Raw Output
 
-**What happens:** 5 scrapers call external sources, normalize responses into `Job` dataclass, deduplicate by URL.
+**What happens:** 6 scrapers call external sources, normalize responses into `Job` dataclass, deduplicate by URL.
 
 **External calls per source:**
 
@@ -177,6 +177,7 @@ Read sequentially. Each stage's output becomes the next stage's input. Fields ad
 | Arbeitnow | `requests.get(ARBEITNOW_API_URL, params={page})` | GET `https://www.arbeitnow.com/api/job-board-api?page=N` | JSON: `{data: [{title, company_name, location, tags[], description, url, remote, created_at}]}` |
 | WTTJ | `requests.post(ALGOLIA_URL, json={query, page, hitsPerPage})` | POST Algolia search index | JSON: `{hits: [{name, organization{name,slug}, profile, office{city,country_code}, remote, salary_*, contract_type, sectors[], slug}]}` |
 | Rekrute | `Fetcher.fetch(url)` | GET `https://www.rekrute.com/...` | HTML → parse job cards |
+| LinkedIn | `requests.get(url, proxies=dataimpulse)` | GET `linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=...&location=...&start=N` | HTML fragments → parse `.base-search-card` divs → title, company, location, date, URL |
 
 **Schema transformation:** Each source maps differently into the `Job` dataclass:
 
