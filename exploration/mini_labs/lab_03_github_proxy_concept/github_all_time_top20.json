@@ -1,0 +1,224 @@
+{
+  "captured_at_utc": "2026-03-08T01:02:46+00:00",
+  "signal": "GitHub topic pages (top-starred repos as all-time community popularity proxy)",
+  "total_limit": 20,
+  "category_topics": {
+    "devops": [
+      "devops"
+    ],
+    "cloud": [
+      "cloud"
+    ],
+    "ai_mlops": [
+      "mlops",
+      "artificial-intelligence"
+    ],
+    "automation": [
+      "automation"
+    ],
+    "agents": [
+      "ai-agents",
+      "agents"
+    ]
+  },
+  "byte_rate_limit": {
+    "max_bytes_per_minute": 6291456,
+    "max_megabytes_per_minute": 6.0
+  },
+  "traffic": {
+    "requests": 14,
+    "request_bytes": 8872,
+    "response_bytes": 7780978,
+    "total_bytes": 7789850,
+    "request_megabytes": 0.0085,
+    "response_megabytes": 7.4205,
+    "total_megabytes": 7.429,
+    "run_duration_seconds": 74.346,
+    "effective_bytes_per_minute": 6286740,
+    "effective_megabytes_per_minute": 5.9955,
+    "proxy_price_per_gb_usd": null,
+    "estimated_proxy_cost_usd": null
+  },
+  "results": [
+    {
+      "category": "cloud",
+      "topic": "cloud",
+      "repo": "awesome-selfhosted/awesome-selfhosted",
+      "url": "https://github.com/awesome-selfhosted/awesome-selfhosted",
+      "stars": 278000,
+      "stars_raw": "278k",
+      "description": "A list of Free Software network services and web applications which can be hosted on your own servers"
+    },
+    {
+      "category": "devops",
+      "topic": "devops",
+      "repo": "trimstray/the-book-of-secret-knowledge",
+      "url": "https://github.com/trimstray/the-book-of-secret-knowledge",
+      "stars": 209000,
+      "stars_raw": "209k",
+      "description": "A collection of inspiring lists, manuals, cheatsheets, blogs, hacks, one-liners, cli/web tools and more."
+    },
+    {
+      "category": "ai_mlops",
+      "topic": "artificial-intelligence",
+      "repo": "Significant-Gravitas/AutoGPT",
+      "url": "https://github.com/Significant-Gravitas/AutoGPT",
+      "stars": 182000,
+      "stars_raw": "182k",
+      "description": "AutoGPT is the vision of accessible AI for everyone, to use and to build on. Our mission is to provide the tools, so that you can focus on what matters."
+    },
+    {
+      "category": "automation",
+      "topic": "automation",
+      "repo": "n8n-io/n8n",
+      "url": "https://github.com/n8n-io/n8n",
+      "stars": 178000,
+      "stars_raw": "178k",
+      "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations."
+    },
+    {
+      "category": "ai_mlops",
+      "topic": "artificial-intelligence",
+      "repo": "f/prompts.chat",
+      "url": "https://github.com/f/prompts.chat",
+      "stars": 151000,
+      "stars_raw": "151k",
+      "description": "f.k.a. Awesome ChatGPT Prompts. Share, discover, and collect prompts from the community. Free and open source \u2014 self-host for your organization with complete privacy."
+    },
+    {
+      "category": "agents",
+      "topic": "agents",
+      "repo": "langflow-ai/langflow",
+      "url": "https://github.com/langflow-ai/langflow",
+      "stars": 145000,
+      "stars_raw": "145k",
+      "description": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows."
+    },
+    {
+      "category": "automation",
+      "topic": "automation",
+      "repo": "langgenius/dify",
+      "url": "https://github.com/langgenius/dify",
+      "stars": 132000,
+      "stars_raw": "132k",
+      "description": "Production-ready platform for agentic workflow development."
+    },
+    {
+      "category": "agents",
+      "topic": "ai-agents",
+      "repo": "langchain-ai/langchain",
+      "url": "https://github.com/langchain-ai/langchain",
+      "stars": 129000,
+      "stars_raw": "129k",
+      "description": "The agent engineering platform"
+    },
+    {
+      "category": "agents",
+      "topic": "agents",
+      "repo": "Shubhamsaboo/awesome-llm-apps",
+      "url": "https://github.com/Shubhamsaboo/awesome-llm-apps",
+      "stars": 101000,
+      "stars_raw": "101k",
+      "description": "Collection of awesome LLM apps with AI Agents and RAG using OpenAI, Anthropic, Gemini and opensource models."
+    },
+    {
+      "category": "agents",
+      "topic": "ai-agents",
+      "repo": "google-gemini/gemini-cli",
+      "url": "https://github.com/google-gemini/gemini-cli",
+      "stars": 96800,
+      "stars_raw": "96.8k",
+      "description": "An open-source AI agent that brings the power of Gemini directly into your terminal."
+    },
+    {
+      "category": "automation",
+      "topic": "automation",
+      "repo": "puppeteer/puppeteer",
+      "url": "https://github.com/puppeteer/puppeteer",
+      "stars": 93700,
+      "stars_raw": "93.7k",
+      "description": "JavaScript API for Chrome and Firefox"
+    },
+    {
+      "category": "ai_mlops",
+      "topic": "artificial-intelligence",
+      "repo": "rasbt/LLMs-from-scratch",
+      "url": "https://github.com/rasbt/LLMs-from-scratch",
+      "stars": 87400,
+      "stars_raw": "87.4k",
+      "description": "Implement a ChatGPT-like LLM in PyTorch from scratch, step by step"
+    },
+    {
+      "category": "automation",
+      "topic": "automation",
+      "repo": "microsoft/playwright",
+      "url": "https://github.com/microsoft/playwright",
+      "stars": 83700,
+      "stars_raw": "83.7k",
+      "description": "Playwright is a framework for Web Testing and Automation. It allows testing Chromium, Firefox and WebKit with a single API."
+    },
+    {
+      "category": "devops",
+      "topic": "devops",
+      "repo": "bregman-arie/devops-exercises",
+      "url": "https://github.com/bregman-arie/devops-exercises",
+      "stars": 81400,
+      "stars_raw": "81.4k",
+      "description": "Linux, Jenkins, AWS, SRE, Prometheus, Docker, Python, Ansible, Git, Kubernetes, Terraform, OpenStack, SQL, NoSQL, Azure, GCP, DNS, Elastic, Network, Virtualization. DevOps Interview Questions"
+    },
+    {
+      "category": "ai_mlops",
+      "topic": "artificial-intelligence",
+      "repo": "hacksider/Deep-Live-Cam",
+      "url": "https://github.com/hacksider/Deep-Live-Cam",
+      "stars": 79900,
+      "stars_raw": "79.9k",
+      "description": "real time face swap and one-click video deepfake with only a single image"
+    },
+    {
+      "category": "devops",
+      "topic": "devops",
+      "repo": "netdata/netdata",
+      "url": "https://github.com/netdata/netdata",
+      "stars": 78000,
+      "stars_raw": "78k",
+      "description": "The fastest path to AI-powered full stack observability, even for lean teams."
+    },
+    {
+      "category": "devops",
+      "topic": "devops",
+      "repo": "nektos/act",
+      "url": "https://github.com/nektos/act",
+      "stars": 69200,
+      "stars_raw": "69.2k",
+      "description": "Run your GitHub Actions locally \ud83d\ude80"
+    },
+    {
+      "category": "cloud",
+      "topic": "cloud",
+      "repo": "localstack/localstack",
+      "url": "https://github.com/localstack/localstack",
+      "stars": 64599,
+      "stars_raw": "64.6k",
+      "description": "\ud83d\udcbb A fully functional local AWS cloud stack. Develop and test your cloud & Serverless apps offline"
+    },
+    {
+      "category": "cloud",
+      "topic": "cloud",
+      "repo": "minio/minio",
+      "url": "https://github.com/minio/minio",
+      "stars": 60400,
+      "stars_raw": "60.4k",
+      "description": "MinIO is a high-performance, S3 compatible object store, open sourced under GNU AGPLv3 license."
+    },
+    {
+      "category": "cloud",
+      "topic": "cloud",
+      "repo": "pi-hole/pi-hole",
+      "url": "https://github.com/pi-hole/pi-hole",
+      "stars": 56000,
+      "stars_raw": "56k",
+      "description": "A black hole for Internet advertisements"
+    }
+  ]
+}

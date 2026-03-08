@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from datetime import datetime
 from urllib.parse import quote_plus
 
@@ -8,8 +9,6 @@ from bs4 import BeautifulSoup
 
 from .base import BaseScraper
 from .config import (
-    LINKEDIN_DELAY_MAX,
-    LINKEDIN_DELAY_MIN,
     LINKEDIN_MAX_BYTES_PER_RUN,
     LINKEDIN_MAX_PAGES,
     LINKEDIN_REGIONS,
@@ -25,6 +24,28 @@ _USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
 )
+
+# 6 MB/min — stays well under LinkedIn's radar while keeping runs fast
+_MAX_BYTES_PER_MINUTE = 6 * 1024 * 1024
+
+
+class _ByteRateLimiter:
+    """Throttle based on cumulative bytes transferred, not fixed delays."""
+
+    def __init__(self, max_bytes_per_minute: int) -> None:
+        self.max_bytes_per_second = max_bytes_per_minute / 60.0 if max_bytes_per_minute > 0 else 0.0
+        self.started_at = time.monotonic()
+        self.total_bytes = 0
+
+    def consume(self, byte_count: int) -> None:
+        if byte_count <= 0 or self.max_bytes_per_second <= 0:
+            return
+        self.total_bytes += byte_count
+        expected_elapsed = self.total_bytes / self.max_bytes_per_second
+        actual_elapsed = time.monotonic() - self.started_at
+        sleep_seconds = expected_elapsed - actual_elapsed
+        if sleep_seconds > 0:
+            time.sleep(sleep_seconds)
 
 
 def _build_proxy_url() -> str | None:
@@ -60,6 +81,7 @@ class LinkedInScraper(BaseScraper):
         jobs = []
         total_bytes = 0
         total_requests = 0
+        limiter = _ByteRateLimiter(_MAX_BYTES_PER_MINUTE)
 
         target_regions = {
             name: loc for name, loc in LINKEDIN_REGIONS.items()
@@ -85,8 +107,10 @@ class LinkedInScraper(BaseScraper):
                             proxies=proxies,
                             timeout=20,
                         )
-                        total_bytes += len(resp.content)
+                        resp_bytes = len(resp.content)
+                        total_bytes += resp_bytes
                         total_requests += 1
+                        limiter.consume(resp_bytes)
 
                         if total_bytes >= LINKEDIN_MAX_BYTES_PER_RUN:
                             logger.warning(
@@ -112,8 +136,6 @@ class LinkedInScraper(BaseScraper):
                     except Exception as e:
                         logger.error(f"LinkedIn error ({region_name}, '{keyword}', page {page + 1}): {e}")
                         break
-
-                    self.delay(LINKEDIN_DELAY_MIN, LINKEDIN_DELAY_MAX)
 
         deduped = self.dedup(jobs)
         self._log_summary(deduped, total_requests, total_bytes, proxies is not None)

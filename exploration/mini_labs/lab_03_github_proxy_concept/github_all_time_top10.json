@@ -1,0 +1,116 @@
+{
+  "captured_at_utc": "2026-03-08T01:29:15+00:00",
+  "signal": "GitHub topic pages (top-starred repos as all-time community popularity proxy)",
+  "total_limit": 10,
+  "category_topics": {
+    "system": [
+      "operating-systems",
+      "linux",
+      "windows",
+      "macos"
+    ],
+    "networking": [
+      "networking"
+    ],
+    "security": [
+      "security"
+    ]
+  },
+  "traffic": {
+    "requests": 12,
+    "response_megabytes": 6.3923,
+    "run_duration_seconds": 36.31
+  },
+  "results": [
+    {
+      "category": "system",
+      "topic": "linux",
+      "repo": "trimstray/the-book-of-secret-knowledge",
+      "url": "https://github.com/trimstray/the-book-of-secret-knowledge",
+      "stars": 209000,
+      "stars_raw": "209k",
+      "description": "A collection of inspiring lists, manuals, cheatsheets, blogs, hacks, one-liners, cli/web tools and more."
+    },
+    {
+      "category": "system",
+      "topic": "windows",
+      "repo": "flutter/flutter",
+      "url": "https://github.com/flutter/flutter",
+      "stars": 175000,
+      "stars_raw": "175k",
+      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond"
+    },
+    {
+      "category": "system",
+      "topic": "windows",
+      "repo": "massgravel/Microsoft-Activation-Scripts",
+      "url": "https://github.com/massgravel/Microsoft-Activation-Scripts",
+      "stars": 168000,
+      "stars_raw": "168k",
+      "description": "Open-source Windows and Office activator featuring HWID, Ohook, TSforge, and Online KMS activation methods, along with advanced troubleshooting."
+    },
+    {
+      "category": "system",
+      "topic": "linux",
+      "repo": "jlevy/the-art-of-command-line",
+      "url": "https://github.com/jlevy/the-art-of-command-line",
+      "stars": 160000,
+      "stars_raw": "160k",
+      "description": "Master the command line, in one page"
+    },
+    {
+      "category": "security",
+      "topic": "security",
+      "repo": "Hack-with-Github/Awesome-Hacking",
+      "url": "https://github.com/Hack-with-Github/Awesome-Hacking",
+      "stars": 108000,
+      "stars_raw": "108k",
+      "description": "A collection of various awesome lists for hackers, pentesters and security researchers"
+    },
+    {
+      "category": "security",
+      "topic": "security",
+      "repo": "Developer-Y/cs-video-courses",
+      "url": "https://github.com/Developer-Y/cs-video-courses",
+      "stars": 76700,
+      "stars_raw": "76.7k",
+      "description": "List of Computer Science courses with video lectures."
+    },
+    {
+      "category": "security",
+      "topic": "security",
+      "repo": "swisskyrepo/PayloadsAllTheThings",
+      "url": "https://github.com/swisskyrepo/PayloadsAllTheThings",
+      "stars": 75800,
+      "stars_raw": "75.8k",
+      "description": "A list of useful payloads and bypass for Web Application Security and Pentest/CTF"
+    },
+    {
+      "category": "networking",
+      "topic": "networking",
+      "repo": "Alamofire/Alamofire",
+      "url": "https://github.com/Alamofire/Alamofire",
+      "stars": 42400,
+      "stars_raw": "42.4k",
+      "description": "Elegant HTTP Networking in Swift"
+    },
+    {
+      "category": "networking",
+      "topic": "networking",
+      "repo": "GyulyVGC/sniffnet",
+      "url": "https://github.com/GyulyVGC/sniffnet",
+      "stars": 32900,
+      "stars_raw": "32.9k",
+      "description": "Comfortably monitor your Internet traffic \ud83d\udd75\ufe0f\u200d\u2642\ufe0f"
+    },
+    {
+      "category": "networking",
+      "topic": "networking",
+      "repo": "tokio-rs/tokio",
+      "url": "https://github.com/tokio-rs/tokio",
+      "stars": 31400,
+      "stars_raw": "31.4k",
+      "description": "A runtime for writing reliable asynchronous applications with Rust. Provides I/O, networking, scheduling, timers, ..."
+    }
+  ]
+}

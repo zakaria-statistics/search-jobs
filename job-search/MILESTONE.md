@@ -86,9 +86,29 @@
 | dotenv loading | `pipeline.py` now loads `.env` at startup for all env-dependent modules |
 | Commit | `f69d634` (2026-03-08) |
 
+## Phase 8: Offer Intelligence -- Ghost Detection & Prediction Model (PLANNED)
+
+| What | Detail |
+|------|--------|
+| SQLite intelligence DB | `output/intelligence.db` — persistent cross-run knowledge store (offers, runs, sightings, company reviews, careers page cache) |
+| History recorder | Auto-records every scraped job with fingerprint tracking; backfills 5 existing runs (642 jobs, 99 cross-run overlaps) |
+| Ghost prediction model | 9-signal weighted scorer: posting age, repost frequency, employer type, description quality, company intel, pipeline language, careers page match, description hash, contact present |
+| Model progression | Weighted heuristic (day 1) → Bayesian updates (~20 outcomes) → Logistic Regression (~100) → GBDT (~500) |
+| Blocker detection | Regex extraction for visa, language, clearance, seniority blockers with hard/soft/uncertain severity |
+| Time-risk scoring | Effort estimation (easy apply vs take-home vs multi-round) × late-rejection probability → QUICK WIN / WORTH INVESTING / LOTTERY TICKET / TIME TRAP |
+| Action tiers | Combines ghost score + blockers + fit + time-risk into actionable terminal report |
+| Glassdoor scraper | Company review intelligence (ratings, interview difficulty, salary data) via DataImpulse proxy, cached in SQLite |
+| Careers page checker | HTTP check if job exists on company's own site (ghost signal) |
+| Description length | Scraper cap raised from 500 → 3000 chars for better signal extraction |
+| Feedback loop | Application outcomes (response/ghosted/rejected/interview) feed back into model weights via Bayesian updates |
+| Research backing | Based on 2025–2026 ghost job studies: 18–27% of listings are ghosts (Greenhouse, ResumeUp.AI, Clarify Capital) |
+| New pipeline stage | `analyze` between validate and prepare |
+| Commit | `TBD` |
+
 ## What's Next (ideas)
 
-- Auto-application drafting (cover letter generation per job)
-- Interview prep generation (company-specific question banks)
-- Market trend analytics over time (skill demand, salary ranges)
+- Cover letter generation per job (Claude API, run on Tier 1/2 only)
+- Success predictor model (P(response) per job, LogReg → LightGBM)
+- Market intelligence (skill demand trends, salary clustering, timing optimization)
 - Resume auto-tailoring per job (adjust emphasis based on matched skills)
+- Company targeting (proactive: watch companies that hire your profile regularly)

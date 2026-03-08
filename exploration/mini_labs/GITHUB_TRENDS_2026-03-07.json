@@ -1,0 +1,181 @@
+{
+  "captured_date": "2026-03-07",
+  "snapshot_name": "github_trends_devops_cloud_automation_ai_mlops_agents",
+  "methodology": {
+    "weekly_trend_signal": "GitHub Trending with since=weekly",
+    "category_relevance": "GitHub Topics pages",
+    "note": "Topic pages are star-sorted by default; recency was inferred from shown updated dates."
+  },
+  "sources": [
+    "https://github.com/trending?since=weekly",
+    "https://github.com/trending/python?since=weekly",
+    "https://github.com/trending/typescript?since=weekly",
+    "https://github.com/topics/devops",
+    "https://github.com/topics/cloud",
+    "https://github.com/topics/automation",
+    "https://github.com/topics/mlops",
+    "https://github.com/topics/ai-agents",
+    "https://github.com/topics/agents"
+  ],
+  "categories": {
+    "devops": [
+      {
+        "repo": "netdata/netdata",
+        "url": "https://github.com/netdata/netdata",
+        "stars_total": "78k",
+        "updated": "2026-03-04"
+      },
+      {
+        "repo": "nektos/act",
+        "url": "https://github.com/nektos/act",
+        "stars_total": "69.1k",
+        "updated": "2026-03-01"
+      },
+      {
+        "repo": "go-gitea/gitea",
+        "url": "https://github.com/go-gitea/gitea",
+        "stars_total": "54.1k",
+        "updated": "2026-03-04"
+      },
+      {
+        "repo": "getsentry/sentry",
+        "url": "https://github.com/getsentry/sentry",
+        "stars_total": "43.3k",
+        "updated": "2026-03-04"
+      }
+    ],
+    "cloud": [
+      {
+        "repo": "localstack/localstack",
+        "url": "https://github.com/localstack/localstack",
+        "stars_total": "64.6k",
+        "updated": "2026-03-06"
+      },
+      {
+        "repo": "hashicorp/terraform",
+        "url": "https://github.com/hashicorp/terraform",
+        "stars_total": "47.9k",
+        "updated": "2026-03-06"
+      },
+      {
+        "repo": "pulumi/pulumi",
+        "url": "https://github.com/pulumi/pulumi",
+        "stars_total": "24.9k",
+        "updated": "2026-03-06"
+      },
+      {
+        "repo": "minio/minio",
+        "url": "https://github.com/minio/minio",
+        "stars_total": "60.4k",
+        "updated": "2026-02-12"
+      }
+    ],
+    "automation": [
+      {
+        "repo": "n8n-io/n8n",
+        "url": "https://github.com/n8n-io/n8n",
+        "stars_total": "178k",
+        "updated": "2026-03-04"
+      },
+      {
+        "repo": "langgenius/dify",
+        "url": "https://github.com/langgenius/dify",
+        "stars_total": "131k",
+        "updated": "2026-03-04"
+      },
+      {
+        "repo": "puppeteer/puppeteer",
+        "url": "https://github.com/puppeteer/puppeteer",
+        "stars_total": "93.7k",
+        "updated": "2026-03-04"
+      },
+      {
+        "repo": "microsoft/playwright",
+        "url": "https://github.com/microsoft/playwright",
+        "stars_total": "83.5k",
+        "updated": "2026-03-04"
+      },
+      {
+        "repo": "apache/airflow",
+        "url": "https://github.com/apache/airflow",
+        "stars_total": "44.5k",
+        "updated": "2026-03-04"
+      }
+    ],
+    "ai_mlops": [
+      {
+        "repo": "mlflow/mlflow",
+        "url": "https://github.com/mlflow/mlflow",
+        "stars_total": "24.2k",
+        "updated": "2026-02-15"
+      },
+      {
+        "repo": "qdrant/qdrant",
+        "url": "https://github.com/qdrant/qdrant",
+        "stars_total": "28.8k",
+        "updated": "2026-02-15"
+      },
+      {
+        "repo": "HumanSignal/label-studio",
+        "url": "https://github.com/HumanSignal/label-studio",
+        "stars_total": "26.4k",
+        "updated": "2026-02-15"
+      },
+      {
+        "repo": "apache/airflow",
+        "url": "https://github.com/apache/airflow",
+        "stars_total": "44.3k",
+        "updated": "2026-02-15"
+      }
+    ],
+    "agents": {
+      "weekly_trending": [
+        {
+          "repo": "alibaba/OpenSandbox",
+          "url": "https://github.com/alibaba/OpenSandbox",
+          "stars_this_week": 5156
+        },
+        {
+          "repo": "bytedance/deer-flow",
+          "url": "https://github.com/bytedance/deer-flow",
+          "stars_this_week": 3480
+        },
+        {
+          "repo": "badlogic/pi-mono",
+          "url": "https://github.com/badlogic/pi-mono",
+          "stars_this_week": 3287
+        },
+        {
+          "repo": "agentscope-ai/agentscope",
+          "url": "https://github.com/agentscope-ai/agentscope",
+          "stars_this_week": 1120
+        },
+        {
+          "repo": "cloudflare/agents",
+          "url": "https://github.com/cloudflare/agents",
+          "stars_this_week": 1054
+        }
+      ],
+      "topic_high_signal": [
+        {
+          "repo": "langchain-ai/langchain",
+          "url": "https://github.com/langchain-ai/langchain",
+          "stars_total": "129k",
+          "updated": "2026-03-07"
+        },
+        {
+          "repo": "google-gemini/gemini-cli",
+          "url": "https://github.com/google-gemini/gemini-cli",
+          "stars_total": "96.8k",
+          "updated": "2026-03-07"
+        },
+        {
+          "repo": "microsoft/autogen",
+          "url": "https://github.com/microsoft/autogen",
+          "stars_total": "55.3k",
+          "updated": "2026-03-05"
+        }
+      ]
+    }
+  }
+}

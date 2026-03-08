@@ -142,6 +142,10 @@ Enter plan mode and ask clarifying questions when:
 - Multiple valid approaches exist
 - Change touches shared state or persistent data
 
+**Ask before building:** For G3+ features, ask clarifying questions to understand the user's full intent before writing code or a plan. Don't assume scope, data sources, or priorities — surface unknowns early. Even for G2, if the goal is ambiguous, ask rather than guess.
+
+**Offer choices:** When multiple valid approaches exist, present them as numbered options with trade-offs (e.g., cost, complexity, time). Let the user pick direction rather than choosing silently. Format: `1. Option — trade-off | 2. Option — trade-off`
+
 ### 7. Parameterized Context for Prompts (PCTF)
 
 When working with agents or complex tasks, structure prompts with:
