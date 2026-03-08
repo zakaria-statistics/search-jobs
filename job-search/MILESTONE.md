@@ -84,7 +84,7 @@
 | Region support | 9 regions matching existing Indeed config (MA, FR, DE, NL, BE, LU, PL, CH, UK) |
 | Pipeline integration | `--sources linkedin` flag, included in full `run` command |
 | dotenv loading | `pipeline.py` now loads `.env` at startup for all env-dependent modules |
-| Commit | `PENDING` |
+| Commit | `f69d634` (2026-03-08) |
 
 ## What's Next (ideas)
 
