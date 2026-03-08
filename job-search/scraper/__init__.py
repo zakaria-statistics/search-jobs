@@ -3,6 +3,7 @@ from .remoteok import RemoteOKScraper
 from .arbeitnow import ArbeitnowScraper
 from .rekrute import RekruteScraper
 from .wttj import WTTJScraper
+from .linkedin import LinkedInScraper
 from .models import Job
 from .storage import save_jobs
 
@@ -12,6 +13,7 @@ __all__ = [
     "ArbeitnowScraper",
     "RekruteScraper",
     "WTTJScraper",
+    "LinkedInScraper",
     "Job",
     "save_jobs",
 ]

@@ -49,6 +49,25 @@ INDEED_ENRICH_MAX = 50
 INDEED_ENRICH_DELAY_MIN = 8
 INDEED_ENRICH_DELAY_MAX = 12
 
+# LinkedIn settings (uses DataImpulse proxy)
+LINKEDIN_RESULTS_PER_PAGE = 25
+LINKEDIN_MAX_PAGES = 3
+LINKEDIN_DELAY_MIN = 4
+LINKEDIN_DELAY_MAX = 8
+LINKEDIN_MAX_BYTES_PER_RUN = 10 * 1024 * 1024  # 10 MB
+
+LINKEDIN_REGIONS = {
+    "morocco": "Morocco",
+    "france": "France",
+    "germany": "Germany",
+    "netherlands": "Netherlands",
+    "belgium": "Belgium",
+    "luxembourg": "Luxembourg",
+    "poland": "Poland",
+    "switzerland": "Switzerland",
+    "uk": "United Kingdom",
+}
+
 # URL validation settings
 URL_VALIDATE_DELAY_MIN = 3
 URL_VALIDATE_DELAY_MAX = 6

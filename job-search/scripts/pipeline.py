@@ -25,6 +25,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+# Load .env before any module that reads env vars
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
 # Ensure job-search/ is on the path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -75,12 +79,13 @@ AVAILABLE_SCRAPERS = {
     "arbeitnow": "scraper.ArbeitnowScraper",
     "rekrute": "scraper.RekruteScraper",
     "wttj": "scraper.WTTJScraper",
+    "linkedin": "scraper.LinkedInScraper",
 }
 
 
 def cmd_scrape(args):
     """Run scrapers and save results."""
-    from scraper import IndeedScraper, RemoteOKScraper, ArbeitnowScraper, RekruteScraper, WTTJScraper
+    from scraper import IndeedScraper, RemoteOKScraper, ArbeitnowScraper, RekruteScraper, WTTJScraper, LinkedInScraper
     from scraper.config import KEYWORDS
     from scraper.storage import save_jobs, print_summary
 
@@ -90,6 +95,7 @@ def cmd_scrape(args):
         "arbeitnow": ArbeitnowScraper,
         "rekrute": RekruteScraper,
         "wttj": WTTJScraper,
+        "linkedin": LinkedInScraper,
     }
 
     sources = args.sources if args.sources else list(scraper_map.keys())

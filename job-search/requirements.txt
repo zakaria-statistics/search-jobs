@@ -1,5 +1,6 @@
 scrapling[all]
 requests
+beautifulsoup4
 anthropic
 python-dotenv
 chromadb

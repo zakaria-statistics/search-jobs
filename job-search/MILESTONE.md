@@ -72,6 +72,20 @@
 | Rate limiting | Grouped by source, random delay (3-6s), max 200 URLs per run |
 | Commit | `d158c91` (2026-03-07) |
 
+## Phase 7: LinkedIn Scraper -- Proxy-Powered Source Expansion
+
+| What | Detail |
+|------|--------|
+| LinkedIn scraper | New `scraper/linkedin.py` — 6th source via LinkedIn public guest API |
+| DataImpulse proxy | Residential proxy integration (`.env` credentials, no account risk) |
+| Byte budget | Per-run cap (`LINKEDIN_MAX_BYTES_PER_RUN = 10 MB`) to protect 5GB/month plan |
+| Cost tracking | Logs requests, MB transferred, and estimated proxy cost per run |
+| Rate limiting | 4-8s random delay between requests + 429 detection auto-stops |
+| Region support | 9 regions matching existing Indeed config (MA, FR, DE, NL, BE, LU, PL, CH, UK) |
+| Pipeline integration | `--sources linkedin` flag, included in full `run` command |
+| dotenv loading | `pipeline.py` now loads `.env` at startup for all env-dependent modules |
+| Commit | `PENDING` |
+
 ## What's Next (ideas)
 
 - Auto-application drafting (cover letter generation per job)
