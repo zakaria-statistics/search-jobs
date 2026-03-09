@@ -56,6 +56,7 @@
 | Prepare stage | Externalized `slim_job()` — inspect `prepared.json` before API call |
 | Batched ranking | Auto-splits into batches of 30, streams with progress, merges globally |
 | Docs consolidation | GUIDE.md, MILESTONE.md, CLAUDE.md; trimmed README/ARCHITECTURE |
+| Relevance indicator | `ranker/relevance.py` — per-stage summary block (source/keyword/score breakdowns) injected into every JSON output |
 | Commit | `fbf10f5` (2026-03-06) |
 
 ## Phase 6: URL Validation -- Dead Posting Detection

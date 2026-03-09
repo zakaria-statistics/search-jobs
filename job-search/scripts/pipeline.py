@@ -342,6 +342,8 @@ def cmd_filter(args):
         args._run_dir = run_dir
 
     # Save each bucket as a separate file
+    from ranker.relevance import build_relevance
+
     saved_files = []
     for name, lo, hi, desc in SCORE_BUCKETS:
         bucket_jobs = buckets[name]
@@ -355,6 +357,7 @@ def cmd_filter(args):
             "score_range": f"{lo:.2f}-{hi:.2f}",
             "total_input": len(jobs),
             "total_in_bucket": len(bucket_jobs),
+            "relevance": build_relevance(bucket_jobs, "filtered"),
             "jobs": bucket_jobs,
         }
         outpath.write_text(json.dumps(data, indent=2, ensure_ascii=False, default=str))
@@ -443,6 +446,8 @@ def cmd_validate(args):
         args._run_dir = run_dir
 
     # Save validated.json (live jobs)
+    from ranker.relevance import build_relevance
+
     validated_path = Path(run_dir) / "validated.json"
     validated_data = {
         "validated_at": datetime.now().isoformat(),
@@ -450,6 +455,7 @@ def cmd_validate(args):
         "total_input": len(jobs),
         "total_live": len(live),
         "total_closed": len(closed),
+        "relevance": build_relevance(live, "validated"),
         "jobs": live,
     }
     validated_path.write_text(json.dumps(validated_data, indent=2, ensure_ascii=False, default=str))
@@ -552,11 +558,14 @@ def cmd_prepare(args):
         args._run_dir = run_dir
 
     # Save prepared.json
+    from ranker.relevance import build_relevance
+
     outpath = Path(run_dir) / "prepared.json"
     data = {
         "prepared_at": datetime.now().isoformat(),
         "source_file": str(filepath),
         "total_jobs": len(slim_jobs),
+        "relevance": build_relevance(slim_jobs, "prepared"),
         "jobs": slim_jobs,
     }
     outpath.write_text(json.dumps(data, indent=2, ensure_ascii=False, default=str))

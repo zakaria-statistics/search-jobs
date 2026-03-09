@@ -44,10 +44,14 @@ def save_jobs(jobs: list[Job], output_dir: str = None, run_dir: str = None) -> s
         except (json.JSONDecodeError, KeyError):
             pass
 
+    from ranker.relevance import build_relevance
+
+    job_dicts = [job.to_dict() if isinstance(job, Job) else job for job in unique]
     data = {
         "scraped_at": datetime.now().isoformat(),
         "total_jobs": len(unique),
-        "jobs": [job.to_dict() if isinstance(job, Job) else job for job in unique],
+        "relevance": build_relevance(job_dicts, "scraped"),
+        "jobs": job_dicts,
     }
 
     with open(filepath, "w", encoding="utf-8") as f:

@@ -201,8 +201,11 @@ def _merge_results(batch_results: list[dict]) -> dict:
         },
     }
 
+    from ranker.relevance import build_relevance
+
     return {
         "search_summary": summary,
+        "relevance": build_relevance(all_jobs, "ranked"),
         "ranked_jobs": all_jobs,
         "global_insights": all_insights,
     }
