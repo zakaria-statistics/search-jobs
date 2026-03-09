@@ -71,6 +71,8 @@ all scrapers --> base.py, config.py, models.py
 - `_find_latest_file()` (scripts/pipeline.py) — file discovery with fallback chain
 - `check_single_url()` (scraper/url_validator.py) — single URL liveness check
 - `drop_closed()` (scraper/url_validator.py) — split jobs into live/closed
+- `build_relevance()` (ranker/relevance.py) — per-stage summary block for JSON outputs
+- `cmd_sync()` (scripts/pipeline.py) — rclone-based sync to Google Drive
 
 **Config:**
 - `scraper/linkedin.py` — LinkedInScraper, guest API + DataImpulse proxy, byte budget tracking
@@ -243,6 +245,7 @@ When a major milestone is completed (new pipeline stage, new scoring system, str
 - Anthropic Claude API for ranking
 - scrapling for HTML scraping (Fetcher, StealthyFetcher)
 - Standalone HTML (CDN-loaded libs) for dashboards/visualizations — no JS build toolchain
+- rclone for Google Drive sync (`pipeline.py sync`)
 - No tests yet — manual validation via pipeline commands
 
 ## Data Conventions

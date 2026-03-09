@@ -15,6 +15,7 @@ Usage:
     python scripts/pipeline.py run --skip-validate  # Skip URL validation
     python scripts/pipeline.py manual          # Add a job manually (delegates to tracker)
     python scripts/pipeline.py status          # Show pipeline stats
+    python scripts/pipeline.py sync            # Sync output/latest to Google Drive
 """
 
 import argparse
@@ -987,6 +988,64 @@ def cmd_status(args):
     print(f"\n{'='*50}")
 
 
+# ─── Sync ────────────────────────────────────────────────────────────────────
+
+RCLONE_REMOTE = "gdrive"
+RCLONE_DEST = "job-search/output"
+
+def cmd_sync(args):
+    """Sync output/latest + persistent files to Google Drive via rclone."""
+    import shutil
+    import subprocess
+
+    if not shutil.which("rclone"):
+        logger.error("rclone not installed. Run: curl https://rclone.org/install.sh | bash")
+        sys.exit(1)
+
+    remote = f"{RCLONE_REMOTE}:{RCLONE_DEST}"
+
+    # Resolve what to sync
+    targets = []
+
+    # Latest run
+    latest = OUTPUT_DIR / "latest"
+    if latest.exists():
+        run_name = latest.resolve().name  # e.g. 2026-03-08-23-32-06
+        targets.append((str(latest) + "/", f"{remote}/runs/{run_name}/"))
+        targets.append((str(latest) + "/", f"{remote}/latest/"))
+
+    # Persistent files
+    for name in ("opportunities.json", "contacts.json"):
+        path = OUTPUT_DIR / name
+        if path.exists():
+            targets.append((str(path), f"{remote}/{name}"))
+
+    if not targets:
+        logger.warning("Nothing to sync — no output/latest or persistent files found.")
+        return
+
+    print(f"\n{'='*50}")
+    print(f"  SYNC TO GOOGLE DRIVE")
+    print(f"{'='*50}")
+
+    for src, dst in targets:
+        # Use 'copy' for files, 'copy' for dirs
+        is_dir = src.endswith("/")
+        label = Path(src.rstrip("/")).name
+        print(f"\n  [{label}] → {dst}")
+
+        cmd = ["rclone", "copy", src, dst, "--progress"]
+        result = subprocess.run(cmd, capture_output=False)
+        if result.returncode != 0:
+            logger.error(f"Failed to sync {label}")
+        else:
+            print(f"  [{label}] done.")
+
+    print(f"\n{'='*50}")
+    print(f"  Sync complete.")
+    print(f"{'='*50}\n")
+
+
 # ─── CLI ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -1058,6 +1117,9 @@ def main():
     # status
     sub.add_parser("status", help="Show pipeline statistics")
 
+    # sync
+    sub.add_parser("sync", help="Sync output/latest + persistent files to Google Drive")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -1076,6 +1138,7 @@ def main():
         "run": cmd_run,
         "manual": cmd_manual,
         "status": cmd_status,
+        "sync": cmd_sync,
     }
 
     commands[args.command](args)

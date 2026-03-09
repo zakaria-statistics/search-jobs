@@ -91,6 +91,14 @@ python scripts/contact_pipeline.py due      # recruiter follow-ups
 
 Act on follow-ups before searching for new roles.
 
+### Step 9: Sync to Google Drive
+
+```bash
+python scripts/pipeline.py sync    # sync latest run + persistent files to Google Drive
+```
+
+Requires `rclone` configured with a `gdrive` remote (one-time setup: `rclone config`).
+
 ### Full pipeline shortcut
 
 ```bash
@@ -129,6 +137,7 @@ python scripts/pipeline.py run --skip-validate # skip URL validation (faster)
 | `run --skip-validate` | Skip URL validation stage | ~20 min |
 | `manual` | Add a job manually to tracker | ~1 min |
 | `status` | Pipeline health and statistics | instant |
+| `sync` | Sync output/latest + persistent files to Google Drive | ~10 sec |
 
 Example `status` output:
 

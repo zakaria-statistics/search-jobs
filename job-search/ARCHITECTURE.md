@@ -137,6 +137,7 @@ Unified CLI that chains everything:
 | `run` | Full chain: scrape → enrich → filter → validate → prepare → rank → review |
 | `manual` | Delegates to `opportunity_tracker.py add` for manual entry |
 | `status` | Counts across pipeline stages (scraped, filtered, ranked, tracked, by status) |
+| `sync` | Sync output/latest + persistent files (opportunities, contacts) to Google Drive via rclone |
 
 The `filter` command is the inspection point — you see what passes, check scores and stack distribution, then decide to send to Claude via `rank`.
 

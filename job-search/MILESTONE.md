@@ -57,7 +57,8 @@
 | Batched ranking | Auto-splits into batches of 30, streams with progress, merges globally |
 | Docs consolidation | GUIDE.md, MILESTONE.md, CLAUDE.md; trimmed README/ARCHITECTURE |
 | Relevance indicator | `ranker/relevance.py` — per-stage summary block (source/keyword/score breakdowns) injected into every JSON output |
-| Commit | `fbf10f5` (2026-03-06) |
+| Google Drive sync | `pipeline.py sync` — rclone-based sync of latest run + persistent files to Google Drive |
+| Commit | `fbf10f5` (2026-03-06), `c7472a8` (relevance), `TBD` (sync) |
 
 ## Phase 6: URL Validation -- Dead Posting Detection
 
